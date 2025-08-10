@@ -11,7 +11,6 @@ import Footer from "../components/Footer/Footer";
 import MainHomeFilms from "../components/Home/MainHomeFilm";
 import RecommendGenres from "../components/Home/RecommendGenres";
 import TrendingNow from "../components/Home/TrendingNow";
-import AboutStatement from "../components/Common/AboutStatement";
 import { useHomeData } from "../hooks/useHomeData";
 import { useAppSelector } from "../store/hooks";
 
@@ -142,8 +141,6 @@ const Home: FC = () => {
           <TrendingNow />
         </div>
       </div>
-
-      <AboutStatement />
 
       <Footer />
     </>
