@@ -3,5 +3,10 @@
   "outputDirectory": "build",
   "framework": "create-react-app",
   "installCommand": "npm install --force --legacy-peer-deps --no-optional",
-  "devCommand": "npm start"
+  "devCommand": "npm start",
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "nodejs18.x"
+    }
+  }
 }
