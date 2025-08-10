@@ -13,12 +13,6 @@ const Footer: FunctionComponent<FooterProps> = () => {
       </p>
       <div className="flex gap-3 items-center">
         <p className="hidden md:block">Contact me: </p>
-        <a
-          href="#about-story"
-          className="hidden md:block text-primary hover:text-white transition duration-300 mr-4"
-        >
-          Our Story
-        </a>
         <div className="flex gap-2">
           <a
             href="https://github.com/gideongeny"
