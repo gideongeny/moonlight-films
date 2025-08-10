@@ -1,4 +1,4 @@
-import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { FC, useState } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
@@ -18,7 +18,7 @@ const Home: FC = () => {
   const currentUser = useAppSelector((state) => state.auth.user);
 
   const [isSidebarActive, setIsSidebarActive] = useState(false);
-  const [parent] = useAutoAnimate();
+  
 
   ///////////////////////////////////////////////////////////////////////////////////
   // WAY 1: MANUALLY SET UP LOCAL STORAGE
@@ -85,7 +85,7 @@ const Home: FC = () => {
 
         <div
           // @ts-ignore
-          ref={parent}
+          
           className="flex-grow md:pt-7 pt-0 pb-7 border-x md:px-[2vw] px-[4vw] border-gray-darken min-h-screen"
         >
           <div className="flex justify-between md:items-end items-center">

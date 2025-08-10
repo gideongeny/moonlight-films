@@ -1,4 +1,4 @@
-import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { FunctionComponent } from "react";
 import { getExploreMovie, getExploreTV } from "../../services/explore";
@@ -14,7 +14,7 @@ const ExploreResult: FunctionComponent<ExploreResultProps> = ({
   currentTab,
   config,
 }) => {
-  const [parent] = useAutoAnimate();
+  
 
   const {
     data: movies,
@@ -60,7 +60,7 @@ const ExploreResult: FunctionComponent<ExploreResultProps> = ({
   return (
     <div
       // @ts-ignore
-      ref={parent}
+      
     >
       {currentTab === "movie" && (
         <ExploreResultContent

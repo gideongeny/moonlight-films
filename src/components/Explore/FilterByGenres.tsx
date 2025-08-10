@@ -3,7 +3,7 @@ import { FunctionComponent } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getRecommendGenres2 } from "../../services/search";
 import { getRecommendGenres2Type } from "../../shared/types";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface FilterByGenresProps {
   currentTab: string;
@@ -18,7 +18,6 @@ const FilterByGenres: FunctionComponent<FilterByGenresProps> = ({
   >(["genres"], getRecommendGenres2);
 
   const [searchParam, setSearchParam] = useSearchParams();
-  const [parent] = useAutoAnimate();
 
   if (isError) return <div>ERROR: {error.message}</div>;
 
@@ -71,25 +70,30 @@ const FilterByGenres: FunctionComponent<FilterByGenresProps> = ({
   };
 
   return (
-    <ul // @ts-ignore
-      ref={parent}
-      className="flex gap-3 flex-wrap max-h-[200px] overflow-y-auto"
-    >
-      {data[currentTab === "movie" ? "movieGenres" : "tvGenres"].map(
-        (genre) => (
-          <li key={genre.id}>
-            <button
-              onClick={chooseGenre.bind(this, String(genre.id))}
-              className={`px-4 py-1 border border-[#989898] rounded-full hover:brightness-75 transition duration-300 inline-block ${
-                searchParam.getAll("genre").includes(String(genre.id)) &&
-                "bg-primary text-white"
-              }`}
+    <ul className="flex gap-3 flex-wrap max-h-[200px] overflow-y-auto">
+      <AnimatePresence>
+        {data[currentTab === "movie" ? "movieGenres" : "tvGenres"].map(
+          (genre, index) => (
+            <motion.li 
+              key={genre.id}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.2, delay: index * 0.05 }}
             >
-              {genre.name}
-            </button>
-          </li>
-        )
-      )}
+              <button
+                onClick={chooseGenre.bind(this, String(genre.id))}
+                className={`px-4 py-1 border border-[#989898] rounded-full hover:brightness-75 transition duration-300 inline-block ${
+                  searchParam.getAll("genre").includes(String(genre.id)) &&
+                  "bg-primary text-white"
+                }`}
+              >
+                {genre.name}
+              </button>
+            </motion.li>
+          )
+        )}
+      </AnimatePresence>
     </ul>
   );
 };

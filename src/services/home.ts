@@ -45,10 +45,12 @@ export const getMovieBannerInfo = async (
   const translations: string[][] = translationRes.map((item: any) =>
     item.data.translations
       .filter((translation: any) =>
-        ["vi", "fr", "ja", "pt", "ru", "es"].includes(translation.iso_639_1)
+        ["en", "sw", "fr", "es", "pt", "de", "it", "ru", "ja", "ko", "zh", "ar", "hi"].includes(translation.iso_639_1)
       )
       .reduce((acc: any, element: any) => {
-        if (element.iso_639_1 === "vi") {
+        if (element.iso_639_1 === "en") {
+          return [element, ...acc];
+        } else if (element.iso_639_1 === "sw") {
           return [element, ...acc];
         }
         return [...acc, element];
@@ -56,7 +58,7 @@ export const getMovieBannerInfo = async (
       .map((translation: any) => translation.data.title)
   );
 
-  // translations will look like: [["bác sĩ kì lạ", "doctor strange", "doctor Strange tiếng nước nào đó"],["nhện xa nhà", "nhện xa nhà tiếng nước nào đó", "spider man fram from home", "spider man tiếng châu phi"],...]
+  // translations will look like: [["Doctor Strange", "Daktari Strange", "Doctor Strange", "Dr. Strange"],["Spider Man Far From Home", "Spider Man Mbali na Nyumbani", "Spider-Man Lejos de Casa"],...]
 
   const genres: { name: string; id: number }[][] = detailRes.map((item: any) =>
     item.data.genres.filter((_: any, index: number) => index < 3)
@@ -115,10 +117,12 @@ export const getTVBannerInfo = async (tvs: Item[]): Promise<BannerInfo[]> => {
   const translations = translationRes.map((item: any) =>
     item.data.translations
       .filter((translation: any) =>
-        ["vi", "fr", "ja", "pt", "ru", "es"].includes(translation.iso_639_1)
+        ["en", "sw", "fr", "es", "pt", "de", "it", "ru", "ja", "ko", "zh", "ar", "hi"].includes(translation.iso_639_1)
       )
       .reduce((acc: any, element: any) => {
-        if (element.iso_639_1 === "vi") {
+        if (element.iso_639_1 === "en") {
+          return [element, ...acc];
+        } else if (element.iso_639_1 === "sw") {
           return [element, ...acc];
         }
         return [...acc, element];

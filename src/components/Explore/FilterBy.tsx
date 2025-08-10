@@ -1,4 +1,4 @@
-import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { motion, AnimatePresence } from "framer-motion";
 import { FunctionComponent, useState } from "react";
 import { FiChevronDown, FiChevronRight } from "react-icons/fi";
 import FilterByDate from "./FilterByDate";
@@ -10,14 +10,14 @@ interface FilterByProps {
 }
 
 const FilterBy: FunctionComponent<FilterByProps> = ({ currentTab }) => {
-  const [filter] = useAutoAnimate();
+  
 
   const [openFilter, setOpenFilter] = useState(true);
 
   return (
     <div
       // @ts-ignore
-      ref={filter}
+      
       className="bg-dark-lighten rounded-md shadow-md px-4 py-3 mt-8"
     >
       <div className="flex justify-between items-center text-white pb-3">

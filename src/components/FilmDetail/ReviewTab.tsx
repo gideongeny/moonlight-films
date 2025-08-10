@@ -7,7 +7,7 @@ import { calculateTimePassed } from "../../shared/utils";
 import StarRating from "../Common/StarRating";
 import ReadMore from "../Common/ReadMore";
 import { SortReview } from "./SortReview";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ReviewTabProps {
   reviews: Reviews[];
@@ -19,15 +19,20 @@ interface ReviewContentProps {
 }
 
 const ReviewContent: FC<ReviewContentProps> = ({ reviews, type }) => {
-  const [parent] = useAutoAnimate();
+  
   return (
     <ul
       // @ts-ignore: Unreachable code error
-      ref={parent}
+      
       className="flex flex-col gap-12 max-h-[400px] overflow-y-auto pr-4"
     >
+        <AnimatePresence>
       {SortReview(reviews, type).map((review) => (
-        <li key={review.id} className="flex gap-7">
+        <motion.li
+              key={review.id} className="flex gap-7"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}>
           <div className="shrink-0 max-w-[60px] w-full h-[60px]">
             <LazyLoadImage
               src="/me.jpg"
@@ -49,9 +54,10 @@ const ReviewContent: FC<ReviewContentProps> = ({ reviews, type }) => {
               {calculateTimePassed(new Date(review.created_at).getTime())}
             </p>
           </div>
-        </li>
+        </motion.li>
       ))}
-    </ul>
+            </AnimatePresence>
+      </ul>
   );
 };
 
