@@ -1,0 +1,5 @@
+[33ma3e235d[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Refactor: use useLocalStorage hook instead of manually interacting with localStorage
+[33m5876177[m Refactor: use debounce() and useDebounce() instead of handling timeout manually
+[33m935def8[m refactor homepage by custom hook, keepPreviousData on Explore page
+[33me1a45e5[m refactor homepage fetching by custom hook, add keepPreviousData to explore page
+[33m1691d80[m Refactoring: pass event handler as prop instead of state setter function
