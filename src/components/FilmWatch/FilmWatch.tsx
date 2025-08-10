@@ -15,6 +15,7 @@ import {
   Item,
 } from "../../shared/types";
 import { embedMovie, embedTV } from "../../shared/utils";
+import { EMBED_ALTERNATIVES } from "../../shared/constants";
 import { useAppSelector } from "../../store/hooks";
 import ReadMore from "../Common/ReadMore";
 import RightbarFilms from "../Common/RightbarFilms";
@@ -46,6 +47,61 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
   const currentUser = useAppSelector((state) => state.auth.user);
   const { isMobile } = useCurrentViewportView();
   const [isSidebarActive, setIsSidebarActive] = useState(false);
+  const [currentSourceIndex, setCurrentSourceIndex] = useState(0);
+  const [videoError, setVideoError] = useState(false);
+  const [isLoadingVideo, setIsLoadingVideo] = useState(true);
+
+  // Generate all available video sources
+  const getVideoSources = () => {
+    if (media_type === "movie") {
+      return [
+        `${EMBED_ALTERNATIVES.EMBEDTO}/movie?id=${detail?.id}`,
+        `${EMBED_ALTERNATIVES.VIDSRC}/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.TWOEMBED}/movie?tmdb=${detail?.id}`,
+      ];
+    } else {
+      return [
+        `${EMBED_ALTERNATIVES.EMBEDTO}/tv?id=${detail?.id}&s=${seasonId}&e=${episodeId}`,
+        `${EMBED_ALTERNATIVES.VIDSRC}/${detail?.id}/${seasonId}-${episodeId}`,
+        `${EMBED_ALTERNATIVES.TWOEMBED}/series?tmdb=${detail?.id}&sea=${seasonId}&epi=${episodeId}`,
+      ];
+    }
+  };
+
+  const videoSources = getVideoSources();
+  const currentSource = videoSources[currentSourceIndex];
+
+  const handleVideoError = () => {
+    console.log(`Video source ${currentSourceIndex + 1} failed, trying next...`);
+    setVideoError(true);
+    
+    // Try next source if available
+    if (currentSourceIndex < videoSources.length - 1) {
+      setTimeout(() => {
+        setCurrentSourceIndex(currentSourceIndex + 1);
+        setVideoError(false);
+        setIsLoadingVideo(true);
+      }, 1000);
+    }
+  };
+
+  const handleVideoLoad = () => {
+    setIsLoadingVideo(false);
+    setVideoError(false);
+  };
+
+  const resetToFirstSource = () => {
+    setCurrentSourceIndex(0);
+    setVideoError(false);
+    setIsLoadingVideo(true);
+  };
+
+  // Reset source when detail changes
+  useEffect(() => {
+    setCurrentSourceIndex(0);
+    setVideoError(false);
+    setIsLoadingVideo(true);
+  }, [detail?.id, seasonId, episodeId]);
 
   useEffect(() => {
     if (!currentUser) return;
@@ -134,27 +190,66 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
             )}
             {detail && (
               <>
+                {/* Manual source selector */}
+                <div className="absolute top-4 right-4 z-10">
+                  <select
+                    value={currentSourceIndex}
+                    onChange={(e) => {
+                      setCurrentSourceIndex(Number(e.target.value));
+                      setVideoError(false);
+                      setIsLoadingVideo(true);
+                    }}
+                    className="bg-black/80 text-white text-xs px-3 py-2 rounded border border-gray-600 hover:border-gray-400 transition-colors"
+                  >
+                    {videoSources.map((source, index) => (
+                      <option key={index} value={index}>
+                        Source {index + 1} ({source.includes('2embed.to') ? '2embed.to' : source.includes('vidsrc.me') ? 'VidSrc' : '2embed.org'})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
                 <iframe
                   className="absolute w-full h-full top-0 left-0"
-                  src={
-                    media_type === "movie"
-                      ? embedMovie(detail.id)
-                      : embedTV(
-                          detail.id,
-                          seasonId as number,
-                          episodeId as number
-                        )
-                  }
+                  src={currentSource}
                   title="Film Video Player"
                   frameBorder="0"
                   allowFullScreen
-                  onError={(e) => console.error("Video iframe error:", e)}
-                  onLoad={() => console.log("Video iframe loaded successfully")}
+                  onError={handleVideoError}
+                  onLoad={handleVideoLoad}
                 ></iframe>
-                {/* Fallback message if video doesn't load */}
-                <div className="absolute top-4 left-4 bg-black/70 text-white px-3 py-2 rounded text-sm">
-                  <p>Loading video from: {media_type === "movie" ? embedMovie(detail.id) : embedTV(detail.id, seasonId as number, episodeId as number)}</p>
-                  <p className="text-xs mt-1">If video doesn't play, try refreshing or check your ad blocker</p>
+                {/* Enhanced video status and fallback controls */}
+                <div className="absolute top-4 left-4 bg-black/80 text-white px-4 py-3 rounded-lg text-sm max-w-md">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="font-medium">Video Source {currentSourceIndex + 1}/{videoSources.length}</p>
+                    {videoError && (
+                      <button
+                        onClick={resetToFirstSource}
+                        className="text-primary hover:text-blue-300 text-xs underline"
+                      >
+                        Reset
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-xs mb-2 break-all">
+                    {currentSource}
+                  </p>
+                  {isLoadingVideo && (
+                    <div className="flex items-center gap-2 text-yellow-400">
+                      <div className="w-3 h-3 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+                      <span className="text-xs">Loading...</span>
+                    </div>
+                  )}
+                  {videoError && currentSourceIndex < videoSources.length - 1 && (
+                    <div className="flex items-center gap-2 text-orange-400">
+                      <span className="text-xs">Source failed, trying next...</span>
+                    </div>
+                  )}
+                  {videoError && currentSourceIndex === videoSources.length - 1 && (
+                    <div className="text-red-400 text-xs">
+                      All sources failed. Try refreshing or check your ad blocker.
+                    </div>
+                  )}
                 </div>
               </>
             )}
