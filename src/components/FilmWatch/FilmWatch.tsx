@@ -133,21 +133,30 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
               <Skeleton className="absolute top-0 left-0 w-full h-full rounded-sm" />
             )}
             {detail && (
-              <iframe
-                className="absolute w-full h-full top-0 left-0"
-                src={
-                  media_type === "movie"
-                    ? embedMovie(detail.id)
-                    : embedTV(
-                        detail.id,
-                        seasonId as number,
-                        episodeId as number
-                      )
-                }
-                title="Film Video Player"
-                frameBorder="0"
-                allowFullScreen
-              ></iframe>
+              <>
+                <iframe
+                  className="absolute w-full h-full top-0 left-0"
+                  src={
+                    media_type === "movie"
+                      ? embedMovie(detail.id)
+                      : embedTV(
+                          detail.id,
+                          seasonId as number,
+                          episodeId as number
+                        )
+                  }
+                  title="Film Video Player"
+                  frameBorder="0"
+                  allowFullScreen
+                  onError={(e) => console.error("Video iframe error:", e)}
+                  onLoad={() => console.log("Video iframe loaded successfully")}
+                ></iframe>
+                {/* Fallback message if video doesn't load */}
+                <div className="absolute top-4 left-4 bg-black/70 text-white px-3 py-2 rounded text-sm">
+                  <p>Loading video from: {media_type === "movie" ? embedMovie(detail.id) : embedTV(detail.id, seasonId as number, episodeId as number)}</p>
+                  <p className="text-xs mt-1">If video doesn't play, try refreshing or check your ad blocker</p>
+                </div>
+              </>
             )}
           </div>
           <div className="mt-5 pb-8">

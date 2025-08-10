@@ -3,7 +3,7 @@ import { FC } from "react";
 import { Link } from "react-router-dom";
 import { getRecommendGenres2 } from "../../services/search";
 import { getRecommendGenres2Type } from "../../shared/types";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const getRandomGenres = (genres: { id: number; name: string }[]) => {
   // const NUMBER_OF_GENRES = 6;
@@ -27,7 +27,6 @@ const RecommendGenres: FC<RecommendGenresProps> = ({ currentTab }) => {
     getRecommendGenres2Type,
     Error
   >(["genres"], getRecommendGenres2);
-  const [parent] = useAutoAnimate();
 
   if (isError) return <div>ERROR: {error.message}</div>;
 
@@ -42,21 +41,26 @@ const RecommendGenres: FC<RecommendGenresProps> = ({ currentTab }) => {
   );
 
   return (
-    <ul
-      // @ts-ignore
-      ref={parent}
-      className="mt-28 flex gap-3 flex-wrap "
-    >
-      {randomGenres.map((genre) => (
-        <li key={genre.id} className="mb-2">
-          <Link
-            to={`/explore?genre=${String(genre.id)}`}
-            className="px-4 py-2 bg-dark-lighten rounded-full hover:brightness-75 transition duration-300"
+    <ul className="mt-28 flex gap-3 flex-wrap">
+      <AnimatePresence>
+        {randomGenres.map((genre, index) => (
+          <motion.li
+            key={genre.id}
+            className="mb-2"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3, delay: index * 0.1 }}
           >
-            {genre.name}
-          </Link>
-        </li>
-      ))}
+            <Link
+              to={`/explore?genre=${String(genre.id)}`}
+              className="px-4 py-2 bg-dark-lighten rounded-full hover:brightness-75 transition duration-300"
+            >
+              {genre.name}
+            </Link>
+          </motion.li>
+        ))}
+      </AnimatePresence>
     </ul>
   );
 };

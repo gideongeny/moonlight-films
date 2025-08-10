@@ -1,4 +1,4 @@
-import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { motion, AnimatePresence } from "framer-motion";
 import { FunctionComponent, useState } from "react";
 import { FiChevronDown, FiChevronRight } from "react-icons/fi";
 import { GiHamburgerMenu } from "react-icons/gi";
@@ -18,7 +18,7 @@ const Search: FunctionComponent<SearchProps> = () => {
   const { isMobile } = useCurrentViewportView();
   const [searchParams, setSearchParams] = useSearchParams();
   const [openSearchFilter, setOpenSearchFilter] = useState(true);
-  const [parent] = useAutoAnimate();
+  
   const query = searchParams.get("query");
   const page = searchParams.get("page") || 1;
   const [currentTab, setCurrentTab] = useState("multi");
@@ -86,7 +86,7 @@ const Search: FunctionComponent<SearchProps> = () => {
             <div className="shrink-0 md:max-w-[310px] w-full md:pt-32 pt-[104px] px-3">
               <div
                 // @ts-ignore
-                ref={parent}
+                
                 className="bg-dark-lighten rounded-md shadow-md px-4 pt-3"
               >
                 <div className="flex justify-between items-center text-white pb-3">
@@ -98,8 +98,13 @@ const Search: FunctionComponent<SearchProps> = () => {
                 </div>
                 {openSearchFilter && (
                   <ul className="md:py-6 py-2 border-t border-dark-darken text-white text-lg flex md:flex-col flex-row gap-3">
+        <AnimatePresence>
                     {filterOptions.map((filterOption) => (
-                      <li key={filterOption.id} className="flex-1">
+                      <motion.li
+              key={filterOption.id} className="flex-1"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}>
                         <button
                           onClick={() => {
                             setSearchParams({ query: query ?? "", page: "1" });
@@ -112,9 +117,10 @@ const Search: FunctionComponent<SearchProps> = () => {
                         >
                           {filterOption.label}
                         </button>
-                      </li>
+                      </motion.li>
                     ))}
-                  </ul>
+                          </AnimatePresence>
+      </ul>
                 )}
               </div>
             </div>
@@ -133,7 +139,7 @@ const Search: FunctionComponent<SearchProps> = () => {
           <div className="shrink-0 md:max-w-[310px] w-full md:pt-32 pt-4 px-3">
             <div
               // @ts-ignore
-              ref={parent}
+              
               className="bg-dark-lighten rounded-md shadow-md px-4 pt-3"
             >
               <div className="flex justify-between items-center text-white pb-3">
@@ -145,8 +151,13 @@ const Search: FunctionComponent<SearchProps> = () => {
               </div>
               {openSearchFilter && (
                 <ul className="md:py-6 py-2 border-t border-dark-darken text-white text-lg flex md:flex-col flex-row gap-3">
+        <AnimatePresence>
                   {filterOptions.map((filterOption) => (
-                    <li key={filterOption.id} className="flex-1">
+                    <motion.li
+              key={filterOption.id} className="flex-1"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}>
                       <button
                         onClick={() => {
                           setSearchParams({ query: query ?? "", page: "1" });
@@ -159,9 +170,10 @@ const Search: FunctionComponent<SearchProps> = () => {
                       >
                         {filterOption.label}
                       </button>
-                    </li>
+                    </motion.li>
                   ))}
-                </ul>
+                        </AnimatePresence>
+      </ul>
               )}
             </div>
           </div>

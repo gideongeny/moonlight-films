@@ -1,4 +1,4 @@
-import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   doc,
   DocumentData,
@@ -38,7 +38,7 @@ const CommentUserContent: FunctionComponent<CommentUserContentProps> = ({
   id,
   role,
 }) => {
-  const [parent] = useAutoAnimate();
+  
   const currentUser = useAppSelector((state) => state.auth.user);
   const [commentHiden, setCommentHiden] = useState<string[]>([]);
   const [showOptionFor, setShowOptionFor] = useState<string | undefined>(
@@ -136,8 +136,9 @@ const CommentUserContent: FunctionComponent<CommentUserContentProps> = ({
   return (
     <ul
       // @ts-ignore
-      ref={parent}
+      
     >
+        <AnimatePresence>
       {sortComment(commentData, sortType)
         ?.slice(0, commentLimit)
         .map((doc) => {
@@ -146,10 +147,13 @@ const CommentUserContent: FunctionComponent<CommentUserContentProps> = ({
           return (
             <Fragment key={doc.id}>
               {!commentHiden.includes(doc.id) && (
-                <li
-                  key={doc.id}
+                <motion.li
+              key={doc.id}
                   className="mb-6 flex md:gap-4 gap-2 items-start last:mb-0"
-                >
+                
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}>
                   <div className="w-[44px] h-[44px] shrink-0">
                     <LazyLoadImage
                       src={docData.user.photoURL as string}
@@ -200,7 +204,7 @@ const CommentUserContent: FunctionComponent<CommentUserContentProps> = ({
                                 if (e.key === "Escape")
                                   setEditingCommentFor(undefined);
                               }}
-                              ref={editValueRef}
+                              
                               defaultValue={docData.value}
                               type="text"
                               className="w-full bg-dark-lighten-2 outline-none py-1 px-2 rounded-md mt-1 text-lg text-white"
@@ -306,12 +310,13 @@ const CommentUserContent: FunctionComponent<CommentUserContentProps> = ({
                     setShowOptionFor={setShowOptionFor}
                     setCommentHiden={setCommentHiden}
                   />
-                </li>
+                </motion.li>
               )}
             </Fragment>
           );
         })}
-    </ul>
+            </AnimatePresence>
+      </ul>
   );
 };
 

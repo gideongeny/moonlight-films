@@ -1,4 +1,4 @@
-import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { motion, AnimatePresence } from "framer-motion";
 import { doc, updateDoc } from "firebase/firestore";
 import { FunctionComponent, useState } from "react";
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
@@ -37,9 +37,9 @@ const FilmListViewForBookmarkAndHistory: FunctionComponent<
     "all"
   );
 
-  const [parent] = useAutoAnimate();
-  const [action] = useAutoAnimate();
-  const [show] = useAutoAnimate();
+  
+  
+  
 
   const tabs = [
     { label: "All", value: "all", id: 1 },
@@ -92,7 +92,7 @@ const FilmListViewForBookmarkAndHistory: FunctionComponent<
     <>
       <div
         // @ts-ignore
-        ref={show}
+        
       >
         {isShowPrompt && (
           <>
@@ -177,12 +177,17 @@ const FilmListViewForBookmarkAndHistory: FunctionComponent<
 
           <div
             // @ts-ignore
-            ref={action}
+            
             className="flex flex-col md:flex-row items-start md:items-end gap-5 md:justify-between m mb-8"
           >
             <ul className="inline-flex gap-[30px] pb-[14px] border-b border-gray-darken relative">
+        <AnimatePresence>
               {tabs.map((tab) => (
-                <li key={tab.id}>
+                <motion.li
+              key={tab.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}>
                   <button
                     onClick={() => {
                       setCurrentTab(tab.value);
@@ -200,9 +205,10 @@ const FilmListViewForBookmarkAndHistory: FunctionComponent<
                   >
                     {tab.label}
                   </button>
-                </li>
+                </motion.li>
               ))}
-            </ul>
+                    </AnimatePresence>
+      </ul>
 
             {!isEditing && (
               <button
@@ -246,16 +252,21 @@ const FilmListViewForBookmarkAndHistory: FunctionComponent<
 
           <ul
             // @ts-ignore
-            ref={parent}
+            
             className={`grid grid-cols-sm md:grid-cols-lg gap-x-8 gap-y-10 ${
               isEditing && "!gap-y-16"
             }`}
           >
+        <AnimatePresence>
             {isLoading &&
               [...new Array(12)].map((_, index) => (
-                <li key={index}>
+                <motion.li
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}>
                   <Skeleton className="h-0 pb-[160%]" />
-                </li>
+                </motion.li>
               ))}
             {currentTab === "all" && (
               <BookmarkResult
@@ -287,7 +298,8 @@ const FilmListViewForBookmarkAndHistory: FunctionComponent<
                 pageType={pageType}
               />
             )}
-          </ul>
+                  </AnimatePresence>
+      </ul>
         </div>
       </div>
     </>

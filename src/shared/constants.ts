@@ -4,6 +4,14 @@ export const EMBED_URL = "https://2embed.org/embed";
 export const EMBED_VIDSRC = "https://vidsrc.me/embed";
 export const EMBED_TO = "https://www.2embed.to/embed/tmdb";
 
+// Alternative video streaming services as fallbacks
+export const EMBED_ALTERNATIVES = {
+  VIDSRC: "https://vidsrc.me/embed",
+  TWOEMBED: "https://2embed.org/embed",
+  EMBEDTO: "https://www.2embed.to/embed/tmdb",
+  // Add more alternatives if needed
+};
+
 export const reactionColorForTailwindCSS = {
   haha: "text-yellow-500",
   like: "text-primary",

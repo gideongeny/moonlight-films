@@ -4,7 +4,7 @@ import { BsThreeDots } from "react-icons/bs";
 import { useAppSelector } from "../../../store/hooks";
 import { doc } from "firebase/firestore";
 import { db } from "../../../shared/firebase";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { motion, AnimatePresence } from "framer-motion";
 import { AiOutlineDelete } from "react-icons/ai";
 import BlackBackdrop from "../../Common/BlackBackdrop";
 interface EditCommentProps {
@@ -28,7 +28,7 @@ const EditComment: FunctionComponent<EditCommentProps> = ({
 }) => {
   const currentUser = useAppSelector((state) => state.auth.user);
   const [isShowPrompt, setIsShowPrompt] = useState(false);
-  const [show] = useAutoAnimate();
+  
   return (
     <>
       <div className="relative z-[39]">
@@ -89,7 +89,7 @@ const EditComment: FunctionComponent<EditCommentProps> = ({
       )}
       <div
         // @ts-ignore
-        ref={show}
+        
       >
         {isShowPrompt && (
           <>

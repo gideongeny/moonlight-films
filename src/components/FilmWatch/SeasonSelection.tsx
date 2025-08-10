@@ -1,4 +1,4 @@
-import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { motion, AnimatePresence } from "framer-motion";
 import { FunctionComponent, useState } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link } from "react-router-dom";
@@ -25,12 +25,12 @@ const Season: FunctionComponent<SeasonProps> = ({
   const [isSeasonExpanded, setIsSeasonExpanded] = useState<boolean>(
     season.season_number === 1
   );
-  const [list] = useAutoAnimate();
+  
   return (
-    <li
-      // @ts-ignore
-      ref={list}
-      // key={season.id}:  key is now set for custom component named Season
+    <motion.li
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
     >
       <button
         onClick={() => setIsSeasonExpanded((prev) => !prev)}
@@ -62,53 +62,66 @@ const Season: FunctionComponent<SeasonProps> = ({
         </div>
       </button>
 
-      {isSeasonExpanded && (
-        <ul className="flex flex-col gap-4 pl-6 mt-2">
-          {season.episodes.map((episode) => (
-            <li key={episode.id}>
-              <Link
-                to={{
-                  pathname: "",
-                  search: `?season=${season.season_number}&episode=${episode.episode_number}`,
-                }}
-                className="flex items-center gap-3 hover:bg-dark-lighten transiton duration-300 rounded-md pl-2"
+      <AnimatePresence>
+        {isSeasonExpanded && (
+          <motion.ul 
+            className="flex flex-col gap-4 pl-6 mt-2"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            {season.episodes.map((episode) => (
+              <motion.li 
+                key={episode.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.2 }}
               >
-                <div className="shrink-0 max-w-[15px] w-full">
-                  <p
-                    className={`text-white font-medium transition duration-300 ${
-                      episode.episode_number === episodeId &&
-                      season.season_number === seasonId &&
-                      "!text-primary"
-                    }`}
-                  >
-                    {episode.episode_number}
-                  </p>
-                </div>
-                <div className="shrink-0 max-w-[120px] w-full pt-2">
-                  <LazyLoadImage
-                    src={resizeImage(episode.still_path, "w185")}
-                    alt=""
-                    effect="opacity"
-                    className="object-cover w-[120px] rounded-md"
-                  />
-                </div>
-                <div className="flex-grow">
-                  <p
-                    className={`transition duration-300 text-sm ${
-                      episode.episode_number === episodeId &&
-                      season.season_number === seasonId &&
-                      "text-white"
-                    }`}
-                  >
-                    {episode.name}
-                  </p>
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-    </li>
+                <Link
+                  to={{
+                    pathname: "",
+                    search: `?season=${season.season_number}&episode=${episode.episode_number}`,
+                  }}
+                  className="flex items-center gap-3 hover:bg-dark-lighten transiton duration-300 rounded-md pl-2"
+                >
+                  <div className="shrink-0 max-w-[15px] w-full">
+                    <p
+                      className={`text-white font-medium transition duration-300 ${
+                        episode.episode_number === episodeId &&
+                        season.season_number === seasonId &&
+                        "!text-primary"
+                      }`}
+                    >
+                      {episode.episode_number}
+                    </p>
+                  </div>
+                  <div className="shrink-0 max-w-[120px] w-full pt-2">
+                    <LazyLoadImage
+                      src={resizeImage(episode.still_path, "w185")}
+                      alt=""
+                      effect="opacity"
+                      className="object-cover w-[120px] rounded-md"
+                    />
+                  </div>
+                  <div className="flex-grow">
+                    <p
+                      className={`transition duration-300 text-sm ${
+                        episode.episode_number === episodeId &&
+                        season.season_number === seasonId &&
+                        "text-white"
+                      }`}
+                    >
+                      {episode.name}
+                    </p>
+                  </div>
+                </Link>
+              </motion.li>
+            ))}
+          </motion.ul>
+        )}
+      </AnimatePresence>
+    </motion.li>
   );
 };
 
