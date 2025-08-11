@@ -1,14 +1,4 @@
-import {
-  addDoc,
-  collection,
-  doc,
-  getDocs,
-  orderBy,
-  query,
-  serverTimestamp,
-  setDoc,
-  Timestamp,
-} from "firebase/firestore";
+import { addDoc, collection, query, serverTimestamp, where } from "firebase/firestore";
 import { FormEvent, FunctionComponent, useEffect, useState } from "react";
 import { MdSend } from "react-icons/md";
 import { LazyLoadImage } from "react-lazy-load-image-component";
@@ -49,53 +39,16 @@ const Comment: FunctionComponent<CommentProps> = ({ id, media_type }) => {
     setCommentInputValue("");
   };
 
-  const {
-    data: commentData,
-    isLoading,
-    isError,
-  } = useCollectionQuery(
-    id,
-    query(collection(db, `${media_type}-${id}`), orderBy("createdAt", "desc"))
+  // Only show comments created by the current user (hide old/global comments)
+  const userUidForQuery = currentUser?.uid ?? "__nope__";
+  const commentsQuery = query(
+    collection(db, `${media_type}-${id}`),
+    where("user.uid", "==", userUidForQuery)
   );
 
-  // Auto comment
-  useEffect(() => {
-    if (!media_type || !id) return;
-    getDocs(collection(db, `${media_type}-${id as number}`)).then(
-      (docSnapshot) => {
-        if (
-          !docSnapshot.docs.some(
-            (doc) => doc.data()?.user.uid === "CZGmXpePYsd1YryQR3C8xA5YOzb2"
-          )
-        ) {
-          setDoc(doc(db, `${media_type}-${id as number}`, "admin"), {
-            user: {
-              displayName: "_fuocy",
-              email: "huuphuoc@gmail.com",
-              emailVerified: false,
-              photoURL: "https://i.ibb.co/CJqGvY6/satthudatinh.jpg",
-              uid: "CZGmXpePYsd1YryQR3C8xA5YOzb2",
-            },
-            value:
-              "Ngoài bình luận, trang web còn có chức năng thả cảm xúc, xem thông tin những người thả cảm xúc, (cảm xúc được nhiều người thả sẽ được ưu tiên hiện đầu), trả lời bình luận, chỉnh sửa, xóa, ẩn bình luận, sắp xếp bình luận, tải thêm bình luận.",
-            reactions: {
-              "3RkuRS4zSqadAkKDqSfTjCzwzF92": "haha",
-              GMaGmpy8ZaRBEhtaoZJdd9pNNXz1: "love",
-              UNuwtFtu69YHDGTs2emT6O8ClSG3: "love",
-              Z3eRARZ9jlftBLA6u0g8MWABkwo2: "like",
-              nj99GDXzPwNhcfUpk5PkyNFiwPt1: "sad",
-              ufw994VFRnQDCL0f6ISXpeIBTFX2: "haha",
-              vOV472eiPwf1GT8YPjiXs4xfYxt1: "haha",
-            },
-            createdAt: Timestamp.fromDate(
-              new Date("Sat Aug 03 2022 10:10:32 GMT+0700 (Indochina Time)")
-            ),
-            isEdited: true,
-          });
-        }
-      }
-    );
-  }, [media_type, id]);
+  const { data: commentData, isLoading, isError } = useCollectionQuery(id, commentsQuery);
+
+  // Removed old auto-seeded admin comment logic
 
   return (
     <div className="mb-16">

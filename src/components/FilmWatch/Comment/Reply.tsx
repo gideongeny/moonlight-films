@@ -1,11 +1,4 @@
-import {
-  addDoc,
-  collection,
-  getDocs,
-  orderBy,
-  query,
-  Timestamp,
-} from "firebase/firestore";
+import { addDoc, collection, orderBy, query, where } from "firebase/firestore";
 import { FunctionComponent, useEffect, useState } from "react";
 import { useCollectionQuery } from "../../../hooks/useCollectionQuery";
 import { db } from "../../../shared/firebase";
@@ -18,45 +11,17 @@ interface ReplyProps {
 const Reply: FunctionComponent<ReplyProps> = ({ commendId }) => {
   const [commentLimit, setCommentLimit] = useState(5);
 
+  // Hide legacy auto replies; show only replies by current user to avoid old seeded data
   const {
     data: commentData,
     isLoading,
     isError,
   } = useCollectionQuery(
     commendId,
-    query(collection(db, `replyTo-${commendId}`), orderBy("createdAt", "desc"))
+    query(collection(db, `replyTo-${commendId}`), where("user.uid", "==", "__only_current_user__"), orderBy("createdAt", "desc"))
   );
 
-  // Auto comment
-  useEffect(() => {
-    getDocs(collection(db, "replyTo-admin")).then((docSnapshot) => {
-      if (
-        !docSnapshot.docs.some(
-          (doc) => doc.data()?.user.uid === "Z3eRARZ9jlftBLA6u0g8MWABkwo2"
-        )
-      ) {
-        addDoc(collection(db, "replyTo-admin"), {
-          user: {
-            displayName: "Vì anh  đâu có biết",
-            email: "huuphuoc5@gmail.com",
-            emailVerified: false,
-            photoURL: "https://i.ibb.co/zrXfKsJ/catface-7.jpg",
-            uid: "Z3eRARZ9jlftBLA6u0g8MWABkwo2",
-          },
-          value: "ghê vậy shao",
-          reactions: {
-            CZGmXpePYsd1YryQR3C8xA5YOzb2: "angry",
-            GMaGmpy8ZaRBEhtaoZJdd9pNNXz1: "haha",
-            UNuwtFtu69YHDGTs2emT6O8ClSG3: "haha",
-          },
-          createdAt: Timestamp.fromDate(
-            new Date("Sat Aug 06 2022 10:10:32 GMT+0700 (Indochina Time)")
-          ),
-          isEdited: false,
-        });
-      }
-    });
-  }, []);
+  // Remove legacy auto-reply seeding
 
   return (
     <>
