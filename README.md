@@ -59,7 +59,7 @@ The Movie Database API
 
 ## Start
 
-From July 2, 2025 to August 9, 2025
+From July 2, 2024 to August 9, 2025
 
 ## How to clone this project
 
