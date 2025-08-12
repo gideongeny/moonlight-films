@@ -1,6 +1,6 @@
 import { FunctionComponent } from "react";
 import { SiTiktok } from "react-icons/si";
-import { BsInstagram, BsWhatsapp } from "react-icons/bs";
+import { BsInstagram, BsWhatsapp, BsFacebook } from "react-icons/bs";
 
 interface FooterProps {}
 
@@ -29,6 +29,14 @@ const Footer: FunctionComponent<FooterProps> = () => {
             className="hover:text-primary transition duration-300"
           >
             <BsInstagram size={22} />
+          </a>
+          <a
+            href="https://www.facebook.com/gideo.cheruiyot.2025"
+            target="_blank"
+            rel="noreferrer"
+            className="hover:text-primary transition duration-300"
+          >
+            <BsFacebook size={22} />
           </a>
           <a
             href="https://wa.me/254720317626"

@@ -17,6 +17,7 @@ import {
 import { embedMovie, embedTV } from "../../shared/utils";
 import { EMBED_ALTERNATIVES } from "../../shared/constants";
 import { useAppSelector } from "../../store/hooks";
+import { downloadService } from "../../services/download";
 import ReadMore from "../Common/ReadMore";
 import RightbarFilms from "../Common/RightbarFilms";
 import SearchBox from "../Common/SearchBox";
@@ -27,6 +28,7 @@ import Title from "../Common/Title";
 import Footer from "../Footer/Footer";
 import Comment from "./Comment/Comment";
 import SeasonSelection from "./SeasonSelection";
+import DownloadOptions from "../Common/DownloadOptions";
 
 interface FilmWatchProps {
   media_type: "movie" | "tv";
@@ -50,6 +52,7 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
   const [currentSourceIndex, setCurrentSourceIndex] = useState(0);
   const [videoError, setVideoError] = useState(false);
   const [isLoadingVideo, setIsLoadingVideo] = useState(true);
+  const [downloadInfo, setDownloadInfo] = useState<any>(null);
 
   // Generate all available video sources
   const getVideoSources = () => {
@@ -102,6 +105,20 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
     setVideoError(false);
     setIsLoadingVideo(true);
   }, [detail?.id, seasonId, episodeId]);
+
+  // Generate download info when detail changes
+  useEffect(() => {
+    if (detail) {
+      const info = downloadService.generateDownloadInfo(
+        detail,
+        media_type,
+        seasonId,
+        episodeId,
+        currentEpisode
+      );
+      setDownloadInfo(info);
+    }
+  }, [detail, media_type, seasonId, episodeId, currentEpisode]);
 
   useEffect(() => {
     if (!currentUser) return;
@@ -191,7 +208,7 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
             {detail && (
               <>
                 {/* Manual source selector */}
-                <div className="absolute top-4 right-4 z-10">
+                <div className="absolute top-4 right-4 z-10 flex gap-2">
                   <select
                     value={currentSourceIndex}
                     onChange={(e) => {
@@ -207,6 +224,23 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
                       </option>
                     ))}
                   </select>
+                  
+                  {/* Download Button */}
+                  {downloadInfo && (
+                    <button
+                      onClick={() => {
+                        // Scroll to download section
+                        const downloadSection = document.getElementById('download-section');
+                        if (downloadSection) {
+                          downloadSection.scrollIntoView({ behavior: 'smooth' });
+                        }
+                      }}
+                      className="bg-black/80 border border-primary text-primary hover:bg-primary hover:text-white text-xs px-3 py-2 rounded transition-colors flex items-center gap-1"
+                    >
+                      <AiOutlineDownload size={14} />
+                      Download
+                    </button>
+                  )}
                 </div>
                 
                 <iframe
@@ -356,6 +390,13 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
                   ? detail.overview
                   : currentEpisode?.overview}
               </ReadMore>
+            )}
+            
+            {/* Download Section */}
+            {downloadInfo && (
+              <div id="download-section" className="mt-6">
+                <DownloadOptions downloadInfo={downloadInfo} />
+              </div>
             )}
           </div>
           <Comment media_type={media_type} id={detail?.id} />
