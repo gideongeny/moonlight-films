@@ -1,6 +1,6 @@
 import { arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
 import { FunctionComponent, useEffect, useState } from "react";
-import { AiFillStar, AiTwotoneCalendar } from "react-icons/ai";
+import { AiFillStar, AiTwotoneCalendar, AiOutlineDownload } from "react-icons/ai";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { LazyLoadImage } from "react-lazy-load-image-component";
