@@ -58,15 +58,21 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
   const getVideoSources = () => {
     if (media_type === "movie") {
       return [
-        `${EMBED_ALTERNATIVES.EMBEDTO}/movie?id=${detail?.id}`,
         `${EMBED_ALTERNATIVES.VIDSRC}/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.EMBEDTO}/movie?id=${detail?.id}`,
         `${EMBED_ALTERNATIVES.TWOEMBED}/movie?tmdb=${detail?.id}`,
+        `${EMBED_ALTERNATIVES.SUPEREMBED}/movie?tmdb=${detail?.id}`,
+        `${EMBED_ALTERNATIVES.VEMBED}/movie?tmdb=${detail?.id}`,
+        `${EMBED_ALTERNATIVES.SMASHYST}/movie?tmdb=${detail?.id}`,
       ];
     } else {
       return [
-        `${EMBED_ALTERNATIVES.EMBEDTO}/tv?id=${detail?.id}&s=${seasonId}&e=${episodeId}`,
         `${EMBED_ALTERNATIVES.VIDSRC}/${detail?.id}/${seasonId}-${episodeId}`,
+        `${EMBED_ALTERNATIVES.EMBEDTO}/tv?id=${detail?.id}&s=${seasonId}&e=${episodeId}`,
         `${EMBED_ALTERNATIVES.TWOEMBED}/series?tmdb=${detail?.id}&sea=${seasonId}&epi=${episodeId}`,
+        `${EMBED_ALTERNATIVES.SUPEREMBED}/tv?tmdb=${detail?.id}&season=${seasonId}&episode=${episodeId}`,
+        `${EMBED_ALTERNATIVES.VEMBED}/tv?tmdb=${detail?.id}&season=${seasonId}&episode=${episodeId}`,
+        `${EMBED_ALTERNATIVES.SMASHYST}/tv?tmdb=${detail?.id}&season=${seasonId}&episode=${episodeId}`,
       ];
     }
   };

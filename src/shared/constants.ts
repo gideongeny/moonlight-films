@@ -9,6 +9,9 @@ export const EMBED_ALTERNATIVES = {
   VIDSRC: "https://vidsrc.me/embed",
   TWOEMBED: "https://2embed.org/embed",
   EMBEDTO: "https://www.2embed.to/embed/tmdb",
+  SUPEREMBED: "https://multiembed.mov",
+  VEMBED: "https://vembed.net",
+  SMASHYST: "https://embed.smashyst.com",
   // Add more alternatives if needed
 };
 

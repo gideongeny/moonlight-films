@@ -64,15 +64,21 @@ export class DownloadService {
   ): string[] {
     if (mediaType === "movie") {
       return [
-        `${EMBED_ALTERNATIVES.EMBEDTO}/movie?id=${id}`,
         `${EMBED_ALTERNATIVES.VIDSRC}/${id}`,
+        `${EMBED_ALTERNATIVES.EMBEDTO}/movie?id=${id}`,
         `${EMBED_ALTERNATIVES.TWOEMBED}/movie?tmdb=${id}`,
+        `${EMBED_ALTERNATIVES.SUPEREMBED}/movie?tmdb=${id}`,
+        `${EMBED_ALTERNATIVES.VEMBED}/movie?tmdb=${id}`,
+        `${EMBED_ALTERNATIVES.SMASHYST}/movie?tmdb=${id}`,
       ];
     } else {
       return [
-        `${EMBED_ALTERNATIVES.EMBEDTO}/tv?id=${id}&s=${seasonId}&e=${episodeId}`,
         `${EMBED_ALTERNATIVES.VIDSRC}/${id}/${seasonId}-${episodeId}`,
+        `${EMBED_ALTERNATIVES.EMBEDTO}/tv?id=${id}&s=${seasonId}&e=${episodeId}`,
         `${EMBED_ALTERNATIVES.TWOEMBED}/series?tmdb=${id}&sea=${seasonId}&epi=${episodeId}`,
+        `${EMBED_ALTERNATIVES.SUPEREMBED}/tv?tmdb=${id}&season=${seasonId}&episode=${episodeId}`,
+        `${EMBED_ALTERNATIVES.VEMBED}/tv?tmdb=${id}&season=${seasonId}&episode=${episodeId}`,
+        `${EMBED_ALTERNATIVES.SMASHYST}/tv?tmdb=${id}&season=${seasonId}&episode=${episodeId}`,
       ];
     }
   }
@@ -374,6 +380,139 @@ export class DownloadService {
     } catch (error) {
       progress.status = "error";
       progress.message = `Failed to create download links: ${error instanceof Error ? error.message : 'Unknown error'}`;
+      onProgress?.(progress);
+      throw error;
+    }
+  }
+
+  // Method to attempt direct video extraction and download
+  async downloadDirectVideo(
+    downloadInfo: DownloadInfo,
+    onProgress?: (progress: DownloadProgress) => void
+  ): Promise<void> {
+    const downloadId = this.generateDownloadId(downloadInfo);
+    
+    const progress: DownloadProgress = {
+      progress: 0,
+      status: "downloading",
+      message: "Extracting video source..."
+    };
+    
+    this.downloads.set(downloadId, progress);
+    onProgress?.(progress);
+
+    try {
+      // Try each source until one works
+      for (let i = 0; i < downloadInfo.sources.length; i++) {
+        const source = downloadInfo.sources[i];
+        progress.message = `Trying source ${i + 1}/${downloadInfo.sources.length}...`;
+        onProgress?.(progress);
+        
+        try {
+          // Create a hidden iframe to access the video content
+          const iframe = document.createElement('iframe');
+          iframe.style.display = 'none';
+          iframe.src = source;
+          
+          await new Promise<void>((resolve, reject) => {
+            const timeout = setTimeout(() => {
+              reject(new Error('Source timeout'));
+            }, 10000); // 10 second timeout
+            
+            iframe.onload = () => {
+              clearTimeout(timeout);
+              try {
+                // Try to extract video URL from iframe
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+                if (!iframeDoc) {
+                  reject(new Error("Cannot access iframe content"));
+                  return;
+                }
+
+                // Look for video elements
+                const videoElements = iframeDoc.querySelectorAll('video');
+                if (videoElements.length > 0) {
+                  const videoElement = videoElements[0];
+                  const videoSrc = videoElement.src || videoElement.currentSrc;
+                  
+                  if (videoSrc) {
+                    progress.message = "Found video source, starting download...";
+                    onProgress?.(progress);
+                    
+                    this.downloadVideoFile(videoSrc, downloadInfo, onProgress)
+                      .then(() => {
+                        document.body.removeChild(iframe);
+                        resolve();
+                      })
+                      .catch(reject);
+                    return;
+                  }
+                }
+                
+                // Try to find video source in script tags
+                const scripts = Array.from(iframeDoc.querySelectorAll('script'));
+                for (const script of scripts) {
+                  const content = script.textContent || script.innerHTML;
+                  const videoUrlMatch = content.match(/https?:\/\/[^"'\s]+\.(?:mp4|m3u8|webm)[^"'\s]*/i);
+                  if (videoUrlMatch) {
+                    progress.message = "Found video URL in scripts, starting download...";
+                    onProgress?.(progress);
+                    
+                    this.downloadVideoFile(videoUrlMatch[0], downloadInfo, onProgress)
+                      .then(() => {
+                        document.body.removeChild(iframe);
+                        resolve();
+                      })
+                      .catch(reject);
+                    return;
+                  }
+                }
+                
+                reject(new Error("No video source found in this source"));
+              } catch (error) {
+                reject(error);
+              }
+            };
+            
+            iframe.onerror = () => {
+              clearTimeout(timeout);
+              reject(new Error("Failed to load iframe"));
+            };
+            
+            document.body.appendChild(iframe);
+          });
+          
+          // If we get here, download was successful
+          return;
+          
+        } catch (error) {
+          console.warn(`Source ${i + 1} failed:`, error);
+          // Continue to next source
+        }
+      }
+      
+      // If all sources failed, fall back to opening the first source in a new tab
+      progress.message = "All direct sources failed, opening download link...";
+      onProgress?.(progress);
+      
+      const a = document.createElement('a');
+      a.href = downloadInfo.sources[0];
+      a.target = '_blank';
+      a.download = this.generateFileName(downloadInfo);
+      a.rel = 'noopener noreferrer';
+      
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      
+      progress.status = "completed";
+      progress.progress = 100;
+      progress.message = "Download link opened in new tab";
+      onProgress?.(progress);
+      
+    } catch (error) {
+      progress.status = "error";
+      progress.message = `Download failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
       onProgress?.(progress);
       throw error;
     }

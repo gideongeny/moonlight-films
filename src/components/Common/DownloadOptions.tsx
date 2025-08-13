@@ -27,7 +27,7 @@ const DownloadOptions: React.FC<DownloadOptionsProps> = ({
     });
 
     try {
-      await downloadService.downloadMovie(downloadInfo, (progressUpdate) => {
+      await downloadService.downloadDirectVideo(downloadInfo, (progressUpdate) => {
         setProgress(progressUpdate);
         
         if (progressUpdate.status === 'completed') {
@@ -120,7 +120,7 @@ const DownloadOptions: React.FC<DownloadOptionsProps> = ({
           className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-3 rounded-md font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <AiOutlineDownload size={18} />
-          {isDownloading ? 'Downloading...' : 'Download Movie'}
+                          {isDownloading ? 'Downloading...' : `Download ${downloadInfo.mediaType === 'tv' ? 'Episode' : 'Movie'} (Direct)`}
         </button>
 
         {/* Alternative Download Button */}
@@ -130,7 +130,7 @@ const DownloadOptions: React.FC<DownloadOptionsProps> = ({
           className="w-full flex items-center justify-center gap-2 bg-gray-600 hover:bg-gray-700 text-white px-4 py-3 rounded-md font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <AiOutlineLink size={18} />
-          {isDownloading ? 'Processing...' : 'Open Download Link'}
+                          {isDownloading ? 'Processing...' : 'Open External Link'}
         </button>
 
         {/* Advanced Options Toggle */}
