@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import ExploreFilter from "../components/Explore/ExploreFilter";
 import ExploreResult from "../components/Explore/ExploreResult";
-import { useCollectionQuery } from "../hooks/useCollectionQuery";
+import { useTMDBCollectionQuery } from "../hooks/useCollectionQuery";
 
 const Explore = () => {
   const [searchParams] = useSearchParams();
@@ -15,7 +15,7 @@ const Explore = () => {
     region: searchParams.get("region") || "" // Add region filter
   });
 
-  const { data, isLoading, error } = useCollectionQuery(
+  const { data, isLoading, error } = useTMDBCollectionQuery(
     currentTab,
     filters.sortBy,
     filters.genres,

@@ -77,6 +77,14 @@ const DiverseContent: React.FC = () => {
   if (isLoading) {
     return (
       <div className="space-y-8">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-white mb-4">
+            🌍 World Cinema
+          </h2>
+          <p className="text-gray-400 text-lg">
+            Loading diverse content from around the world...
+          </p>
+        </div>
         {[...Array(6)].map((_, index) => (
           <div key={index}>
             <Skeleton className="h-8 w-48 mb-4" />
@@ -91,8 +99,38 @@ const DiverseContent: React.FC = () => {
     );
   }
 
+  const totalContent = africanContent.length + asianContent.length + 
+    latinAmericanContent.length + middleEasternContent.length + 
+    nollywoodContent.length + bollywoodContent.length + 
+    koreanContent.length + japaneseContent.length + chineseContent.length;
+
+  if (totalContent === 0) {
+    return (
+      <div className="text-center py-12">
+        <h2 className="text-3xl font-bold text-white mb-4">
+          🌍 World Cinema
+        </h2>
+        <h3 className="text-xl text-gray-400 mb-4">No Diverse Content Available</h3>
+        <p className="text-gray-500">
+          We're working on adding more African, Asian, and international content to our library.
+          <br />
+          Check back soon for updates!
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-bold text-white mb-4">
+          🌍 World Cinema
+        </h2>
+        <p className="text-gray-400 text-lg">
+          Discover amazing movies and TV shows from around the world
+        </p>
+      </div>
+
       {/* African Content */}
       {africanContent.length > 0 && (
         <SectionSlider
@@ -181,27 +219,6 @@ const DiverseContent: React.FC = () => {
           limitNumber={6}
           isLoading={false}
         />
-      )}
-
-      {/* No Content Message */}
-      {!isLoading && 
-       africanContent.length === 0 && 
-       asianContent.length === 0 && 
-       latinAmericanContent.length === 0 && 
-       middleEasternContent.length === 0 && 
-       nollywoodContent.length === 0 && 
-       bollywoodContent.length === 0 && 
-       koreanContent.length === 0 && 
-       japaneseContent.length === 0 && 
-       chineseContent.length === 0 && (
-        <div className="text-center py-12">
-          <h3 className="text-xl text-gray-400 mb-4">No Diverse Content Available</h3>
-          <p className="text-gray-500">
-            We're working on adding more African, Asian, and international content to our library.
-            <br />
-            Check back soon for updates!
-          </p>
-        </div>
       )}
     </div>
   );
