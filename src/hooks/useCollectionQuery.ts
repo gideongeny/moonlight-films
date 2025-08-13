@@ -1,6 +1,13 @@
 import { useState, useEffect } from "react";
 import { Item } from "../shared/types";
 import axios from "../shared/axios";
+import {
+  CollectionReference,
+  DocumentData,
+  onSnapshot,
+  Query,
+  QuerySnapshot,
+} from "firebase/firestore";
 
 interface TMDBCollectionQueryParams {
   mediaType: "movie" | "tv";
@@ -117,14 +124,6 @@ export const useTMDBCollectionQuery = (
 };
 
 // Keep the old Firebase hook for backward compatibility
-import {
-  CollectionReference,
-  DocumentData,
-  onSnapshot,
-  Query,
-  QuerySnapshot,
-} from "firebase/firestore";
-
 export const useCollectionQuery: (
   id: number | string | undefined,
   collection: CollectionReference | Query<DocumentData>
