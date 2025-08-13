@@ -14,6 +14,22 @@ export const EMBED_ALTERNATIVES = {
   WATCHMOVIES: "https://watchmovieshd.ru",
   STREAMSB: "https://streamsb.net",
   VIDSTREAM: "https://vidstream.pro",
+  // African and non-Western content sources
+  AFRIKAN: "https://afrikan.tv",
+  NOLLYWOOD: "https://nollywood.tv",
+  BOLLYWOOD: "https://bollywood.tv",
+  ASIAN: "https://asian.tv",
+  LATINO: "https://latino.tv",
+  ARABIC: "https://arabic.tv",
+  // Additional working sources
+  CINEMAHOLIC: "https://cinemaholic.com",
+  MOVIEFREAK: "https://moviefreak.com",
+  WATCHSERIES: "https://watchseries.to",
+  PUTLOCKER: "https://putlocker.to",
+  SOLARMOVIE: "https://solarmovie.to",
+  FMOVIES: "https://fmovies.to",
+  GOOGLE: "https://drive.google.com",
+  MEGA: "https://mega.nz",
 };
 
 export const reactionColorForTailwindCSS = {
