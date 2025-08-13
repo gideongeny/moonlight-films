@@ -26,6 +26,8 @@ import Skeleton from "../Common/Skeleton";
 import Title from "../Common/Title";
 import Footer from "../Footer/Footer";
 import FilmTabInfo from "./FilmTabInfo";
+import DownloadButton from "../Common/DownloadButton";
+import { downloadService } from "../../services/download";
 
 const FilmDetail: FC<FilmInfo> = ({ similar, videos, detail, ...others }) => {
   const currentUser = useAppSelector((state) => state.auth.user);
@@ -162,13 +164,26 @@ const FilmDetail: FC<FilmInfo> = ({ similar, videos, detail, ...others }) => {
                       />
                     </div>
                     {isMobile && (
-                      <Link
-                        to="watch"
-                        className="flex gap-6 items-center pl-6 pr-12 py-3 rounded-full bg-primary text-white hover:bg-blue-600 transition duration-300 mt-24 "
-                      >
-                        <BsFillPlayFill size={25} />
-                        <span className="text-lg font-medium">WATCH</span>
-                      </Link>
+                      <div className="flex gap-3 items-center mt-24">
+                        <Link
+                          to="watch"
+                          className="flex gap-4 items-center pl-4 pr-8 py-2 rounded-full bg-primary text-white hover:bg-blue-600 transition duration-300"
+                        >
+                          <BsFillPlayFill size={20} />
+                          <span className="text-base font-medium">WATCH</span>
+                        </Link>
+                        
+                        {detail && (
+                          <DownloadButton
+                            downloadInfo={downloadService.generateDownloadInfo(
+                              detail,
+                              detail.media_type as "movie" | "tv"
+                            )}
+                            variant="outline"
+                            size="sm"
+                          />
+                        )}
+                      </div>
                     )}
                   </div>
 
@@ -196,13 +211,26 @@ const FilmDetail: FC<FilmInfo> = ({ similar, videos, detail, ...others }) => {
 
                   {/* WATCH NOW */}
                   {!isMobile && (
-                    <Link
-                      to="watch"
-                      className="flex gap-6 items-center pl-6 pr-12 py-3 rounded-full bg-primary text-white hover:bg-blue-600 transition duration-300 mt-24 "
-                    >
-                      <BsFillPlayFill size={25} />
-                      <span className="text-lg font-medium">WATCH</span>
-                    </Link>
+                    <div className="flex gap-4 items-center mt-24">
+                      <Link
+                        to="watch"
+                        className="flex gap-6 items-center pl-6 pr-12 py-3 rounded-full bg-primary text-white hover:bg-blue-600 transition duration-300"
+                      >
+                        <BsFillPlayFill size={25} />
+                        <span className="text-lg font-medium">WATCH</span>
+                      </Link>
+                      
+                      {detail && (
+                        <DownloadButton
+                          downloadInfo={downloadService.generateDownloadInfo(
+                            detail,
+                            detail.media_type as "movie" | "tv"
+                          )}
+                          variant="outline"
+                          size="lg"
+                        />
+                      )}
+                    </div>
                   )}
                 </div>
 
