@@ -1,171 +1,91 @@
-import { FunctionComponent, useEffect, useState } from "react";
-import { BsFillArrowUpCircleFill } from "react-icons/bs";
-import { GiHamburgerMenu } from "react-icons/gi";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import { Link, useSearchParams } from "react-router-dom";
-import SearchBox from "../components/Common/SearchBox";
-import Sidebar from "../components/Common/Sidebar";
-import SidebarMini from "../components/Common/SidebarMini";
-import Title from "../components/Common/Title";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import ExploreFilter from "../components/Explore/ExploreFilter";
 import ExploreResult from "../components/Explore/ExploreResult";
-import { useCurrentViewportView } from "../hooks/useCurrentViewportView";
-import { ConfigType } from "../shared/types";
-import { debounce } from "lodash-es";
-import { useLocalStorage } from "@uidotdev/usehooks";
-interface ExploreProps {}
+import { useCollectionQuery } from "../hooks/useCollectionQuery";
 
-const Explore: FunctionComponent<ExploreProps> = () => {
-  const [currentTab, setCurrentTab] = useLocalStorage("currentTab", "tv");
-  const { isMobile } = useCurrentViewportView();
-  const [isShowScrollUpBtn, setIsShowScrollUpBtn] = useState(false);
-  const [isSidebarActive, setIsSidebarActive] = useState(false);
+const Explore = () => {
+  const [searchParams] = useSearchParams();
+  const [currentTab, setCurrentTab] = useState<"movie" | "tv">("movie");
+  const [filters, setFilters] = useState({
+    sortBy: "popularity.desc",
+    genres: [] as number[],
+    year: "",
+    runtime: "",
+    region: searchParams.get("region") || "" // Add region filter
+  });
 
-  useEffect(() => {
-    const checkIfShowScrollUpBtn = debounce(() => {
-      const scrollOffset = document.documentElement.scrollTop;
-      if (scrollOffset > 1000) {
-        setIsShowScrollUpBtn(true);
-      } else {
-        setIsShowScrollUpBtn(false);
-      }
-    }, 300);
-
-    window.addEventListener("scroll", checkIfShowScrollUpBtn);
-
-    return () => window.removeEventListener("scroll", checkIfShowScrollUpBtn);
-  }, []);
-
-  const scrollToTop = () =>
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [config, setConfig] = useState<ConfigType>({});
+  const { data, isLoading, error } = useCollectionQuery(
+    currentTab,
+    filters.sortBy,
+    filters.genres,
+    filters.year,
+    filters.runtime,
+    filters.region // Pass region to the query
+  );
 
   useEffect(() => {
-    const changeConfig = (key: string, value: string | number) => {
-      setConfig((prevConfig) => ({
-        ...prevConfig,
-        [key]: value,
-      }));
+    // Update filters when URL params change
+    const region = searchParams.get("region");
+    if (region) {
+      setFilters(prev => ({ ...prev, region }));
+    }
+  }, [searchParams]);
+
+  const handleFilterChange = (newFilters: Partial<typeof filters>) => {
+    setFilters(prev => ({ ...prev, ...newFilters }));
+  };
+
+  const getRegionTitle = (region: string) => {
+    const regionTitles: Record<string, string> = {
+      "africa": "🌍 African Cinema",
+      "asia": "🌏 Asian Cinema", 
+      "latin": "🌎 Latin American Cinema",
+      "middleeast": "🕌 Middle Eastern Cinema",
+      "nollywood": "🎬 Nollywood (Nigerian Movies)",
+      "bollywood": "🎭 Bollywood (Indian Movies)",
+      "korea": "🇰🇷 Korean Drama & Movies",
+      "japan": "🇯🇵 Japanese Anime & Movies",
+      "china": "🇨🇳 Chinese Cinema"
     };
+    return regionTitles[region] || "Explore Movies & TV Shows";
+  };
 
-    const sortType = searchParams.get("sort_by") || "popularity.desc";
-    changeConfig("sort_by", sortType);
-
-    const genreType = searchParams.getAll("genre") || [];
-    changeConfig("with_genres", genreType.toString());
-
-    const minRuntime = Number(searchParams.get("minRuntime")) || 0;
-    const maxRuntime = Number(searchParams.get("maxRuntime")) || 200;
-    changeConfig("with_runtime.gte", minRuntime);
-    changeConfig("with_runtime.lte", maxRuntime);
-
-    const releaseFrom = searchParams.get("from") || "2002-11-04";
-    const releaseTo = searchParams.get("to") || "2022-07-28";
-    changeConfig("primary_release_date.gte", releaseFrom);
-    changeConfig("primary_release_date.lte", releaseTo);
-    changeConfig("air_date.gte", releaseFrom);
-    changeConfig("air_date.lte", releaseTo);
-
-    // eslint-disable-next-line
-  }, [window.location.search]);
   return (
-    <>
-      <Title value="Explore | Moonlight" />
-
-      <button
-        onClick={scrollToTop}
-        className={`fixed bottom-[30px] right-[30px] z-10 transition duration-500 ${
-          !isShowScrollUpBtn && "opacity-0 pointer-events-none"
-        }`}
-      >
-        <BsFillArrowUpCircleFill
-          size={35}
-          className="text-primary hover:brightness-75 transition duration-300"
-        />
-      </button>
-
-      <div className="flex md:hidden justify-between items-center px-5 my-5">
-        <Link to="/" className="flex gap-2 items-center">
-          <LazyLoadImage
-            src="/logo.png"
-            className="h-10 w-10 rounded-full object-cover"
-          />
-          <p className="text-xl text-white font-medium tracking-wider uppercase">
-            Moon<span className="text-primary">light</span>
-          </p>
-        </Link>
-        <button onClick={() => setIsSidebarActive((prev) => !prev)}>
-          <GiHamburgerMenu size={25} />
-        </button>
-      </div>
-
-      <div className="flex flex-col-reverse md:flex-row">
-        {!isMobile && <SidebarMini />}
-        {isMobile && (
-          <Sidebar
-            onCloseSidebar={() => setIsSidebarActive(false)}
-            isSidebarActive={isSidebarActive}
-          />
-        )}
-
-        <div className="flex-grow px-[2vw] pt-6">
-          {!isMobile && (
-            <div className="flex justify-between items-center mb-8">
-              <h2 className="text-white text-3xl font-medium uppercase ">
-                Find films that best fit you
-              </h2>
-              <div className="relative max-w-[350px] w-full -mt-24 -mr-7">
-                <SearchBox />
-              </div>
-            </div>
+    <div className="min-h-screen bg-gray-900 text-white">
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold mb-2">
+            {filters.region ? getRegionTitle(filters.region) : "Explore Movies & TV Shows"}
+          </h1>
+          {filters.region && (
+            <p className="text-gray-400">
+              Discover amazing content from around the world
+            </p>
           )}
+        </div>
 
-          <div className="inline-flex gap-[40px] pb-[14px] border-b border-gray-darken relative mb-6">
-            <button
-              onClick={() => {
-                setCurrentTab("tv");
-                setSearchParams({});
-              }}
-              className={`${
-                currentTab === "tv" &&
-                "text-white font-medium after:absolute after:bottom-0 after:left-[13%] after:bg-white after:h-[3px] after:w-5"
-              } transition duration-300 hover:text-white`}
-            >
-              TV Show
-            </button>
-            <button
-              onClick={() => {
-                setCurrentTab("movie");
-                setSearchParams({});
-              }}
-              className={`${
-                currentTab === "movie" &&
-                "text-white font-medium after:absolute after:bottom-0 after:right-[9%] after:bg-white after:h-[3px] after:w-5"
-              } transition duration-300 hover:text-white`}
-            >
-              Movie
-            </button>
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <div className="lg:col-span-1">
+            <ExploreFilter
+              currentTab={currentTab}
+              onTabChange={setCurrentTab}
+              filters={filters}
+              onFilterChange={handleFilterChange}
+            />
           </div>
-
-          <ExploreResult currentTab={currentTab} config={config} />
+          
+          <div className="lg:col-span-3">
+            <ExploreResult
+              data={data}
+              isLoading={isLoading}
+              error={error}
+              currentTab={currentTab}
+            />
+          </div>
         </div>
-
-        <div className="shrink-0 md:max-w-[310px] w-full md:py-12 pt-4 px-3">
-          <ExploreFilter currentTab={currentTab} />
-        </div>
-
-        {isMobile && (
-          <h2 className="text-white text-3xl font-medium uppercase ml-3 mt-3">
-            Find films that best fit you
-          </h2>
-        )}
       </div>
-    </>
+    </div>
   );
 };
 
