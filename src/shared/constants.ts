@@ -12,6 +12,12 @@ export const EMBED_ALTERNATIVES = {
   SUPEREMBED: "https://multiembed.mov",
   VEMBED: "https://vembed.net",
   SMASHYST: "https://embed.smashyst.com",
+  // New working alternatives
+  VIDEMBED: "https://vidembed.cc",
+  MOVIEBOX: "https://moviebox.live",
+  WATCHMOVIES: "https://watchmovieshd.ru",
+  STREAMSB: "https://streamsb.net",
+  VIDSTREAM: "https://vidstream.pro",
   // Add more alternatives if needed
 };
 
