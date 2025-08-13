@@ -8,9 +8,11 @@ import SearchBox from "../components/Common/SearchBox";
 import Sidebar from "../components/Common/Sidebar";
 import Title from "../components/Common/Title";
 import Footer from "../components/Footer/Footer";
-import MainHomeFilms from "../components/Home/MainHomeFilm";
+import MainHomeFilm from "../components/Home/MainHomeFilm";
 import RecommendGenres from "../components/Home/RecommendGenres";
 import TrendingNow from "../components/Home/TrendingNow";
+import DiverseNavigation from "../components/Common/DiverseNavigation";
+import DiverseContent from "../components/Home/DiverseContent";
 import { useHomeData } from "../hooks/useHomeData";
 import { useAppSelector } from "../store/hooks";
 
@@ -118,7 +120,7 @@ const Home: FC = () => {
           </div>
 
           {currentTab === "movie" && (
-            <MainHomeFilms
+            <MainHomeFilm
               data={dataMovie}
               dataDetail={detailQueryMovie.data}
               isLoadingBanner={detailQueryMovie.isLoading}
@@ -126,7 +128,7 @@ const Home: FC = () => {
             />
           )}
           {currentTab === "tv" && (
-            <MainHomeFilms
+            <MainHomeFilm
               data={dataTV}
               dataDetail={detailQueryTV.data}
               isLoadingBanner={detailQueryTV.isLoading}
@@ -139,6 +141,8 @@ const Home: FC = () => {
           <SearchBox />
           <RecommendGenres currentTab={currentTab} />
           <TrendingNow />
+          <DiverseNavigation />
+          <DiverseContent />
         </div>
       </div>
 

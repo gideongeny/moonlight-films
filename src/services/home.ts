@@ -1,6 +1,7 @@
 import axios from "../shared/axios";
-import { BannerInfo, Item } from "../shared/types";
+import { BannerInfo, Item, DetailMovie, DetailTV } from "../shared/types";
 import { HomeFilms } from "../shared/types";
+import { API_URL } from "../shared/constants";
 
 // MOVIE TAB
 ///////////////////////////////////////////////////////////////
@@ -144,4 +145,122 @@ export const getTVBannerInfo = async (tvs: Item[]): Promise<BannerInfo[]> => {
 ///////////////////////////////////////////////////////////////
 export const getTrendingNow = async (): Promise<Item[]> => {
   return (await axios.get("/trending/all/day?page=2")).data.results;
+};
+
+// Add methods for diverse content
+export const getAfricanContent = async (): Promise<Item[]> => {
+  try {
+    // Fetch African movies and TV shows
+    const response = await axios.get(
+      `/discover/movie?with_origin_country=NG&with_origin_country=KE&with_origin_country=ZA&with_origin_country=EG&sort_by=popularity.desc&page=1`
+    );
+    return response.data.results || [];
+  } catch (error) {
+    console.error("Error fetching African content:", error);
+    return [];
+  }
+};
+
+export const getAsianContent = async (): Promise<Item[]> => {
+  try {
+    // Fetch Asian movies and TV shows
+    const response = await axios.get(
+      `/discover/movie?with_origin_country=KR&with_origin_country=JP&with_origin_country=CN&with_origin_country=IN&sort_by=popularity.desc&page=1`
+    );
+    return response.data.results || [];
+  } catch (error) {
+    console.error("Error fetching Asian content:", error);
+    return [];
+  }
+};
+
+export const getLatinAmericanContent = async (): Promise<Item[]> => {
+  try {
+    // Fetch Latin American movies and TV shows
+    const response = await axios.get(
+      `/discover/movie?with_origin_country=MX&with_origin_country=BR&with_origin_country=AR&with_origin_country=CO&sort_by=popularity.desc&page=1`
+    );
+    return response.data.results || [];
+  } catch (error) {
+    console.error("Error fetching Latin American content:", error);
+    return [];
+  }
+};
+
+export const getMiddleEasternContent = async (): Promise<Item[]> => {
+  try {
+    // Fetch Middle Eastern movies and TV shows
+    const response = await axios.get(
+      `/discover/movie?with_origin_country=TR&with_origin_country=EG&with_origin_country=SA&with_origin_country=AE&sort_by=popularity.desc&page=1`
+    );
+    return response.data.results || [];
+  } catch (error) {
+    console.error("Error fetching Middle Eastern content:", error);
+    return [];
+  }
+};
+
+export const getNollywoodContent = async (): Promise<Item[]> => {
+  try {
+    // Fetch Nigerian (Nollywood) content
+    const response = await axios.get(
+      `/discover/movie?with_origin_country=NG&with_keywords=210024|210025|210026&sort_by=popularity.desc&page=1`
+    );
+    return response.data.results || [];
+  } catch (error) {
+    console.error("Error fetching Nollywood content:", error);
+    return [];
+  }
+};
+
+export const getBollywoodContent = async (): Promise<Item[]> => {
+  try {
+    // Fetch Indian (Bollywood) content
+    const response = await axios.get(
+      `/discover/movie?with_origin_country=IN&with_keywords=210024|210025|210026&sort_by=popularity.desc&page=1`
+    );
+    return response.data.results || [];
+  } catch (error) {
+    console.error("Error fetching Bollywood content:", error);
+    return [];
+  }
+};
+
+export const getKoreanContent = async (): Promise<Item[]> => {
+  try {
+    // Fetch Korean content
+    const response = await axios.get(
+      `/discover/movie?with_origin_country=KR&with_keywords=210024|210025|210026&sort_by=popularity.desc&page=1`
+    );
+    return response.data.results || [];
+  } catch (error) {
+    console.error("Error fetching Korean content:", error);
+    return [];
+  }
+};
+
+export const getJapaneseContent = async (): Promise<Item[]> => {
+  try {
+    // Fetch Japanese content
+    const response = await axios.get(
+      `/discover/movie?with_origin_country=JP&with_keywords=210024|210025|210026&sort_by=popularity.desc&page=1`
+    );
+    return response.data.results || [];
+  } catch (error) {
+    console.error("Error fetching Japanese content:", error);
+    return [];
+  }
+};
+
+export const getChineseContent = async (): Promise<Item[]> => {
+  try {
+    // Fetch Chinese content
+    const response = await axios.get(
+      `/discover/movie?with_origin_country=CN&with_keywords=210024|210025|210026&sort_by=popularity.desc&page=1`
+    );
+    return response.data.results || [];
+  } catch (error) {
+    console.error("Error fetching Chinese content:", error);
+    return [];
+  }
 };
