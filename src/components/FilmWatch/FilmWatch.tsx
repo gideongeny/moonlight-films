@@ -61,24 +61,41 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
         `${EMBED_ALTERNATIVES.VIDSRC}/${detail?.id}`,
         `${EMBED_ALTERNATIVES.EMBEDTO}/movie?id=${detail?.id}`,
         `${EMBED_ALTERNATIVES.TWOEMBED}/movie?tmdb=${detail?.id}`,
-        `${EMBED_ALTERNATIVES.SUPEREMBED}/movie?tmdb=${detail?.id}`,
-        `${EMBED_ALTERNATIVES.VEMBED}/movie?tmdb=${detail?.id}`,
-        `${EMBED_ALTERNATIVES.SMASHYST}/movie?tmdb=${detail?.id}`,
+        `${EMBED_ALTERNATIVES.VIDEMBED}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.MOVIEBOX}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.WATCHMOVIES}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.STREAMSB}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.VIDSTREAM}/movie/${detail?.id}`,
       ];
     } else {
       return [
         `${EMBED_ALTERNATIVES.VIDSRC}/${detail?.id}/${seasonId}-${episodeId}`,
         `${EMBED_ALTERNATIVES.EMBEDTO}/tv?id=${detail?.id}&s=${seasonId}&e=${episodeId}`,
         `${EMBED_ALTERNATIVES.TWOEMBED}/series?tmdb=${detail?.id}&sea=${seasonId}&epi=${episodeId}`,
-        `${EMBED_ALTERNATIVES.SUPEREMBED}/tv?tmdb=${detail?.id}&season=${seasonId}&episode=${episodeId}`,
-        `${EMBED_ALTERNATIVES.VEMBED}/tv?tmdb=${detail?.id}&season=${seasonId}&episode=${episodeId}`,
-        `${EMBED_ALTERNATIVES.SMASHYST}/tv?tmdb=${detail?.id}&season=${seasonId}&episode=${episodeId}`,
+        `${EMBED_ALTERNATIVES.VIDEMBED}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.MOVIEBOX}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.WATCHMOVIES}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.STREAMSB}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.VIDSTREAM}/tv/${detail?.id}/${seasonId}/${episodeId}`,
       ];
     }
   };
 
   const videoSources = getVideoSources();
   const currentSource = videoSources[currentSourceIndex];
+
+  // Helper function to get readable source names
+  const getSourceDisplayName = (source: string): string => {
+    if (source.includes('vidsrc.me')) return 'VidSrc';
+    if (source.includes('2embed.to')) return '2Embed.to';
+    if (source.includes('2embed.org')) return '2Embed.org';
+    if (source.includes('vidembed.cc')) return 'VidEmbed';
+    if (source.includes('moviebox.live')) return 'MovieBox';
+    if (source.includes('watchmovieshd.ru')) return 'WatchMovies';
+    if (source.includes('streamsb.net')) return 'StreamSB';
+    if (source.includes('vidstream.pro')) return 'VidStream';
+    return 'Unknown Source';
+  };
 
   const handleVideoError = () => {
     console.log(`Video source ${currentSourceIndex + 1} failed, trying next...`);
@@ -91,6 +108,10 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
         setVideoError(false);
         setIsLoadingVideo(true);
       }, 1000);
+    } else {
+      // All sources failed
+      setVideoError(true);
+      setIsLoadingVideo(false);
     }
   };
 
@@ -99,11 +120,25 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
     setVideoError(false);
   };
 
+  // Function to reset to first source
   const resetToFirstSource = () => {
     setCurrentSourceIndex(0);
     setVideoError(false);
     setIsLoadingVideo(true);
   };
+
+  // Auto-advance to next source if current one fails
+  useEffect(() => {
+    if (videoError && currentSourceIndex < videoSources.length - 1) {
+      const timer = setTimeout(() => {
+        setCurrentSourceIndex(currentSourceIndex + 1);
+        setVideoError(false);
+        setIsLoadingVideo(true);
+      }, 2000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [videoError, currentSourceIndex, videoSources.length]);
 
   // Reset source when detail changes
   useEffect(() => {
@@ -226,7 +261,7 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
                   >
                     {videoSources.map((source, index) => (
                       <option key={index} value={index}>
-                        Source {index + 1} ({source.includes('2embed.to') ? '2embed.to' : source.includes('vidsrc.me') ? 'VidSrc' : '2embed.org'})
+                        {getSourceDisplayName(source)} - Source {index + 1}
                       </option>
                     ))}
                   </select>

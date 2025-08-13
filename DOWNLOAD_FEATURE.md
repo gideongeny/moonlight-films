@@ -1,168 +1,130 @@
-# Download Feature for Moonlight Films
+# Moonlight Films - Download Feature & Content Guide
 
-## Overview
+## 🎬 Download Feature
 
-The download feature allows users to download movies and TV show episodes to their local device storage for offline viewing. This feature is integrated into the video player interface and provides multiple download options.
+### How to Download Videos
 
-## Features
+1. **Navigate to any movie or TV show**
+2. **Click the "Download" button** in the video player
+3. **Choose your download method:**
+   - **Direct Download**: Opens a download page with all sources
+   - **Video Viewer**: Opens a video player where you can right-click to save
+   - **Multiple Sources**: Creates download links for all available sources
 
-### 1. Multiple Download Methods
-- **Direct Download**: Attempts to download the video file directly to the user's device
-- **Download Link**: Opens the video source in a new tab for manual download
-- **Multiple Source Links**: Creates download links for all available video sources
+### Download Instructions
 
-### 2. Progress Tracking
-- Real-time download progress indicator
-- Status messages showing current operation
-- Error handling with user-friendly messages
+1. **Wait for the video to load completely**
+2. **Right-click on the video player**
+3. **Select "Save video as..." or "Download video"**
+4. **Choose your download location and save**
 
-### 3. Cross-Platform Support
-- Works on desktop and mobile browsers
-- Supports multiple video formats (MP4, M3U8, WebM)
-- Fallback methods for different browser capabilities
+### Troubleshooting Downloads
 
-## How It Works
+- **If downloads don't work**: Try different sources from the dropdown
+- **If popups are blocked**: Allow popups for this site
+- **If videos don't load**: Disable ad blockers temporarily
+- **Try different browsers**: Some browsers handle video downloads better
 
-### Video Source Detection
-The download service attempts to extract video URLs from embedded video players by:
-1. Creating a hidden iframe to access the video content
-2. Scanning for video elements and their sources
-3. Parsing script tags for video URLs
-4. Using multiple fallback sources if one fails
+## 🌍 Finding Non-Western Content
 
-### Download Process
-1. **Source Selection**: The system tries multiple video sources until one works
-2. **Content Extraction**: Extracts the actual video URL from the embedded player
-3. **File Download**: Downloads the video file using XMLHttpRequest with progress tracking
-4. **File Naming**: Automatically generates appropriate filenames based on content type
+### Current Content Sources
 
-## Usage
+Moonlight Films currently uses **The Movie Database (TMDB)** API, which primarily contains:
+- **Western movies and TV shows** (Hollywood, European, etc.)
+- **International films** (limited selection)
+- **Independent films** from various countries
 
-### For Users
-1. Navigate to any movie or TV show episode
-2. Click the "Download" button in the video player controls
-3. Choose from the available download options:
-   - **Download Movie**: Direct download (recommended)
-   - **Open Download Link**: Alternative method
-   - **Create Multiple Download Links**: For advanced users
+### How to Find Non-Western Content
 
-### For Developers
-The download feature is implemented through several components:
+1. **Use the Search Feature**
+   - Search for specific countries: "Korean", "Japanese", "Indian", "Nigerian"
+   - Search for languages: "Spanish", "French", "Arabic", "Chinese"
 
-#### DownloadService (`src/services/download.ts`)
-- Main service class handling all download operations
-- Singleton pattern for consistent state management
-- Progress tracking and error handling
+2. **Explore by Genre**
+   - **Foreign Films**: Look for "Foreign" or "International" categories
+   - **Documentary**: Often contains content from various cultures
+   - **Independent**: More diverse content from different regions
 
-#### DownloadOptions (`src/components/Common/DownloadOptions.tsx`)
-- User interface component for download options
-- Progress indicators and status messages
-- Multiple download method support
+3. **Check Release Years**
+   - Older films often have more diverse international content
+   - Recent years have more global releases
 
-#### Integration in FilmWatch (`src/components/FilmWatch/FilmWatch.tsx`)
-- Download button in video player controls
-- Download section in movie information area
-- Automatic download info generation
+### Popular Non-Western Content Available
 
-## Technical Implementation
+- **Korean Dramas** (limited selection)
+- **Bollywood Films** (some popular titles)
+- **European Cinema** (French, German, Italian films)
+- **Asian Cinema** (Japanese, Chinese films - limited)
+- **African Films** (very limited selection)
 
-### Key Components
+## 🔧 Technical Improvements Made
 
-1. **DownloadService Class**
-   ```typescript
-   class DownloadService {
-     generateDownloadInfo(detail, mediaType, seasonId?, episodeId?, currentEpisode?)
-     downloadMovie(downloadInfo, onProgress?)
-     downloadWithFetch(downloadInfo, onProgress?)
-     createDirectDownloadLink(downloadInfo, onProgress?)
-   }
-   ```
+### Video Sources
+- **VidSrc**: Primary source (most reliable)
+- **2Embed**: Secondary source
+- **VidEmbed**: Alternative source
+- **MovieBox**: Additional source
+- **WatchMovies**: Backup source
+- **StreamSB**: Fallback source
+- **VidStream**: Extra source
 
-2. **DownloadInfo Interface**
-   ```typescript
-   interface DownloadInfo {
-     title: string;
-     mediaType: "movie" | "tv";
-     seasonId?: number;
-     episodeId?: number;
-     episodeName?: string;
-     sources: string[];
-     posterPath?: string;
-     overview?: string;
-   }
-   ```
-
-3. **DownloadProgress Interface**
-   ```typescript
-   interface DownloadProgress {
-     progress: number;
-     status: "idle" | "downloading" | "completed" | "error";
-     message: string;
-   }
-   ```
-
-### Browser Compatibility
-
-The download feature supports:
-- Modern browsers with download API support
-- Fallback methods for older browsers
-- Mobile browser compatibility
-- Cross-origin resource handling
+### Download System
+- **Multiple download methods** for better compatibility
+- **Source fallback** when videos fail to load
+- **User-friendly download pages** with instructions
+- **Automatic source switching** on errors
 
 ### Error Handling
+- **Automatic source fallback** when videos fail
+- **Better error messages** for users
+- **Source selection dropdown** for manual control
+- **Loading indicators** and status updates
 
-The system includes comprehensive error handling:
-- Network error detection
-- Source availability checking
-- Browser capability detection
-- User-friendly error messages
-- Automatic fallback to alternative methods
+## 🚀 Future Improvements
 
-## Security Considerations
+### Planned Features
+1. **More Video Sources**: Adding more international streaming services
+2. **Content Diversity**: Expanding non-Western content availability
+3. **Language Support**: Adding subtitles and dubbing options
+4. **Regional Content**: Country-specific content sections
 
-1. **Cross-Origin Restrictions**: The feature handles CORS limitations gracefully
-2. **Content Security Policy**: Respects CSP restrictions
-3. **User Consent**: All downloads require explicit user action
-4. **File Validation**: Validates downloaded content before saving
+### Content Expansion
+- **Partner with international streaming services**
+- **Add more regional content providers**
+- **Include independent film distributors**
+- **Support for more languages and regions**
 
-## Limitations
+## 📱 Mobile Compatibility
 
-1. **Embedded Content**: Download success depends on the embedded video service
-2. **Browser Restrictions**: Some browsers may block certain download methods
-3. **File Size**: Large files may take time to download
-4. **Network Dependencies**: Requires stable internet connection for initial setup
+- **Responsive design** for all devices
+- **Touch-friendly controls** for mobile users
+- **Optimized video player** for mobile browsers
+- **Download support** on mobile devices
 
-## Future Enhancements
+## 🛡️ Security & Privacy
 
-Potential improvements for the download feature:
-1. **Resume Downloads**: Support for interrupted download resumption
-2. **Quality Selection**: Allow users to choose video quality
-3. **Batch Downloads**: Download multiple episodes at once
-4. **Storage Management**: Track and manage downloaded content
-5. **Offline Library**: Built-in offline content management
+- **No personal data collection** during downloads
+- **Secure video sources** from trusted providers
+- **Privacy-focused** download methods
+- **No tracking** of download activities
 
-## Troubleshooting
+## 💡 Tips for Better Experience
 
-### Common Issues
+1. **Use multiple sources** if one fails
+2. **Allow popups** for download features
+3. **Try different browsers** for compatibility
+4. **Check your internet connection** for smooth streaming
+5. **Use VPN** if some sources are blocked in your region
 
-1. **Download Fails**: Try the alternative download method
-2. **Slow Downloads**: Check internet connection and try different sources
-3. **File Not Found**: The video source may be temporarily unavailable
-4. **Browser Blocked**: Check browser settings and disable ad blockers
+## 🆘 Support
 
-### Debug Information
+If you encounter issues:
+1. **Check the troubleshooting section** above
+2. **Try different video sources** from the dropdown
+3. **Clear browser cache** and cookies
+4. **Update your browser** to the latest version
+5. **Contact support** if problems persist
 
-The download service provides detailed logging for troubleshooting:
-- Source availability status
-- Download progress details
-- Error messages and stack traces
-- Browser capability information
+---
 
-## Support
-
-For issues with the download feature:
-1. Check browser compatibility
-2. Verify internet connection
-3. Try alternative download methods
-4. Check browser console for error messages
-5. Contact support with specific error details
+**Note**: The availability of non-Western content depends on the TMDB database and our video source providers. We're continuously working to expand content diversity and improve the user experience.

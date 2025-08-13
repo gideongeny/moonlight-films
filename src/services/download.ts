@@ -67,29 +67,33 @@ export class DownloadService {
         `${EMBED_ALTERNATIVES.VIDSRC}/${id}`,
         `${EMBED_ALTERNATIVES.EMBEDTO}/movie?id=${id}`,
         `${EMBED_ALTERNATIVES.TWOEMBED}/movie?tmdb=${id}`,
-        `${EMBED_ALTERNATIVES.SUPEREMBED}/movie?tmdb=${id}`,
-        `${EMBED_ALTERNATIVES.VEMBED}/movie?tmdb=${id}`,
-        `${EMBED_ALTERNATIVES.SMASHYST}/movie?tmdb=${id}`,
+        `${EMBED_ALTERNATIVES.VIDEMBED}/movie/${id}`,
+        `${EMBED_ALTERNATIVES.MOVIEBOX}/movie/${id}`,
+        `${EMBED_ALTERNATIVES.WATCHMOVIES}/movie/${id}`,
+        `${EMBED_ALTERNATIVES.STREAMSB}/movie/${id}`,
+        `${EMBED_ALTERNATIVES.VIDSTREAM}/movie/${id}`,
       ];
     } else {
       return [
         `${EMBED_ALTERNATIVES.VIDSRC}/${id}/${seasonId}-${episodeId}`,
         `${EMBED_ALTERNATIVES.EMBEDTO}/tv?id=${id}&s=${seasonId}&e=${episodeId}`,
         `${EMBED_ALTERNATIVES.TWOEMBED}/series?tmdb=${id}&sea=${seasonId}&epi=${episodeId}`,
-        `${EMBED_ALTERNATIVES.SUPEREMBED}/tv?tmdb=${id}&season=${seasonId}&episode=${episodeId}`,
-        `${EMBED_ALTERNATIVES.VEMBED}/tv?tmdb=${id}&season=${seasonId}&episode=${episodeId}`,
-        `${EMBED_ALTERNATIVES.SMASHYST}/tv?tmdb=${id}&season=${seasonId}&episode=${episodeId}`,
+        `${EMBED_ALTERNATIVES.VIDEMBED}/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.MOVIEBOX}/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.WATCHMOVIES}/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.STREAMSB}/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.VIDSTREAM}/tv/${id}/${seasonId}/${episodeId}`,
       ];
     }
   }
 
+  // Main download method that tries multiple approaches
   async downloadMovie(
     downloadInfo: DownloadInfo,
     onProgress?: (progress: DownloadProgress) => void
   ): Promise<void> {
     const downloadId = this.generateDownloadId(downloadInfo);
     
-    // Initialize download progress
     const progress: DownloadProgress = {
       progress: 0,
       status: "idle",
@@ -104,27 +108,25 @@ export class DownloadService {
       progress.message = "Starting download...";
       onProgress?.(progress);
 
-      // Try to download from each source until one works
-      for (let i = 0; i < downloadInfo.sources.length; i++) {
-        const source = downloadInfo.sources[i];
-        progress.message = `Trying source ${i + 1}/${downloadInfo.sources.length}...`;
-        progress.progress = (i / downloadInfo.sources.length) * 100;
-        onProgress?.(progress);
-
-        try {
-          await this.attemptDownload(source, downloadInfo, onProgress);
-          progress.status = "completed";
-          progress.progress = 100;
-          progress.message = "Download completed successfully!";
-          onProgress?.(progress);
-          return;
-        } catch (error) {
-          console.warn(`Source ${i + 1} failed:`, error);
-          if (i === downloadInfo.sources.length - 1) {
-            throw new Error("All download sources failed");
-          }
-        }
+      // Try direct download first
+      try {
+        await this.attemptDirectDownload(downloadInfo, onProgress);
+        return;
+      } catch (error) {
+        console.log("Direct download failed, trying alternative methods...");
       }
+
+      // Try iframe extraction
+      try {
+        await this.attemptIframeExtraction(downloadInfo, onProgress);
+        return;
+      } catch (error) {
+        console.log("Iframe extraction failed, trying external links...");
+      }
+
+      // Fallback to external download links
+      await this.createExternalDownloadLinks(downloadInfo, onProgress);
+      
     } catch (error) {
       progress.status = "error";
       progress.message = `Download failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
@@ -133,122 +135,307 @@ export class DownloadService {
     }
   }
 
-  private async attemptDownload(
-    source: string,
+  // Method 1: Try to download directly from video URLs
+  private async attemptDirectDownload(
     downloadInfo: DownloadInfo,
     onProgress?: (progress: DownloadProgress) => void
   ): Promise<void> {
-    return new Promise((resolve, reject) => {
-      // Create a hidden iframe to access the video content
-      const iframe = document.createElement('iframe');
-      iframe.style.display = 'none';
-      iframe.src = source;
-      
-      iframe.onload = () => {
-        try {
-          // Try to extract video URL from iframe
-          const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-          if (!iframeDoc) {
-            reject(new Error("Cannot access iframe content"));
-            return;
-          }
+    const progress = this.downloads.get(this.generateDownloadId(downloadInfo));
+    if (!progress) return;
 
-          // Look for video elements
-          const videoElements = iframeDoc.querySelectorAll('video');
-          if (videoElements.length > 0) {
-            const videoElement = videoElements[0];
-            const videoSrc = videoElement.src || videoElement.currentSrc;
-            
-            if (videoSrc) {
-              this.downloadVideoFile(videoSrc, downloadInfo, onProgress)
-                .then(resolve)
-                .catch(reject);
-            } else {
-              reject(new Error("No video source found"));
-            }
-          } else {
-            // Try to find video source in script tags or other elements
-            const scripts = Array.from(iframeDoc.querySelectorAll('script'));
-            for (const script of scripts) {
-              const content = script.textContent || script.innerHTML;
-              const videoUrlMatch = content.match(/https?:\/\/[^"'\s]+\.(?:mp4|m3u8|webm)[^"'\s]*/i);
-              if (videoUrlMatch) {
-                this.downloadVideoFile(videoUrlMatch[0], downloadInfo, onProgress)
-                  .then(resolve)
-                  .catch(reject);
-                return;
-              }
-            }
-            reject(new Error("No video source found in iframe"));
-          }
-        } catch (error) {
-          reject(error);
-        } finally {
-          document.body.removeChild(iframe);
-        }
-      };
+    progress.message = "Attempting direct download...";
+    onProgress?.(progress);
 
-      iframe.onerror = () => {
-        document.body.removeChild(iframe);
-        reject(new Error("Failed to load iframe"));
-      };
-
-      document.body.appendChild(iframe);
-    });
+    // For now, we'll create a download page that users can use
+    // This is more reliable than trying to extract from iframes
+    const downloadPage = this.createDownloadPage(downloadInfo);
+    
+    // Open download page in new tab
+    const newTab = window.open(downloadPage, '_blank');
+    if (newTab) {
+      progress.status = "completed";
+      progress.progress = 100;
+      progress.message = "Download page opened in new tab";
+      onProgress?.(progress);
+    } else {
+      throw new Error("Popup blocked. Please allow popups for this site.");
+    }
   }
 
-  private async downloadVideoFile(
-    videoUrl: string,
+  // Method 2: Try to extract video from iframes (less reliable)
+  private async attemptIframeExtraction(
     downloadInfo: DownloadInfo,
     onProgress?: (progress: DownloadProgress) => void
   ): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      
-      xhr.open('GET', videoUrl, true);
-      xhr.responseType = 'blob';
-      
-      xhr.onprogress = (event) => {
-        if (event.lengthComputable) {
-          const progress = (event.loaded / event.total) * 100;
-          const downloadId = this.generateDownloadId(downloadInfo);
-          const currentProgress = this.downloads.get(downloadId);
-          
-          if (currentProgress) {
-            currentProgress.progress = progress;
-            currentProgress.message = `Downloading: ${Math.round(progress)}%`;
-            onProgress?.(currentProgress);
+    const progress = this.downloads.get(this.generateDownloadId(downloadInfo));
+    if (!progress) return;
+
+    progress.message = "Extracting video from source...";
+    onProgress?.(progress);
+
+    // This method is less reliable due to CORS restrictions
+    // We'll create a simple iframe viewer instead
+    const viewerPage = this.createVideoViewerPage(downloadInfo);
+    
+    const newTab = window.open(viewerPage, '_blank');
+    if (newTab) {
+      progress.status = "completed";
+      progress.progress = 100;
+      progress.message = "Video viewer opened in new tab";
+      onProgress?.(progress);
+    } else {
+      throw new Error("Popup blocked. Please allow popups for this site.");
+    }
+  }
+
+  // Method 3: Create external download links
+  private async createExternalDownloadLinks(
+    downloadInfo: DownloadInfo,
+    onProgress?: (progress: DownloadProgress) => void
+  ): Promise<void> {
+    const progress = this.downloads.get(this.generateDownloadId(downloadInfo));
+    if (!progress) return;
+
+    progress.message = "Creating download links...";
+    onProgress?.(progress);
+
+    // Create a download page with all sources
+    const downloadPage = this.createDownloadPage(downloadInfo);
+    
+    const newTab = window.open(downloadPage, '_blank');
+    if (newTab) {
+      progress.status = "completed";
+      progress.progress = 100;
+      progress.message = "Download page opened with all sources";
+      onProgress?.(progress);
+    } else {
+      throw new Error("Popup blocked. Please allow popups for this site.");
+    }
+  }
+
+  // Create a download page with all available sources
+  private createDownloadPage(downloadInfo: DownloadInfo): string {
+    const sources = downloadInfo.sources;
+    const title = downloadInfo.title;
+    const mediaType = downloadInfo.mediaType;
+    
+    const html = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Download ${title}</title>
+        <style>
+          body { 
+            font-family: Arial, sans-serif; 
+            background: #1a1a1a; 
+            color: white; 
+            margin: 0; 
+            padding: 20px; 
           }
-        }
-      };
-      
-      xhr.onload = () => {
-        if (xhr.status === 200) {
-          const blob = xhr.response;
-          const url = window.URL.createObjectURL(blob);
+          .container { max-width: 800px; margin: 0 auto; }
+          .header { text-align: center; margin-bottom: 30px; }
+          .source-grid { display: grid; gap: 15px; }
+          .source-card { 
+            background: #2a2a2a; 
+            padding: 20px; 
+            border-radius: 8px; 
+            border: 1px solid #444; 
+          }
+          .source-name { 
+            font-weight: bold; 
+            margin-bottom: 10px; 
+            color: #3b82f6; 
+          }
+          .download-btn { 
+            background: #3b82f6; 
+            color: white; 
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            text-decoration: none; 
+            display: inline-block; 
+            margin-right: 10px; 
+          }
+          .download-btn:hover { background: #2563eb; }
+          .watch-btn { 
+            background: #10b981; 
+            color: white; 
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            text-decoration: none; 
+            display: inline-block; 
+          }
+          .watch-btn:hover { background: #059669; }
+          .instructions { 
+            background: #374151; 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin-bottom: 20px; 
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>Download ${title}</h1>
+            <p>${mediaType === 'movie' ? 'Movie' : `TV Show - Season ${downloadInfo.seasonId}, Episode ${downloadInfo.episodeId}`}</p>
+          </div>
           
-          // Create download link
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = this.generateFileName(downloadInfo);
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
+          <div class="instructions">
+            <h3>📥 How to Download:</h3>
+            <ol>
+              <li>Click "Watch & Download" on any source below</li>
+              <li>Wait for the video to load</li>
+              <li>Right-click on the video and select "Save video as..." or "Download video"</li>
+              <li>Choose your download location and save</li>
+            </ol>
+            <p><strong>Note:</strong> Some sources may require you to disable ad blockers for the video to load properly.</p>
+          </div>
           
-          // Clean up
-          window.URL.revokeObjectURL(url);
-          resolve();
-        } else {
-          reject(new Error(`HTTP ${xhr.status}: ${xhr.statusText}`));
-        }
-      };
-      
-      xhr.onerror = () => {
-        reject(new Error('Network error occurred'));
-      };
-      
-      xhr.send();
-    });
+          <div class="source-grid">
+            ${sources.map((source, index) => `
+              <div class="source-card">
+                <div class="source-name">Source ${index + 1} - ${this.getSourceDisplayName(source)}</div>
+                <a href="${source}" target="_blank" class="watch-btn">Watch & Download</a>
+                <a href="${source}" class="download-btn" download>Direct Download</a>
+              </div>
+            `).join('')}
+          </div>
+          
+          <div style="text-align: center; margin-top: 30px; color: #888;">
+            <p>If downloads don't work, try different sources or check your browser's download settings.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+    
+    const blob = new Blob([html], { type: 'text/html' });
+    return URL.createObjectURL(blob);
+  }
+
+  // Create a video viewer page
+  private createVideoViewerPage(downloadInfo: DownloadInfo): string {
+    const sources = downloadInfo.sources;
+    const title = downloadInfo.title;
+    
+    const html = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Watch ${title}</title>
+        <style>
+          body { 
+            font-family: Arial, sans-serif; 
+            background: #1a1a1a; 
+            color: white; 
+            margin: 0; 
+            padding: 20px; 
+          }
+          .container { max-width: 1200px; margin: 0 auto; }
+          .header { text-align: center; margin-bottom: 30px; }
+          .video-container { 
+            position: relative; 
+            width: 100%; 
+            height: 0; 
+            padding-bottom: 56.25%; 
+            margin-bottom: 20px; 
+          }
+          .video-container iframe { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            border: none; 
+          }
+          .source-selector { 
+            background: #2a2a2a; 
+            padding: 20px; 
+            border-radius: 8px; 
+            margin-bottom: 20px; 
+          }
+          .source-selector select { 
+            width: 100%; 
+            padding: 10px; 
+            background: #444; 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            margin-bottom: 10px; 
+          }
+          .download-info { 
+            background: #374151; 
+            padding: 15px; 
+            border-radius: 8px; 
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>${title}</h1>
+            <p>Select a source below to watch and download</p>
+          </div>
+          
+          <div class="source-selector">
+            <select id="sourceSelect" onchange="changeSource()">
+              ${sources.map((source, index) => `
+                <option value="${index}">Source ${index + 1} - ${this.getSourceDisplayName(source)}</option>
+              `).join('')}
+            </select>
+          </div>
+          
+          <div class="video-container">
+            <iframe id="videoFrame" src="${sources[0]}" allowfullscreen></iframe>
+          </div>
+          
+          <div class="download-info">
+            <h3>📥 How to Download:</h3>
+            <ol>
+              <li>Wait for the video to load completely</li>
+              <li>Right-click on the video player</li>
+              <li>Select "Save video as..." or "Download video"</li>
+              <li>Choose your download location and save</li>
+            </ol>
+            <p><strong>Tip:</strong> If the video doesn't load, try a different source from the dropdown above.</p>
+          </div>
+        </div>
+        
+        <script>
+          function changeSource() {
+            const select = document.getElementById('sourceSelect');
+            const iframe = document.getElementById('videoFrame');
+            const sources = ${JSON.stringify(sources)};
+            iframe.src = sources[select.value];
+          }
+        </script>
+      </body>
+      </html>
+    `;
+    
+    const blob = new Blob([html], { type: 'text/html' });
+    return URL.createObjectURL(blob);
+  }
+
+  // Helper function to get source display names
+  private getSourceDisplayName(source: string): string {
+    if (source.includes('vidsrc.me')) return 'VidSrc';
+    if (source.includes('2embed.to')) return '2Embed.to';
+    if (source.includes('2embed.org')) return '2Embed.org';
+    if (source.includes('vidembed.cc')) return 'VidEmbed';
+    if (source.includes('moviebox.live')) return 'MovieBox';
+    if (source.includes('watchmovieshd.ru')) return 'WatchMovies';
+    if (source.includes('streamsb.net')) return 'StreamSB';
+    if (source.includes('vidstream.pro')) return 'VidStream';
+    return 'Unknown Source';
   }
 
   private generateDownloadId(downloadInfo: DownloadInfo): string {
@@ -256,19 +443,6 @@ export class DownloadService {
       return `movie_${downloadInfo.title}_${Date.now()}`;
     } else {
       return `tv_${downloadInfo.title}_s${downloadInfo.seasonId}e${downloadInfo.episodeId}_${Date.now()}`;
-    }
-  }
-
-  private generateFileName(downloadInfo: DownloadInfo): string {
-    const sanitizedTitle = downloadInfo.title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-    
-    if (downloadInfo.mediaType === "movie") {
-      return `${sanitizedTitle}.mp4`;
-    } else {
-      const episodeName = downloadInfo.episodeName 
-        ? downloadInfo.episodeName.replace(/[^a-z0-9]/gi, '_').toLowerCase()
-        : `episode_${downloadInfo.episodeId}`;
-      return `${sanitizedTitle}_s${downloadInfo.seasonId}e${downloadInfo.episodeId}_${episodeName}.mp4`;
     }
   }
 
@@ -280,268 +454,9 @@ export class DownloadService {
     this.downloads.delete(downloadId);
   }
 
-  // Alternative download method using fetch API
-  async downloadWithFetch(
-    downloadInfo: DownloadInfo,
-    onProgress?: (progress: DownloadProgress) => void
-  ): Promise<void> {
-    const downloadId = this.generateDownloadId(downloadInfo);
-    
-    const progress: DownloadProgress = {
-      progress: 0,
-      status: "downloading",
-      message: "Attempting download..."
-    };
-    
-    this.downloads.set(downloadId, progress);
-    onProgress?.(progress);
-
-    try {
-      // For embedded videos, we'll create a download link that opens the video in a new tab
-      // This is a fallback method when direct download isn't possible
-      const sourceUrl = downloadInfo.sources[0];
-      
-      // Create a download link that opens the video source
-      const a = document.createElement('a');
-      a.href = sourceUrl;
-      a.target = '_blank';
-      a.download = this.generateFileName(downloadInfo);
-      a.rel = 'noopener noreferrer';
-      
-      // Add a custom attribute to indicate this is a video download
-      a.setAttribute('data-video-download', 'true');
-      
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      
-      progress.status = "completed";
-      progress.progress = 100;
-      progress.message = "Download link opened in new tab";
-      onProgress?.(progress);
-      
-    } catch (error) {
-      progress.status = "error";
-      progress.message = `Download failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
-      onProgress?.(progress);
-      throw error;
-    }
-  }
-
-  // Method to create a direct download link for the video source
-  async createDirectDownloadLink(
-    downloadInfo: DownloadInfo,
-    onProgress?: (progress: DownloadProgress) => void
-  ): Promise<void> {
-    const downloadId = this.generateDownloadId(downloadInfo);
-    
-    const progress: DownloadProgress = {
-      progress: 0,
-      status: "downloading",
-      message: "Creating download link..."
-    };
-    
-    this.downloads.set(downloadId, progress);
-    onProgress?.(progress);
-
-    try {
-      // Create a download link for each source
-      downloadInfo.sources.forEach((source, index) => {
-        const a = document.createElement('a');
-        a.href = source;
-        a.target = '_blank';
-        a.download = `${this.generateFileName(downloadInfo)}_source${index + 1}`;
-        a.rel = 'noopener noreferrer';
-        a.className = 'download-link';
-        a.textContent = `Download Source ${index + 1}`;
-        
-        // Style the link
-        a.style.cssText = `
-          display: inline-block;
-          margin: 5px;
-          padding: 8px 16px;
-          background: #3b82f6;
-          color: white;
-          text-decoration: none;
-          border-radius: 4px;
-          font-size: 14px;
-        `;
-        
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-      });
-      
-      progress.status = "completed";
-      progress.progress = 100;
-      progress.message = "Download links created successfully!";
-      onProgress?.(progress);
-      
-    } catch (error) {
-      progress.status = "error";
-      progress.message = `Failed to create download links: ${error instanceof Error ? error.message : 'Unknown error'}`;
-      onProgress?.(progress);
-      throw error;
-    }
-  }
-
-  // Method to attempt direct video extraction and download
-  async downloadDirectVideo(
-    downloadInfo: DownloadInfo,
-    onProgress?: (progress: DownloadProgress) => void
-  ): Promise<void> {
-    const downloadId = this.generateDownloadId(downloadInfo);
-    
-    const progress: DownloadProgress = {
-      progress: 0,
-      status: "downloading",
-      message: "Extracting video source..."
-    };
-    
-    this.downloads.set(downloadId, progress);
-    onProgress?.(progress);
-
-    try {
-      // Try each source until one works
-      for (let i = 0; i < downloadInfo.sources.length; i++) {
-        const source = downloadInfo.sources[i];
-        progress.message = `Trying source ${i + 1}/${downloadInfo.sources.length}...`;
-        onProgress?.(progress);
-        
-        try {
-          // Create a hidden iframe to access the video content
-          const iframe = document.createElement('iframe');
-          iframe.style.display = 'none';
-          iframe.src = source;
-          
-          await new Promise<void>((resolve, reject) => {
-            const timeout = setTimeout(() => {
-              reject(new Error('Source timeout'));
-            }, 10000); // 10 second timeout
-            
-            iframe.onload = () => {
-              clearTimeout(timeout);
-              try {
-                // Try to extract video URL from iframe
-                const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-                if (!iframeDoc) {
-                  reject(new Error("Cannot access iframe content"));
-                  return;
-                }
-
-                // Look for video elements
-                const videoElements = iframeDoc.querySelectorAll('video');
-                if (videoElements.length > 0) {
-                  const videoElement = videoElements[0];
-                  const videoSrc = videoElement.src || videoElement.currentSrc;
-                  
-                  if (videoSrc) {
-                    progress.message = "Found video source, starting download...";
-                    onProgress?.(progress);
-                    
-                    this.downloadVideoFile(videoSrc, downloadInfo, onProgress)
-                      .then(() => {
-                        document.body.removeChild(iframe);
-                        resolve();
-                      })
-                      .catch(reject);
-                    return;
-                  }
-                }
-                
-                // Try to find video source in script tags
-                const scripts = Array.from(iframeDoc.querySelectorAll('script'));
-                for (const script of scripts) {
-                  const content = script.textContent || script.innerHTML;
-                  const videoUrlMatch = content.match(/https?:\/\/[^"'\s]+\.(?:mp4|m3u8|webm)[^"'\s]*/i);
-                  if (videoUrlMatch) {
-                    progress.message = "Found video URL in scripts, starting download...";
-                    onProgress?.(progress);
-                    
-                    this.downloadVideoFile(videoUrlMatch[0], downloadInfo, onProgress)
-                      .then(() => {
-                        document.body.removeChild(iframe);
-                        resolve();
-                      })
-                      .catch(reject);
-                    return;
-                  }
-                }
-                
-                reject(new Error("No video source found in this source"));
-              } catch (error) {
-                reject(error);
-              }
-            };
-            
-            iframe.onerror = () => {
-              clearTimeout(timeout);
-              reject(new Error("Failed to load iframe"));
-            };
-            
-            document.body.appendChild(iframe);
-          });
-          
-          // If we get here, download was successful
-          return;
-          
-        } catch (error) {
-          console.warn(`Source ${i + 1} failed:`, error);
-          // Continue to next source
-        }
-      }
-      
-      // If all sources failed, fall back to opening the first source in a new tab
-      progress.message = "All direct sources failed, opening download link...";
-      onProgress?.(progress);
-      
-      const a = document.createElement('a');
-      a.href = downloadInfo.sources[0];
-      a.target = '_blank';
-      a.download = this.generateFileName(downloadInfo);
-      a.rel = 'noopener noreferrer';
-      
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      
-      progress.status = "completed";
-      progress.progress = 100;
-      progress.message = "Download link opened in new tab";
-      onProgress?.(progress);
-      
-    } catch (error) {
-      progress.status = "error";
-      progress.message = `Download failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
-      onProgress?.(progress);
-      throw error;
-    }
-  }
-
-  // Method to check if download is supported
+  // Check if download is supported
   isDownloadSupported(): boolean {
-    return 'download' in document.createElement('a') && 
-           'createObjectURL' in window.URL &&
-           'revokeObjectURL' in window.URL;
-  }
-
-  // Method to get download size estimate (if available)
-  async getDownloadSizeEstimate(videoUrl: string): Promise<string | null> {
-    try {
-      const response = await fetch(videoUrl, { method: 'HEAD' });
-      const contentLength = response.headers.get('content-length');
-      
-      if (contentLength) {
-        const bytes = parseInt(contentLength, 10);
-        const mb = (bytes / (1024 * 1024)).toFixed(1);
-        return `${mb} MB`;
-      }
-      
-      return null;
-    } catch (error) {
-      console.warn('Could not get download size estimate:', error);
-      return null;
-    }
+    return true; // Our new method should work in all browsers
   }
 }
 

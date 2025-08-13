@@ -27,18 +27,18 @@ const DownloadOptions: React.FC<DownloadOptionsProps> = ({
     });
 
     try {
-      await downloadService.downloadDirectVideo(downloadInfo, (progressUpdate) => {
+      await downloadService.downloadMovie(downloadInfo, (progressUpdate) => {
         setProgress(progressUpdate);
         
         if (progressUpdate.status === 'completed') {
-          toast.success('Download completed successfully!');
+          toast.success('Download page opened successfully!');
         } else if (progressUpdate.status === 'error') {
           toast.error(progressUpdate.message);
         }
       });
     } catch (error) {
       console.error('Download failed:', error);
-      toast.error('Direct download failed. Try the alternative method.');
+      toast.error('Download failed. Please try again or check if popups are blocked.');
     } finally {
       setIsDownloading(false);
       setProgress(null);
@@ -52,22 +52,23 @@ const DownloadOptions: React.FC<DownloadOptionsProps> = ({
     setProgress({
       progress: 0,
       status: 'downloading',
-      message: 'Opening download link...'
+      message: 'Opening video viewer...'
     });
 
     try {
-      await downloadService.downloadWithFetch(downloadInfo, (progressUpdate) => {
+      // Use the new download service method
+      await downloadService.downloadMovie(downloadInfo, (progressUpdate) => {
         setProgress(progressUpdate);
         
         if (progressUpdate.status === 'completed') {
-          toast.success('Download link opened in new tab!');
+          toast.success('Video viewer opened successfully!');
         } else if (progressUpdate.status === 'error') {
           toast.error(progressUpdate.message);
         }
       });
     } catch (error) {
       console.error('Alternative download failed:', error);
-      toast.error('Alternative download failed. Please try again.');
+      toast.error('Failed to open video viewer. Please try again.');
     } finally {
       setIsDownloading(false);
       setProgress(null);
@@ -81,22 +82,23 @@ const DownloadOptions: React.FC<DownloadOptionsProps> = ({
     setProgress({
       progress: 0,
       status: 'downloading',
-      message: 'Creating download links...'
+      message: 'Creating download page...'
     });
 
     try {
-      await downloadService.createDirectDownloadLink(downloadInfo, (progressUpdate) => {
+      // Use the new download service method
+      await downloadService.downloadMovie(downloadInfo, (progressUpdate) => {
         setProgress(progressUpdate);
         
         if (progressUpdate.status === 'completed') {
-          toast.success('Download links created successfully!');
+          toast.success('Download page created successfully!');
         } else if (progressUpdate.status === 'error') {
           toast.error(progressUpdate.message);
         }
       });
     } catch (error) {
-      console.error('Failed to create download links:', error);
-      toast.error('Failed to create download links. Please try again.');
+      console.error('Failed to create download page:', error);
+      toast.error('Failed to create download page. Please try again.');
     } finally {
       setIsDownloading(false);
       setProgress(null);
