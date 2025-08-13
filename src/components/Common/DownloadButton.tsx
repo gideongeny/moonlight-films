@@ -71,11 +71,11 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
     });
 
     try {
-      await downloadService.downloadWithFetch(downloadInfo, (progressUpdate) => {
+      await downloadService.downloadMovie(downloadInfo, (progressUpdate) => {
         setProgress(progressUpdate);
         
         if (progressUpdate.status === 'completed') {
-          toast.success('Download link opened in new tab!');
+          toast.success('Download page opened successfully!');
         } else if (progressUpdate.status === 'error') {
           toast.error(progressUpdate.message);
         }
