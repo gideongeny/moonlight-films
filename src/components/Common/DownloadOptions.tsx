@@ -122,7 +122,7 @@ const DownloadOptions: React.FC<DownloadOptionsProps> = ({
           className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-3 rounded-md font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <AiOutlineDownload size={18} />
-                          {isDownloading ? 'Downloading...' : `Download ${downloadInfo.mediaType === 'tv' ? 'Episode' : 'Movie'} (Direct)`}
+          {isDownloading ? 'Downloading...' : `Download ${downloadInfo.mediaType === 'tv' ? 'Episode' : 'Movie'} (Direct to PC)`}
         </button>
 
         {/* Alternative Download Button */}
@@ -132,7 +132,7 @@ const DownloadOptions: React.FC<DownloadOptionsProps> = ({
           className="w-full flex items-center justify-center gap-2 bg-gray-600 hover:bg-gray-700 text-white px-4 py-3 rounded-md font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <AiOutlineLink size={18} />
-                          {isDownloading ? 'Processing...' : 'Open External Link'}
+          {isDownloading ? 'Processing...' : 'Try Alternative Method'}
         </button>
 
         {/* Advanced Options Toggle */}
@@ -153,13 +153,13 @@ const DownloadOptions: React.FC<DownloadOptionsProps> = ({
               className="w-full flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-md font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
             >
               <AiOutlineDownload size={16} />
-              Create Multiple Download Links
+              Open External Download Page
             </button>
 
             <div className="text-xs text-gray-400 space-y-1">
-              <p>• Direct Download: Attempts to download the video file directly</p>
-              <p>• Download Link: Opens the video source in a new tab for manual download</p>
-              <p>• Multiple Links: Creates download links for all available sources</p>
+              <p>• <strong>Direct Download:</strong> Downloads video file directly to your PC (like MovieBox)</p>
+              <p>• <strong>Alternative Method:</strong> Tries different download approaches if direct fails</p>
+              <p>• <strong>External Page:</strong> Opens download page with all available sources</p>
             </div>
           </div>
         )}
