@@ -76,7 +76,7 @@ const DiverseContent: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="space-y-8">
+      <div className="space-y-8 mt-8">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-white mb-4">
             🌍 World Cinema
@@ -106,7 +106,7 @@ const DiverseContent: React.FC = () => {
 
   if (totalContent === 0) {
     return (
-      <div className="text-center py-12">
+      <div className="text-center py-12 mt-8">
         <h2 className="text-3xl font-bold text-white mb-4">
           🌍 World Cinema
         </h2>
@@ -121,7 +121,7 @@ const DiverseContent: React.FC = () => {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 mt-8">
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-white mb-4">
           🌍 World Cinema
@@ -136,7 +136,7 @@ const DiverseContent: React.FC = () => {
         <SectionSlider
           title="🌍 African Cinema"
           films={africanContent}
-          limitNumber={6}
+          limitNumber={8}
           isLoading={false}
         />
       )}
@@ -146,7 +146,7 @@ const DiverseContent: React.FC = () => {
         <SectionSlider
           title="🎬 Nollywood (Nigerian Movies)"
           films={nollywoodContent}
-          limitNumber={6}
+          limitNumber={8}
           isLoading={false}
         />
       )}
@@ -156,7 +156,7 @@ const DiverseContent: React.FC = () => {
         <SectionSlider
           title="🌏 Asian Cinema"
           films={asianContent}
-          limitNumber={6}
+          limitNumber={8}
           isLoading={false}
         />
       )}
@@ -166,7 +166,7 @@ const DiverseContent: React.FC = () => {
         <SectionSlider
           title="🎭 Bollywood (Indian Movies)"
           films={bollywoodContent}
-          limitNumber={6}
+          limitNumber={8}
           isLoading={false}
         />
       )}
@@ -176,7 +176,7 @@ const DiverseContent: React.FC = () => {
         <SectionSlider
           title="🇰🇷 Korean Drama & Movies"
           films={koreanContent}
-          limitNumber={6}
+          limitNumber={8}
           isLoading={false}
         />
       )}
@@ -186,7 +186,7 @@ const DiverseContent: React.FC = () => {
         <SectionSlider
           title="🇯🇵 Japanese Anime & Movies"
           films={japaneseContent}
-          limitNumber={6}
+          limitNumber={8}
           isLoading={false}
         />
       )}
@@ -196,7 +196,7 @@ const DiverseContent: React.FC = () => {
         <SectionSlider
           title="🇨🇳 Chinese Cinema"
           films={chineseContent}
-          limitNumber={6}
+          limitNumber={8}
           isLoading={false}
         />
       )}
@@ -206,7 +206,7 @@ const DiverseContent: React.FC = () => {
         <SectionSlider
           title="🌎 Latin American Cinema"
           films={latinAmericanContent}
-          limitNumber={6}
+          limitNumber={8}
           isLoading={false}
         />
       )}
@@ -216,7 +216,7 @@ const DiverseContent: React.FC = () => {
         <SectionSlider
           title="🕌 Middle Eastern Cinema"
           films={middleEasternContent}
-          limitNumber={6}
+          limitNumber={8}
           isLoading={false}
         />
       )}

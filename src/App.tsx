@@ -2,6 +2,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { doc, onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
+import { Analytics } from '@vercel/analytics/react';
 
 import Protected from "./components/Common/Protected";
 import Auth from "./pages/Auth";
@@ -101,41 +102,44 @@ function App() {
   }, [location.pathname, location.search]);
 
   return (
-    <Routes>
-      <Route index element={<Home />} />
-      <Route path="movie/:id" element={<MovieInfo />} />
-      <Route path="tv/:id" element={<TVInfo />} />
-      <Route path="movie/:id/watch" element={<MovieWatch />} />
-      <Route path="tv/:id/watch" element={<TVWatch />} />
-      <Route path="explore" element={<Explore />} />
-      <Route path="search" element={<Search />} />
-      <Route path="auth" element={<Auth />} />
-      <Route
-        path="bookmarked"
-        element={
-          <Protected isSignedIn={isSignedIn}>
-            <Bookmarked />
-          </Protected>
-        }
-      />
-      <Route
-        path="history"
-        element={
-          <Protected isSignedIn={isSignedIn}>
-            <History />
-          </Protected>
-        }
-      />
-      <Route
-        path="profile"
-        element={
-          <Protected isSignedIn={isSignedIn}>
-            <Profile />
-          </Protected>
-        }
-      />
-      <Route path="*" element={<Error />} />
-    </Routes>
+    <>
+      <Analytics />
+      <Routes>
+        <Route index element={<Home />} />
+        <Route path="movie/:id" element={<MovieInfo />} />
+        <Route path="tv/:id" element={<TVInfo />} />
+        <Route path="movie/:id/watch" element={<MovieWatch />} />
+        <Route path="tv/:id/watch" element={<TVWatch />} />
+        <Route path="explore" element={<Explore />} />
+        <Route path="search" element={<Search />} />
+        <Route path="auth" element={<Auth />} />
+        <Route
+          path="bookmarked"
+          element={
+            <Protected isSignedIn={isSignedIn}>
+              <Bookmarked />
+            </Protected>
+          }
+        />
+        <Route
+          path="history"
+          element={
+            <Protected isSignedIn={isSignedIn}>
+              <History />
+            </Protected>
+          }
+        />
+        <Route
+          path="profile"
+          element={
+            <Protected isSignedIn={isSignedIn}>
+              <Profile />
+            </Protected>
+          }
+        />
+        <Route path="*" element={<Error />} />
+      </Routes>
+    </>
   );
 }
 
