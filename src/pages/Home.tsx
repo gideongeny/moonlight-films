@@ -136,7 +136,10 @@ const Home: FC = () => {
             />
           )}
 
-          {/* Move DiverseContent to main content area */}
+          {/* Discover World navigation (moved from sidebar) */}
+          <DiverseNavigation />
+
+          {/* Discover World content */}
           <DiverseContent />
         </div>
 
@@ -144,7 +147,7 @@ const Home: FC = () => {
           <SearchBox />
           <RecommendGenres currentTab={currentTab} />
           <TrendingNow />
-          <DiverseNavigation />
+          {/* DiverseNavigation removed from sidebar */}
         </div>
       </div>
 
