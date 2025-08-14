@@ -15,7 +15,12 @@ import {
   getSoutheastAsianContent,
   getFilipinoContent,
   getBrazilianContent,
-  getMexicanContent
+  getMexicanContent,
+  getKenyanTVShows,
+  getNigerianTVShows,
+  getAfricanTVContent,
+  getEnhancedNollywoodContent,
+  getEnhancedKenyanContent
 } from '../../services/home';
 import SectionSlider from '../Slider/SectionSlider';
 import Skeleton from '../Common/Skeleton';
@@ -36,6 +41,11 @@ const DiverseContent: React.FC = () => {
   const [filipinoContent, setFilipinoContent] = useState<Item[]>([]);
   const [brazilianContent, setBrazilianContent] = useState<Item[]>([]);
   const [mexicanContent, setMexicanContent] = useState<Item[]>([]);
+  const [kenyanTVShows, setKenyanTVShows] = useState<Item[]>([]);
+  const [nigerianTVShows, setNigerianTVShows] = useState<Item[]>([]);
+  const [africanTVContent, setAfricanTVContent] = useState<Item[]>([]);
+  const [enhancedNollywood, setEnhancedNollywood] = useState<Item[]>([]);
+  const [enhancedKenyan, setEnhancedKenyan] = useState<Item[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -59,7 +69,12 @@ const DiverseContent: React.FC = () => {
           southeastAsian,
           filipino,
           brazilian,
-          mexican
+          mexican,
+          kenyanTV,
+          nigerianTV,
+          africanTV,
+          enhancedNolly,
+          enhancedKenya
         ] = await Promise.all([
           getAfricanContent(),
           getAsianContent(),
@@ -75,7 +90,12 @@ const DiverseContent: React.FC = () => {
           getSoutheastAsianContent(),
           getFilipinoContent(),
           getBrazilianContent(),
-          getMexicanContent()
+          getMexicanContent(),
+          getKenyanTVShows(),
+          getNigerianTVShows(),
+          getAfricanTVContent(),
+          getEnhancedNollywoodContent(),
+          getEnhancedKenyanContent()
         ]);
 
         setAfricanContent(african);
@@ -93,6 +113,11 @@ const DiverseContent: React.FC = () => {
         setFilipinoContent(filipino);
         setBrazilianContent(brazilian);
         setMexicanContent(mexican);
+        setKenyanTVShows(kenyanTV);
+        setNigerianTVShows(nigerianTV);
+        setAfricanTVContent(africanTV);
+        setEnhancedNollywood(enhancedNolly);
+        setEnhancedKenyan(enhancedKenya);
         
       } catch (error) {
         console.error('Error fetching diverse content:', error);
@@ -115,7 +140,7 @@ const DiverseContent: React.FC = () => {
             Loading diverse content from around the world...
           </p>
         </div>
-        {[...Array(6)].map((_, index) => (
+        {[...Array(10)].map((_, index) => (
           <div key={index}>
             <Skeleton className="h-8 w-48 mb-4" />
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
@@ -135,7 +160,9 @@ const DiverseContent: React.FC = () => {
     koreanContent.length + japaneseContent.length + chineseContent.length +
     eastAfricanContent.length + southAfricanContent.length +
     southeastAsianContent.length + filipinoContent.length +
-    brazilianContent.length + mexicanContent.length;
+    brazilianContent.length + mexicanContent.length +
+    kenyanTVShows.length + nigerianTVShows.length +
+    africanTVContent.length + enhancedNollywood.length + enhancedKenyan.length;
 
   if (totalContent === 0) {
     return (
@@ -164,11 +191,41 @@ const DiverseContent: React.FC = () => {
         </p>
       </div>
 
-      {/* African Content */}
+      {/* Enhanced African Content */}
       {africanContent.length > 0 && (
         <SectionSlider
-          title="🌍 African Cinema"
+          title="🌍 African Cinema & TV Shows"
           films={africanContent}
+          limitNumber={8}
+          isLoading={false}
+        />
+      )}
+
+      {/* Enhanced Nollywood Content */}
+      {enhancedNollywood.length > 0 && (
+        <SectionSlider
+          title="🎬 Enhanced Nollywood (Nigerian Movies & TV Shows)"
+          films={enhancedNollywood}
+          limitNumber={8}
+          isLoading={false}
+        />
+      )}
+
+      {/* Enhanced Kenyan Content */}
+      {enhancedKenyan.length > 0 && (
+        <SectionSlider
+          title="🇰🇪 Enhanced Kenyan Content (Movies & TV Shows)"
+          films={enhancedKenyan}
+          limitNumber={8}
+          isLoading={false}
+        />
+      )}
+
+      {/* African TV Content */}
+      {africanTVContent.length > 0 && (
+        <SectionSlider
+          title="📺 African TV Shows & Series"
+          films={africanTVContent}
           limitNumber={8}
           isLoading={false}
         />
@@ -184,10 +241,20 @@ const DiverseContent: React.FC = () => {
         />
       )}
 
+      {/* Kenyan TV Shows */}
+      {kenyanTVShows.length > 0 && (
+        <SectionSlider
+          title="🇰🇪 Kenyan TV Shows (Citizen TV, NTV Kenya, KTN Kenya)"
+          films={kenyanTVShows}
+          limitNumber={8}
+          isLoading={false}
+        />
+      )}
+
       {/* South African Content */}
       {southAfricanContent.length > 0 && (
         <SectionSlider
-          title="🇿🇦 South African Cinema"
+          title="🇿🇦 South African Cinema & TV Shows"
           films={southAfricanContent}
           limitNumber={8}
           isLoading={false}
@@ -197,8 +264,18 @@ const DiverseContent: React.FC = () => {
       {/* Nollywood Content */}
       {nollywoodContent.length > 0 && (
         <SectionSlider
-          title="🎬 Nollywood (Nigerian Movies)"
+          title="🎬 Nollywood (Nigerian Movies & TV Shows)"
           films={nollywoodContent}
+          limitNumber={8}
+          isLoading={false}
+        />
+      )}
+
+      {/* Nigerian TV Shows */}
+      {nigerianTVShows.length > 0 && (
+        <SectionSlider
+          title="🇳🇬 Nigerian TV Shows & Series"
+          films={nigerianTVShows}
           limitNumber={8}
           isLoading={false}
         />
@@ -207,7 +284,7 @@ const DiverseContent: React.FC = () => {
       {/* Asian Content */}
       {asianContent.length > 0 && (
         <SectionSlider
-          title="🌏 Asian Cinema"
+          title="🌏 Asian Cinema & TV Shows"
           films={asianContent}
           limitNumber={8}
           isLoading={false}
@@ -237,7 +314,7 @@ const DiverseContent: React.FC = () => {
       {/* Bollywood Content */}
       {bollywoodContent.length > 0 && (
         <SectionSlider
-          title="🎭 Bollywood (Indian Movies)"
+          title="🎭 Bollywood (Indian Movies & TV Shows)"
           films={bollywoodContent}
           limitNumber={8}
           isLoading={false}
@@ -267,7 +344,7 @@ const DiverseContent: React.FC = () => {
       {/* Chinese Content */}
       {chineseContent.length > 0 && (
         <SectionSlider
-          title="🇨🇳 Chinese Cinema"
+          title="🇨🇳 Chinese Cinema & TV Shows"
           films={chineseContent}
           limitNumber={8}
           isLoading={false}
@@ -277,7 +354,7 @@ const DiverseContent: React.FC = () => {
       {/* Latin American Content */}
       {latinAmericanContent.length > 0 && (
         <SectionSlider
-          title="🌎 Latin American Cinema"
+          title="🌎 Latin American Cinema & TV Shows"
           films={latinAmericanContent}
           limitNumber={8}
           isLoading={false}
@@ -307,7 +384,7 @@ const DiverseContent: React.FC = () => {
       {/* Middle Eastern Content */}
       {middleEasternContent.length > 0 && (
         <SectionSlider
-          title="🕌 Middle Eastern Cinema"
+          title="🕌 Middle Eastern Cinema & TV Shows"
           films={middleEasternContent}
           limitNumber={8}
           isLoading={false}

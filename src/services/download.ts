@@ -72,13 +72,24 @@ export class DownloadService {
         `${EMBED_ALTERNATIVES.WATCHMOVIES}/movie/${id}`,
         `${EMBED_ALTERNATIVES.STREAMSB}/movie/${id}`,
         `${EMBED_ALTERNATIVES.VIDSTREAM}/movie/${id}`,
-        // African and non-Western content
+        // African and non-Western content - Updated sources
         `${EMBED_ALTERNATIVES.AFRIKAN}/movie/${id}`,
         `${EMBED_ALTERNATIVES.NOLLYWOOD}/movie/${id}`,
         `${EMBED_ALTERNATIVES.BOLLYWOOD}/movie/${id}`,
         `${EMBED_ALTERNATIVES.ASIAN}/movie/${id}`,
         `${EMBED_ALTERNATIVES.LATINO}/movie/${id}`,
         `${EMBED_ALTERNATIVES.ARABIC}/movie/${id}`,
+        // New African content sources
+        `${EMBED_ALTERNATIVES.AFRIKANFLIX}/movie/${id}`,
+        `${EMBED_ALTERNATIVES.NOLLYWOODPLUS}/movie/${id}`,
+        `${EMBED_ALTERNATIVES.AFRICANMOVIES}/movie/${id}`,
+        `${EMBED_ALTERNATIVES.KENYANFLIX}/movie/${id}`,
+        `${EMBED_ALTERNATIVES.NIGERIANFLIX}/movie/${id}`,
+        // Regional African streaming services
+        `${EMBED_ALTERNATIVES.SHOWMAX}/movie/${id}`,
+        `${EMBED_ALTERNATIVES.IROKO}/movie/${id}`,
+        `${EMBED_ALTERNATIVES.BONGO}/movie/${id}`,
+        `${EMBED_ALTERNATIVES.KWESE}/movie/${id}`,
         // Additional sources
         `${EMBED_ALTERNATIVES.CINEMAHOLIC}/movie/${id}`,
         `${EMBED_ALTERNATIVES.MOVIEFREAK}/movie/${id}`,
@@ -86,6 +97,17 @@ export class DownloadService {
         `${EMBED_ALTERNATIVES.PUTLOCKER}/movie/${id}`,
         `${EMBED_ALTERNATIVES.SOLARMOVIE}/movie/${id}`,
         `${EMBED_ALTERNATIVES.FMOVIES}/movie/${id}`,
+        // Major streaming platforms
+        `${EMBED_ALTERNATIVES.NETFLIX}/movie/${id}`,
+        `${EMBED_ALTERNATIVES.AMAZON}/movie/${id}`,
+        `${EMBED_ALTERNATIVES.DISNEY}/movie/${id}`,
+        `${EMBED_ALTERNATIVES.HBO}/movie/${id}`,
+        `${EMBED_ALTERNATIVES.HULU}/movie/${id}`,
+        `${EMBED_ALTERNATIVES.APPLE}/movie/${id}`,
+        // Video platforms
+        `${EMBED_ALTERNATIVES.YOUTUBE}/movie/${id}`,
+        `${EMBED_ALTERNATIVES.VIMEO}/movie/${id}`,
+        `${EMBED_ALTERNATIVES.DAILYMOTION}/movie/${id}`,
       ];
     } else {
       return [
@@ -97,13 +119,24 @@ export class DownloadService {
         `${EMBED_ALTERNATIVES.WATCHMOVIES}/tv/${id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.STREAMSB}/tv/${id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.VIDSTREAM}/tv/${id}/${seasonId}/${episodeId}`,
-        // African and non-Western content
+        // African and non-Western content - Updated sources
         `${EMBED_ALTERNATIVES.AFRIKAN}/tv/${id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.NOLLYWOOD}/tv/${id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.BOLLYWOOD}/tv/${id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.ASIAN}/tv/${id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.LATINO}/tv/${id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.ARABIC}/tv/${id}/${seasonId}/${episodeId}`,
+        // New African content sources
+        `${EMBED_ALTERNATIVES.AFRIKANFLIX}/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.NOLLYWOODPLUS}/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.AFRICANMOVIES}/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.KENYANFLIX}/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.NIGERIANFLIX}/tv/${id}/${seasonId}/${episodeId}`,
+        // Regional African streaming services
+        `${EMBED_ALTERNATIVES.SHOWMAX}/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.IROKO}/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.BONGO}/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.KWESE}/tv/${id}/${seasonId}/${episodeId}`,
         // Additional sources
         `${EMBED_ALTERNATIVES.CINEMAHOLIC}/tv/${id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.MOVIEFREAK}/tv/${id}/${seasonId}/${episodeId}`,
@@ -111,6 +144,17 @@ export class DownloadService {
         `${EMBED_ALTERNATIVES.PUTLOCKER}/tv/${id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.SOLARMOVIE}/tv/${id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.FMOVIES}/tv/${id}/${seasonId}/${episodeId}`,
+        // Major streaming platforms
+        `${EMBED_ALTERNATIVES.NETFLIX}/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.AMAZON}/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.DISNEY}/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.HBO}/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.HULU}/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.APPLE}/tv/${id}/${seasonId}/${episodeId}`,
+        // Video platforms
+        `${EMBED_ALTERNATIVES.YOUTUBE}/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.VIMEO}/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.DAILYMOTION}/tv/${id}/${seasonId}/${episodeId}`,
       ];
     }
   }
@@ -373,6 +417,17 @@ export class DownloadService {
     if (source.includes('asian.tv')) return 'Asian TV (Asian Content)';
     if (source.includes('latino.tv')) return 'Latino TV (Latin American)';
     if (source.includes('arabic.tv')) return 'Arabic TV (Middle Eastern)';
+    // New African content sources
+    if (source.includes('afrikanflix.com')) return 'AfrikanFlix';
+    if (source.includes('nollywoodplus.com')) return 'NollywoodPlus';
+    if (source.includes('africanmovies.com')) return 'AfricanMovies';
+    if (source.includes('kenyanflix.com')) return 'KenyanFlix';
+    if (source.includes('nigerianflix.com')) return 'NigerianFlix';
+    // Regional African streaming services
+    if (source.includes('showmax.com')) return 'ShowMax';
+    if (source.includes('iroko.com')) return 'Iroko';
+    if (source.includes('bongo.tv')) return 'Bongo';
+    if (source.includes('kwe.se')) return 'Kwe.se';
     // Additional sources
     if (source.includes('cinemaholic.com')) return 'Cinemaholic';
     if (source.includes('moviefreak.com')) return 'MovieFreak';
@@ -382,6 +437,17 @@ export class DownloadService {
     if (source.includes('fmovies.to')) return 'FMovies';
     if (source.includes('drive.google.com')) return 'Google Drive';
     if (source.includes('mega.nz')) return 'MEGA';
+    // Major streaming platforms
+    if (source.includes('netflix.com')) return 'Netflix';
+    if (source.includes('amazon.com')) return 'Amazon Prime';
+    if (source.includes('disneyplus.com')) return 'Disney+';
+    if (source.includes('hbo.com')) return 'HBO Max';
+    if (source.includes('hulu.com')) return 'Hulu';
+    if (source.includes('apple.com')) return 'Apple TV+';
+    // Video platforms
+    if (source.includes('youtube.com')) return 'YouTube';
+    if (source.includes('vimeo.com')) return 'Vimeo';
+    if (source.includes('dailymotion.com')) return 'Dailymotion';
     return 'Unknown Source';
   }
 

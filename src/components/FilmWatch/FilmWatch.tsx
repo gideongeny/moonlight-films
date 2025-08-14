@@ -66,6 +66,35 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
         `${EMBED_ALTERNATIVES.WATCHMOVIES}/movie/${detail?.id}`,
         `${EMBED_ALTERNATIVES.STREAMSB}/movie/${detail?.id}`,
         `${EMBED_ALTERNATIVES.VIDSTREAM}/movie/${detail?.id}`,
+        // African and non-Western content - Updated sources
+        `${EMBED_ALTERNATIVES.AFRIKAN}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.NOLLYWOOD}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.BOLLYWOOD}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.ASIAN}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.LATINO}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.ARABIC}/movie/${detail?.id}`,
+        // New African content sources
+        `${EMBED_ALTERNATIVES.AFRIKANFLIX}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.NOLLYWOODPLUS}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.AFRICANMOVIES}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.KENYANFLIX}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.NIGERIANFLIX}/movie/${detail?.id}`,
+        // Regional African streaming services
+        `${EMBED_ALTERNATIVES.SHOWMAX}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.IROKO}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.BONGO}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.KWESE}/movie/${detail?.id}`,
+        // Major streaming platforms
+        `${EMBED_ALTERNATIVES.NETFLIX}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.AMAZON}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.DISNEY}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.HBO}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.HULU}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.APPLE}/movie/${detail?.id}`,
+        // Video platforms
+        `${EMBED_ALTERNATIVES.YOUTUBE}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.VIMEO}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.DAILYMOTION}/movie/${detail?.id}`,
       ];
     } else {
       return [
@@ -77,6 +106,35 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
         `${EMBED_ALTERNATIVES.WATCHMOVIES}/tv/${detail?.id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.STREAMSB}/tv/${detail?.id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.VIDSTREAM}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        // African and non-Western content - Updated sources
+        `${EMBED_ALTERNATIVES.AFRIKAN}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.NOLLYWOOD}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.BOLLYWOOD}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.ASIAN}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.LATINO}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.ARABIC}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        // New African content sources
+        `${EMBED_ALTERNATIVES.AFRIKANFLIX}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.NOLLYWOODPLUS}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.AFRICANMOVIES}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.KENYANFLIX}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.NIGERIANFLIX}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        // Regional African streaming services
+        `${EMBED_ALTERNATIVES.SHOWMAX}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.IROKO}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.BONGO}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.KWESE}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        // Major streaming platforms
+        `${EMBED_ALTERNATIVES.NETFLIX}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.AMAZON}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.DISNEY}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.HBO}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.HULU}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.APPLE}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        // Video platforms
+        `${EMBED_ALTERNATIVES.YOUTUBE}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.VIMEO}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.DAILYMOTION}/tv/${detail?.id}/${seasonId}/${episodeId}`,
       ];
     }
   };
@@ -94,6 +152,35 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
     if (source.includes('watchmovieshd.ru')) return 'WatchMovies';
     if (source.includes('streamsb.net')) return 'StreamSB';
     if (source.includes('vidstream.pro')) return 'VidStream';
+    // African and non-Western content
+    if (source.includes('afrikan.tv')) return 'Afrikan TV (African Content)';
+    if (source.includes('nollywood.tv')) return 'Nollywood (Nigerian Movies)';
+    if (source.includes('bollywood.tv')) return 'Bollywood (Indian Movies)';
+    if (source.includes('asian.tv')) return 'Asian TV (Asian Content)';
+    if (source.includes('latino.tv')) return 'Latino TV (Latin American)';
+    if (source.includes('arabic.tv')) return 'Arabic TV (Middle Eastern)';
+    // New African content sources
+    if (source.includes('afrikanflix.com')) return 'AfrikanFlix';
+    if (source.includes('nollywoodplus.com')) return 'NollywoodPlus';
+    if (source.includes('africanmovies.net')) return 'AfricanMovies';
+    if (source.includes('kenyanflix.com')) return 'KenyanFlix';
+    if (source.includes('nigerianflix.com')) return 'NigerianFlix';
+    // Regional African streaming services
+    if (source.includes('showmax.com')) return 'ShowMax';
+    if (source.includes('irokotv.com')) return 'Iroko';
+    if (source.includes('bongotv.com')) return 'Bongo';
+    if (source.includes('kwese.iflix.com')) return 'Kwe.se';
+    // Major streaming platforms
+    if (source.includes('netflix.com')) return 'Netflix';
+    if (source.includes('amazon.com')) return 'Amazon Prime';
+    if (source.includes('disneyplus.com')) return 'Disney+';
+    if (source.includes('hbomax.com')) return 'HBO Max';
+    if (source.includes('hulu.com')) return 'Hulu';
+    if (source.includes('tv.apple.com')) return 'Apple TV+';
+    // Video platforms
+    if (source.includes('youtube.com')) return 'YouTube';
+    if (source.includes('vimeo.com')) return 'Vimeo';
+    if (source.includes('dailymotion.com')) return 'Dailymotion';
     return 'Unknown Source';
   };
 

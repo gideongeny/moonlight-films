@@ -151,12 +151,23 @@ export const getTrendingNow = async (): Promise<Item[]> => {
 export const getAfricanContent = async (): Promise<Item[]> => {
   try {
     // Fetch African movies and TV shows from multiple regions
-    const response = await axios.get(
-      `/discover/movie?with_origin_country=NG&with_origin_country=KE&with_origin_country=TZ&with_origin_country=UG&with_origin_country=ZA&with_origin_country=EG&with_origin_country=GH&with_origin_country=ET&with_origin_country=RW&with_origin_country=ZM&sort_by=popularity.desc&page=1`
-    );
-    const results = response.data.results || [];
-    // Ensure all items have media_type set to "movie"
-    return results.map((item: any) => ({ ...item, media_type: "movie" }));
+    const [movieResponse, tvResponse] = await Promise.all([
+      axios.get(
+        `/discover/movie?with_origin_country=NG&with_origin_country=KE&with_origin_country=TZ&with_origin_country=UG&with_origin_country=ZA&with_origin_country=EG&with_origin_country=GH&with_origin_country=ET&with_origin_country=RW&with_origin_country=ZM&sort_by=popularity.desc&page=1`
+      ),
+      axios.get(
+        `/discover/tv?with_origin_country=NG&with_origin_country=KE&with_origin_country=TZ&with_origin_country=UG&with_origin_country=ZA&with_origin_country=EG&with_origin_country=GH&with_origin_country=ET&with_origin_country=RW&with_origin_country=ZM&sort_by=popularity.desc&page=1`
+      )
+    ]);
+    
+    const movieResults = movieResponse.data.results || [];
+    const tvResults = tvResponse.data.results || [];
+    
+    // Combine and ensure all items have media_type set
+    const movies = movieResults.map((item: any) => ({ ...item, media_type: "movie" }));
+    const tvs = tvResults.map((item: any) => ({ ...item, media_type: "tv" }));
+    
+    return [...movies, ...tvs];
   } catch (error) {
     console.error("Error fetching African content:", error);
     return [];
@@ -166,11 +177,22 @@ export const getAfricanContent = async (): Promise<Item[]> => {
 // Separate function for East African content
 export const getEastAfricanContent = async (): Promise<Item[]> => {
   try {
-    const response = await axios.get(
-      `/discover/movie?with_origin_country=KE&with_origin_country=TZ&with_origin_country=UG&with_origin_country=ET&with_origin_country=RW&with_origin_country=ZM&sort_by=popularity.desc&page=1`
-    );
-    const results = response.data.results || [];
-    return results.map((item: any) => ({ ...item, media_type: "movie" }));
+    const [movieResponse, tvResponse] = await Promise.all([
+      axios.get(
+        `/discover/movie?with_origin_country=KE&with_origin_country=TZ&with_origin_country=UG&with_origin_country=ET&with_origin_country=RW&with_origin_country=ZM&sort_by=popularity.desc&page=1`
+      ),
+      axios.get(
+        `/discover/tv?with_origin_country=KE&with_origin_country=TZ&with_origin_country=UG&with_origin_country=ET&with_origin_country=RW&with_origin_country=ZM&sort_by=popularity.desc&page=1`
+      )
+    ]);
+    
+    const movieResults = movieResponse.data.results || [];
+    const tvResults = tvResponse.data.results || [];
+    
+    const movies = movieResults.map((item: any) => ({ ...item, media_type: "movie" }));
+    const tvs = tvResults.map((item: any) => ({ ...item, media_type: "tv" }));
+    
+    return [...movies, ...tvs];
   } catch (error) {
     console.error("Error fetching East African content:", error);
     return [];
@@ -180,13 +202,101 @@ export const getEastAfricanContent = async (): Promise<Item[]> => {
 // Separate function for South African content
 export const getSouthAfricanContent = async (): Promise<Item[]> => {
   try {
-    const response = await axios.get(
-      `/discover/movie?with_origin_country=ZA&sort_by=popularity.desc&page=1`
-    );
-    const results = response.data.results || [];
-    return results.map((item: any) => ({ ...item, media_type: "movie" }));
+    const [movieResponse, tvResponse] = await Promise.all([
+      axios.get(
+        `/discover/movie?with_origin_country=ZA&sort_by=popularity.desc&page=1`
+      ),
+      axios.get(
+        `/discover/tv?with_origin_country=ZA&sort_by=popularity.desc&page=1`
+      )
+    ]);
+    
+    const movieResults = movieResponse.data.results || [];
+    const tvResults = tvResponse.data.results || [];
+    
+    const movies = movieResults.map((item: any) => ({ ...item, media_type: "movie" }));
+    const tvs = tvResults.map((item: any) => ({ ...item, media_type: "tv" }));
+    
+    return [...movies, ...tvs];
   } catch (error) {
     console.error("Error fetching South African content:", error);
+    return [];
+  }
+};
+
+// Kenyan TV Shows - Popular shows from major Kenyan channels
+export const getKenyanTVShows = async (): Promise<Item[]> => {
+  try {
+    // Search for popular Kenyan TV shows and series
+    const searchTerms = [
+      "Citizen TV Kenya",
+      "NTV Kenya", 
+      "KTN Kenya",
+      "Kenyan TV series",
+      "Kenyan drama",
+      "Kenyan soap opera",
+      "Kenyan comedy",
+      "Kenyan news",
+      "Kenyan reality show"
+    ];
+    
+    const searchPromises = searchTerms.map(term => 
+      axios.get(`/search/tv?query=${encodeURIComponent(term)}&page=1`)
+    );
+    
+    const searchResults = await Promise.all(searchPromises);
+    
+    // Combine all results and filter for Kenyan content
+    const allResults = searchResults.flatMap(response => 
+      response.data.results || []
+    );
+    
+    // Remove duplicates and ensure media_type is set
+    const uniqueResults = allResults
+      .filter((item: any, index: number, self: any[]) => 
+        index === self.findIndex((t: any) => t.id === item.id)
+      )
+      .map((item: any) => ({ ...item, media_type: "tv" }));
+    
+    return uniqueResults;
+  } catch (error) {
+    console.error("Error fetching Kenyan TV shows:", error);
+    return [];
+  }
+};
+
+// Nigerian TV Shows and Nollywood content
+export const getNigerianTVShows = async (): Promise<Item[]> => {
+  try {
+    const searchTerms = [
+      "Nigerian TV series",
+      "Nollywood TV",
+      "Nigerian drama",
+      "Nigerian soap opera",
+      "Nigerian comedy",
+      "Nigerian reality show",
+      "Nigerian news"
+    ];
+    
+    const searchPromises = searchTerms.map(term => 
+      axios.get(`/search/tv?query=${encodeURIComponent(term)}&page=1`)
+    );
+    
+    const searchResults = await Promise.all(searchPromises);
+    
+    const allResults = searchResults.flatMap(response => 
+      response.data.results || []
+    );
+    
+    const uniqueResults = allResults
+      .filter((item: any, index: number, self: any[]) => 
+        index === self.findIndex((t: any) => t.id === item.id)
+      )
+      .map((item: any) => ({ ...item, media_type: "tv" }));
+    
+    return uniqueResults;
+  } catch (error) {
+    console.error("Error fetching Nigerian TV shows:", error);
     return [];
   }
 };
@@ -194,12 +304,22 @@ export const getSouthAfricanContent = async (): Promise<Item[]> => {
 export const getAsianContent = async (): Promise<Item[]> => {
   try {
     // Fetch Asian movies and TV shows including Southeast Asia
-    const response = await axios.get(
-      `/discover/movie?with_origin_country=KR&with_origin_country=JP&with_origin_country=CN&with_origin_country=IN&with_origin_country=PH&with_origin_country=TH&with_origin_country=VN&with_origin_country=MY&with_origin_country=SG&with_origin_country=ID&sort_by=popularity.desc&page=1`
-    );
-    const results = response.data.results || [];
-    // Ensure all items have media_type set to "movie"
-    return results.map((item: any) => ({ ...item, media_type: "movie" }));
+    const [movieResponse, tvResponse] = await Promise.all([
+      axios.get(
+        `/discover/movie?with_origin_country=KR&with_origin_country=JP&with_origin_country=CN&with_origin_country=IN&with_origin_country=PH&with_origin_country=TH&with_origin_country=VN&with_origin_country=MY&with_origin_country=SG&with_origin_country=ID&sort_by=popularity.desc&page=1`
+      ),
+      axios.get(
+        `/discover/tv?with_origin_country=KR&with_origin_country=JP&with_origin_country=CN&with_origin_country=IN&with_origin_country=PH&with_origin_country=TH&with_origin_country=VN&with_origin_country=MY&with_origin_country=SG&with_origin_country=ID&sort_by=popularity.desc&page=1`
+      )
+    ]);
+    
+    const movieResults = movieResponse.data.results || [];
+    const tvResults = tvResponse.data.results || [];
+    
+    const movies = movieResults.map((item: any) => ({ ...item, media_type: "movie" }));
+    const tvs = tvResults.map((item: any) => ({ ...item, media_type: "tv" }));
+    
+    return [...movies, ...tvs];
   } catch (error) {
     console.error("Error fetching Asian content:", error);
     return [];
@@ -209,11 +329,22 @@ export const getAsianContent = async (): Promise<Item[]> => {
 // Separate function for Southeast Asian content
 export const getSoutheastAsianContent = async (): Promise<Item[]> => {
   try {
-    const response = await axios.get(
-      `/discover/movie?with_origin_country=PH&with_origin_country=TH&with_origin_country=VN&with_origin_country=MY&with_origin_country=SG&with_origin_country=ID&sort_by=popularity.desc&page=1`
-    );
-    const results = response.data.results || [];
-    return results.map((item: any) => ({ ...item, media_type: "movie" }));
+    const [movieResponse, tvResponse] = await Promise.all([
+      axios.get(
+        `/discover/movie?with_origin_country=PH&with_origin_country=TH&with_origin_country=VN&with_origin_country=MY&with_origin_country=SG&with_origin_country=ID&sort_by=popularity.desc&page=1`
+      ),
+      axios.get(
+        `/discover/tv?with_origin_country=PH&with_origin_country=TH&with_origin_country=VN&with_origin_country=MY&with_origin_country=SG&with_origin_country=ID&sort_by=popularity.desc&page=1`
+      )
+    ]);
+    
+    const movieResults = movieResponse.data.results || [];
+    const tvResults = tvResponse.data.results || [];
+    
+    const movies = movieResults.map((item: any) => ({ ...item, media_type: "movie" }));
+    const tvs = tvResults.map((item: any) => ({ ...item, media_type: "tv" }));
+    
+    return [...movies, ...tvs];
   } catch (error) {
     console.error("Error fetching Southeast Asian content:", error);
     return [];
@@ -223,11 +354,22 @@ export const getSoutheastAsianContent = async (): Promise<Item[]> => {
 // Separate function for Filipino content
 export const getFilipinoContent = async (): Promise<Item[]> => {
   try {
-    const response = await axios.get(
-      `/discover/movie?with_origin_country=PH&sort_by=popularity.desc&page=1`
-    );
-    const results = response.data.results || [];
-    return results.map((item: any) => ({ ...item, media_type: "movie" }));
+    const [movieResponse, tvResponse] = await Promise.all([
+      axios.get(
+        `/discover/movie?with_origin_country=PH&sort_by=popularity.desc&page=1`
+      ),
+      axios.get(
+        `/discover/tv?with_origin_country=PH&sort_by=popularity.desc&page=1`
+      )
+    ]);
+    
+    const movieResults = movieResponse.data.results || [];
+    const tvResults = tvResponse.data.results || [];
+    
+    const movies = movieResults.map((item: any) => ({ ...item, media_type: "movie" }));
+    const tvs = tvResults.map((item: any) => ({ ...item, media_type: "tv" }));
+    
+    return [...movies, ...tvs];
   } catch (error) {
     console.error("Error fetching Filipino content:", error);
     return [];
@@ -237,12 +379,22 @@ export const getFilipinoContent = async (): Promise<Item[]> => {
 export const getLatinAmericanContent = async (): Promise<Item[]> => {
   try {
     // Fetch Latin American movies and TV shows including more countries
-    const response = await axios.get(
-      `/discover/movie?with_origin_country=MX&with_origin_country=BR&with_origin_country=AR&with_origin_country=CO&with_origin_country=PE&with_origin_country=CL&with_origin_country=VE&with_origin_country=EC&sort_by=popularity.desc&page=1`
-    );
-    const results = response.data.results || [];
-    // Ensure all items have media_type set to "movie"
-    return results.map((item: any) => ({ ...item, media_type: "movie" }));
+    const [movieResponse, tvResponse] = await Promise.all([
+      axios.get(
+        `/discover/movie?with_origin_country=MX&with_origin_country=BR&with_origin_country=AR&with_origin_country=CO&with_origin_country=PE&with_origin_country=CL&with_origin_country=VE&with_origin_country=EC&sort_by=popularity.desc&page=1`
+      ),
+      axios.get(
+        `/discover/tv?with_origin_country=MX&with_origin_country=BR&with_origin_country=AR&with_origin_country=CO&with_origin_country=PE&with_origin_country=CL&with_origin_country=VE&with_origin_country=EC&sort_by=popularity.desc&page=1`
+      )
+    ]);
+    
+    const movieResults = movieResponse.data.results || [];
+    const tvResults = tvResponse.data.results || [];
+    
+    const movies = movieResults.map((item: any) => ({ ...item, media_type: "movie" }));
+    const tvs = tvResults.map((item: any) => ({ ...item, media_type: "tv" }));
+    
+    return [...movies, ...tvs];
   } catch (error) {
     console.error("Error fetching Latin American content:", error);
     return [];
@@ -252,11 +404,22 @@ export const getLatinAmericanContent = async (): Promise<Item[]> => {
 // Separate function for Brazilian content
 export const getBrazilianContent = async (): Promise<Item[]> => {
   try {
-    const response = await axios.get(
-      `/discover/movie?with_origin_country=BR&sort_by=popularity.desc&page=1`
-    );
-    const results = response.data.results || [];
-    return results.map((item: any) => ({ ...item, media_type: "movie" }));
+    const [movieResponse, tvResponse] = await Promise.all([
+      axios.get(
+        `/discover/movie?with_origin_country=BR&sort_by=popularity.desc&page=1`
+      ),
+      axios.get(
+        `/discover/tv?with_origin_country=BR&sort_by=popularity.desc&page=1`
+      )
+    ]);
+    
+    const movieResults = movieResponse.data.results || [];
+    const tvResults = tvResponse.data.results || [];
+    
+    const movies = movieResults.map((item: any) => ({ ...item, media_type: "movie" }));
+    const tvs = tvResults.map((item: any) => ({ ...item, media_type: "tv" }));
+    
+    return [...movies, ...tvs];
   } catch (error) {
     console.error("Error fetching Brazilian content:", error);
     return [];
@@ -266,11 +429,22 @@ export const getBrazilianContent = async (): Promise<Item[]> => {
 // Separate function for Mexican content
 export const getMexicanContent = async (): Promise<Item[]> => {
   try {
-    const response = await axios.get(
-      `/discover/movie?with_origin_country=MX&sort_by=popularity.desc&page=1`
-    );
-    const results = response.data.results || [];
-    return results.map((item: any) => ({ ...item, media_type: "movie" }));
+    const [movieResponse, tvResponse] = await Promise.all([
+      axios.get(
+        `/discover/movie?with_origin_country=MX&sort_by=popularity.desc&page=1`
+      ),
+      axios.get(
+        `/discover/tv?with_origin_country=MX&sort_by=popularity.desc&page=1`
+      )
+    ]);
+    
+    const movieResults = movieResponse.data.results || [];
+    const tvResults = tvResponse.data.results || [];
+    
+    const movies = movieResults.map((item: any) => ({ ...item, media_type: "movie" }));
+    const tvs = tvResults.map((item: any) => ({ ...item, media_type: "tv" }));
+    
+    return [...movies, ...tvs];
   } catch (error) {
     console.error("Error fetching Mexican content:", error);
     return [];
@@ -280,12 +454,22 @@ export const getMexicanContent = async (): Promise<Item[]> => {
 export const getMiddleEasternContent = async (): Promise<Item[]> => {
   try {
     // Fetch Middle Eastern movies and TV shows
-    const response = await axios.get(
-      `/discover/movie?with_origin_country=TR&with_origin_country=EG&with_origin_country=SA&with_origin_country=AE&sort_by=popularity.desc&page=1`
-    );
-    const results = response.data.results || [];
-    // Ensure all items have media_type set to "movie"
-    return results.map((item: any) => ({ ...item, media_type: "movie" }));
+    const [movieResponse, tvResponse] = await Promise.all([
+      axios.get(
+        `/discover/movie?with_origin_country=TR&with_origin_country=EG&with_origin_country=SA&with_origin_country=AE&sort_by=popularity.desc&page=1`
+      ),
+      axios.get(
+        `/discover/tv?with_origin_country=TR&with_origin_country=EG&with_origin_country=SA&with_origin_country=AE&sort_by=popularity.desc&page=1`
+      )
+    ]);
+    
+    const movieResults = movieResponse.data.results || [];
+    const tvResults = tvResponse.data.results || [];
+    
+    const movies = movieResults.map((item: any) => ({ ...item, media_type: "movie" }));
+    const tvs = tvResults.map((item: any) => ({ ...item, media_type: "tv" }));
+    
+    return [...movies, ...tvs];
   } catch (error) {
     console.error("Error fetching Middle Eastern content:", error);
     return [];
@@ -294,13 +478,23 @@ export const getMiddleEasternContent = async (): Promise<Item[]> => {
 
 export const getNollywoodContent = async (): Promise<Item[]> => {
   try {
-    // Fetch Nigerian (Nollywood) content with better keywords
-    const response = await axios.get(
-      `/discover/movie?with_origin_country=NG&with_keywords=210024|210025|210026|210027|210028&sort_by=popularity.desc&page=1`
-    );
-    const results = response.data.results || [];
-    // Ensure all items have media_type set to "movie"
-    return results.map((item: any) => ({ ...item, media_type: "movie" }));
+    // Fetch Nigerian (Nollywood) content with better keywords and include TV shows
+    const [movieResponse, tvResponse] = await Promise.all([
+      axios.get(
+        `/discover/movie?with_origin_country=NG&with_keywords=210024|210025|210026|210027|210028&sort_by=popularity.desc&page=1`
+      ),
+      axios.get(
+        `/discover/tv?with_origin_country=NG&sort_by=popularity.desc&page=1`
+      )
+    ]);
+    
+    const movieResults = movieResponse.data.results || [];
+    const tvResults = tvResponse.data.results || [];
+    
+    const movies = movieResults.map((item: any) => ({ ...item, media_type: "movie" }));
+    const tvs = tvResults.map((item: any) => ({ ...item, media_type: "tv" }));
+    
+    return [...movies, ...tvs];
   } catch (error) {
     console.error("Error fetching Nollywood content:", error);
     return [];
@@ -309,13 +503,23 @@ export const getNollywoodContent = async (): Promise<Item[]> => {
 
 export const getBollywoodContent = async (): Promise<Item[]> => {
   try {
-    // Fetch Indian (Bollywood) content
-    const response = await axios.get(
-      `/discover/movie?with_origin_country=IN&with_keywords=210024|210025|210026&sort_by=popularity.desc&page=1`
-    );
-    const results = response.data.results || [];
-    // Ensure all items have media_type set to "movie"
-    return results.map((item: any) => ({ ...item, media_type: "movie" }));
+    // Fetch Indian (Bollywood) content including TV shows
+    const [movieResponse, tvResponse] = await Promise.all([
+      axios.get(
+        `/discover/movie?with_origin_country=IN&with_keywords=210024|210025|210026&sort_by=popularity.desc&page=1`
+      ),
+      axios.get(
+        `/discover/tv?with_origin_country=IN&sort_by=popularity.desc&page=1`
+      )
+    ]);
+    
+    const movieResults = movieResponse.data.results || [];
+    const tvResults = tvResponse.data.results || [];
+    
+    const movies = movieResults.map((item: any) => ({ ...item, media_type: "movie" }));
+    const tvs = tvResults.map((item: any) => ({ ...item, media_type: "tv" }));
+    
+    return [...movies, ...tvs];
   } catch (error) {
     console.error("Error fetching Bollywood content:", error);
     return [];
@@ -324,13 +528,23 @@ export const getBollywoodContent = async (): Promise<Item[]> => {
 
 export const getKoreanContent = async (): Promise<Item[]> => {
   try {
-    // Fetch Korean content
-    const response = await axios.get(
-      `/discover/movie?with_origin_country=KR&with_keywords=210024|210025|210026&sort_by=popularity.desc&page=1`
-    );
-    const results = response.data.results || [];
-    // Ensure all items have media_type set to "movie"
-    return results.map((item: any) => ({ ...item, media_type: "movie" }));
+    // Fetch Korean content including TV shows
+    const [movieResponse, tvResponse] = await Promise.all([
+      axios.get(
+        `/discover/movie?with_origin_country=KR&with_keywords=210024|210025|210026&sort_by=popularity.desc&page=1`
+      ),
+      axios.get(
+        `/discover/tv?with_origin_country=KR&sort_by=popularity.desc&page=1`
+      )
+    ]);
+    
+    const movieResults = movieResponse.data.results || [];
+    const tvResults = tvResponse.data.results || [];
+    
+    const movies = movieResults.map((item: any) => ({ ...item, media_type: "movie" }));
+    const tvs = tvResults.map((item: any) => ({ ...item, media_type: "tv" }));
+    
+    return [...movies, ...tvs];
   } catch (error) {
     console.error("Error fetching Korean content:", error);
     return [];
@@ -339,13 +553,23 @@ export const getKoreanContent = async (): Promise<Item[]> => {
 
 export const getJapaneseContent = async (): Promise<Item[]> => {
   try {
-    // Fetch Japanese content
-    const response = await axios.get(
-      `/discover/movie?with_origin_country=JP&with_keywords=210024|210025|210026&sort_by=popularity.desc&page=1`
-    );
-    const results = response.data.results || [];
-    // Ensure all items have media_type set to "movie"
-    return results.map((item: any) => ({ ...item, media_type: "movie" }));
+    // Fetch Japanese content including TV shows
+    const [movieResponse, tvResponse] = await Promise.all([
+      axios.get(
+        `/discover/movie?with_origin_country=JP&with_keywords=210024|210025|210026&sort_by=popularity.desc&page=1`
+      ),
+      axios.get(
+        `/discover/tv?with_origin_country=JP&sort_by=popularity.desc&page=1`
+      )
+    ]);
+    
+    const movieResults = movieResponse.data.results || [];
+    const tvResults = tvResponse.data.results || [];
+    
+    const movies = movieResults.map((item: any) => ({ ...item, media_type: "movie" }));
+    const tvs = tvResults.map((item: any) => ({ ...item, media_type: "tv" }));
+    
+    return [...movies, ...tvs];
   } catch (error) {
     console.error("Error fetching Japanese content:", error);
     return [];
@@ -354,15 +578,256 @@ export const getJapaneseContent = async (): Promise<Item[]> => {
 
 export const getChineseContent = async (): Promise<Item[]> => {
   try {
-    // Fetch Chinese content
-    const response = await axios.get(
-      `/discover/movie?with_origin_country=CN&with_keywords=210024|210025|210026&sort_by=popularity.desc&page=1`
-    );
-    const results = response.data.results || [];
-    // Ensure all items have media_type set to "movie"
-    return results.map((item: any) => ({ ...item, media_type: "movie" }));
+    // Fetch Chinese content including TV shows
+    const [movieResponse, tvResponse] = await Promise.all([
+      axios.get(
+        `/discover/movie?with_origin_country=CN&with_keywords=210024|210025|210026&sort_by=popularity.desc&page=1`
+      ),
+      axios.get(
+        `/discover/tv?with_origin_country=CN&sort_by=popularity.desc&page=1`
+      )
+    ]);
+    
+    const movieResults = movieResponse.data.results || [];
+    const tvResults = tvResponse.data.results || [];
+    
+    const movies = movieResults.map((item: any) => ({ ...item, media_type: "movie" }));
+    const tvs = tvResults.map((item: any) => ({ ...item, media_type: "tv" }));
+    
+    return [...movies, ...tvs];
   } catch (error) {
     console.error("Error fetching Chinese content:", error);
+    return [];
+  }
+};
+
+// Enhanced African TV content fetching with alternative methods
+export const getAfricanTVContent = async (): Promise<Item[]> => {
+  try {
+    // Since TMDB has limited African TV content, we'll use multiple search strategies
+    const searchTerms = [
+      // Kenyan TV shows
+      "Citizen TV",
+      "NTV Kenya", 
+      "KTN Kenya",
+      "Kenyan TV",
+      "Kenyan drama",
+      "Kenyan soap",
+      "Kenyan comedy",
+      // Nigerian TV shows
+      "Nigerian TV",
+      "Nollywood TV",
+      "Nigerian drama",
+      "Nigerian soap",
+      // South African TV shows
+      "South African TV",
+      "SABC",
+      "eTV",
+      "M-Net",
+      // Tanzanian TV shows
+      "Tanzanian TV",
+      "TBC",
+      "ITV Tanzania",
+      // Ugandan TV shows
+      "Ugandan TV",
+      "NTV Uganda",
+      "UBC",
+      // Ghanaian TV shows
+      "Ghanaian TV",
+      "GTV",
+      "TV3 Ghana",
+      // Ethiopian TV shows
+      "Ethiopian TV",
+      "ETV",
+      // Rwandan TV shows
+      "Rwandan TV",
+      "RTV",
+      // Zambian TV shows
+      "Zambian TV",
+      "ZNBC",
+      // General African content
+      "African TV series",
+      "African drama",
+      "African soap opera",
+      "African comedy",
+      "African reality show",
+      "African news",
+      "African documentary"
+    ];
+    
+    const searchPromises = searchTerms.map(term => 
+      axios.get(`/search/tv?query=${encodeURIComponent(term)}&page=1`)
+    );
+    
+    const searchResults = await Promise.all(searchPromises);
+    
+    // Combine all results and filter for African content
+    const allResults = searchResults.flatMap(response => 
+      response.data.results || []
+    );
+    
+    // Remove duplicates and ensure media_type is set
+    const uniqueResults = allResults
+      .filter((item: any, index: number, self: any[]) => 
+        index === self.findIndex((t: any) => t.id === item.id)
+      )
+      .map((item: any) => ({ ...item, media_type: "tv" }));
+    
+    return uniqueResults;
+  } catch (error) {
+    console.error("Error fetching African TV content:", error);
+    return [];
+  }
+};
+
+// Enhanced Nollywood content with better search terms
+export const getEnhancedNollywoodContent = async (): Promise<Item[]> => {
+  try {
+    const searchTerms = [
+      "Nollywood",
+      "Nigerian movie",
+      "Nigerian film",
+      "Nigerian cinema",
+      "Nigerian drama",
+      "Nigerian comedy",
+      "Nigerian action",
+      "Nigerian romance",
+      "Nigerian thriller",
+      "Nigerian horror",
+      "Nigerian family",
+      "Nigerian documentary",
+      "Lagos movie",
+      "Abuja movie",
+      "Nigerian TV series",
+      "Nigerian soap opera",
+      "Nigerian reality show",
+      "Nigerian news",
+      "Nigerian entertainment"
+    ];
+    
+    const [moviePromises, tvPromises] = await Promise.all([
+      searchTerms.map(term => 
+        axios.get(`/search/movie?query=${encodeURIComponent(term)}&page=1`)
+      ),
+      searchTerms.map(term => 
+        axios.get(`/search/tv?query=${encodeURIComponent(term)}&page=1`)
+      )
+    ]);
+    
+    const movieResults = await Promise.all(moviePromises);
+    const tvResults = await Promise.all(tvPromises);
+    
+    const allMovieResults = movieResults.flatMap(response => 
+      response.data.results || []
+    );
+    const allTVResults = tvResults.flatMap(response => 
+      response.data.results || []
+    );
+    
+    // Remove duplicates and set media_type
+    const uniqueMovieResults = allMovieResults
+      .filter((item: any, index: number, self: any[]) => 
+        index === self.findIndex((t: any) => t.id === item.id)
+      )
+      .map((item: any) => ({ ...item, media_type: "movie" }));
+    
+    const uniqueTVResults = allTVResults
+      .filter((item: any, index: number, self: any[]) => 
+        index === self.findIndex((t: any) => t.id === item.id)
+      )
+      .map((item: any) => ({ ...item, media_type: "tv" }));
+    
+    return [...uniqueMovieResults, ...uniqueTVResults];
+  } catch (error) {
+    console.error("Error fetching enhanced Nollywood content:", error);
+    return [];
+  }
+};
+
+// Enhanced Kenyan content with specific channel shows
+export const getEnhancedKenyanContent = async (): Promise<Item[]> => {
+  try {
+    const searchTerms = [
+      // Citizen TV shows
+      "Citizen TV",
+      "Citizen Digital",
+      "Nipashe",
+      "10 over 10",
+      "Power Breakfast",
+      "The Big Question",
+      "JKL",
+      "The Trend",
+      "Tuko Macho",
+      "Punchline",
+      // NTV Kenya shows
+      "NTV Kenya",
+      "NTV Tonight",
+      "Sidebar",
+      "The Property Show",
+      "NTV Wild",
+      "NTV This Morning",
+      "NTV News",
+      // KTN Kenya shows
+      "KTN Kenya",
+      "KTN News",
+      "KTN Home",
+      "KTN Farmers",
+      "KTN Business",
+      "KTN Sports",
+      // General Kenyan content
+      "Kenyan movie",
+      "Kenyan film",
+      "Kenyan drama",
+      "Kenyan comedy",
+      "Kenyan action",
+      "Kenyan romance",
+      "Kenyan thriller",
+      "Kenyan documentary",
+      "Kenyan TV series",
+      "Kenyan soap opera",
+      "Kenyan reality show",
+      "Kenyan news",
+      "Kenyan entertainment",
+      "Nairobi movie",
+      "Mombasa movie",
+      "Kisumu movie"
+    ];
+    
+    const [moviePromises, tvPromises] = await Promise.all([
+      searchTerms.map(term => 
+        axios.get(`/search/movie?query=${encodeURIComponent(term)}&page=1`)
+      ),
+      searchTerms.map(term => 
+        axios.get(`/search/tv?query=${encodeURIComponent(term)}&page=1`)
+      )
+    ]);
+    
+    const movieResults = await Promise.all(moviePromises);
+    const tvResults = await Promise.all(tvPromises);
+    
+    const allMovieResults = movieResults.flatMap(response => 
+      response.data.results || []
+    );
+    const allTVResults = tvResults.flatMap(response => 
+      response.data.results || []
+    );
+    
+    // Remove duplicates and set media_type
+    const uniqueMovieResults = allMovieResults
+      .filter((item: any, index: number, self: any[]) => 
+        index === self.findIndex((t: any) => t.id === item.id)
+      )
+      .map((item: any) => ({ ...item, media_type: "movie" }));
+    
+    const uniqueTVResults = allTVResults
+      .filter((item: any, index: number, self: any[]) => 
+        index === self.findIndex((t: any) => t.id === item.id)
+      )
+      .map((item: any) => ({ ...item, media_type: "tv" }));
+    
+    return [...uniqueMovieResults, ...uniqueTVResults];
+  } catch (error) {
+    console.error("Error fetching enhanced Kenyan content:", error);
     return [];
   }
 };

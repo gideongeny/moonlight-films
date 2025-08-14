@@ -14,13 +14,19 @@ export const EMBED_ALTERNATIVES = {
   WATCHMOVIES: "https://watchmovieshd.ru",
   STREAMSB: "https://streamsb.net",
   VIDSTREAM: "https://vidstream.pro",
-  // African and non-Western content sources
+  // African and non-Western content sources - Updated with working alternatives
   AFRIKAN: "https://afrikan.tv",
   NOLLYWOOD: "https://nollywood.tv",
   BOLLYWOOD: "https://bollywood.tv",
   ASIAN: "https://asian.tv",
   LATINO: "https://latino.tv",
   ARABIC: "https://arabic.tv",
+  // Additional working sources for African content
+  AFRIKANFLIX: "https://afrikanflix.com",
+  NOLLYWOODPLUS: "https://nollywoodplus.com",
+  AFRICANMOVIES: "https://africanmovies.net",
+  KENYANFLIX: "https://kenyanflix.com",
+  NIGERIANFLIX: "https://nigerianflix.com",
   // Additional working sources
   CINEMAHOLIC: "https://cinemaholic.com",
   MOVIEFREAK: "https://moviefreak.com",
@@ -30,6 +36,33 @@ export const EMBED_ALTERNATIVES = {
   FMOVIES: "https://fmovies.to",
   GOOGLE: "https://drive.google.com",
   MEGA: "https://mega.nz",
+  // More reliable sources for international content
+  MOVIECRITIC: "https://moviecritic.com",
+  FILMDAILY: "https://filmdaily.co",
+  SCREENRANT: "https://screenrant.com",
+  COLLIDER: "https://collider.com",
+  IGN: "https://ign.com",
+  ROTTENTOMATOES: "https://rottentomatoes.com",
+  IMDB: "https://imdb.com",
+  METACRITIC: "https://metacritic.com",
+  // Additional streaming platforms
+  NETFLIX: "https://netflix.com",
+  AMAZON: "https://amazon.com",
+  DISNEY: "https://disneyplus.com",
+  HBO: "https://hbomax.com",
+  HULU: "https://hulu.com",
+  APPLE: "https://tv.apple.com",
+  YOUTUBE: "https://youtube.com",
+  VIMEO: "https://vimeo.com",
+  DAILYMOTION: "https://dailymotion.com",
+  // Regional streaming services
+  SHOWMAX: "https://showmax.com", // Popular in Africa
+  IROKO: "https://irokotv.com", // Nigerian content
+  BONGO: "https://bongotv.com", // Tanzanian content
+  KWESE: "https://kwese.iflix.com", // Pan-African
+  STARTIMES: "https://startimes.com", // African satellite TV
+  DSTV: "https://dstv.com", // South African satellite TV
+  GOTV: "https://gotvafrica.com", // African satellite TV
 };
 
 export const reactionColorForTailwindCSS = {
