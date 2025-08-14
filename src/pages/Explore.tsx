@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import ExploreFilter from "../components/Explore/ExploreFilter";
 import ExploreResult from "../components/Explore/ExploreResult";
 import { useTMDBCollectionQuery } from "../hooks/useCollectionQuery";
@@ -54,6 +54,11 @@ const Explore = () => {
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-8">
+        {/* Back to home */}
+        <div className="mb-4">
+          <Link to="/" className="text-primary hover:underline">← Back to Home</Link>
+        </div>
+
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">
             {filters.region ? getRegionTitle(filters.region) : "Explore Movies & TV Shows"}

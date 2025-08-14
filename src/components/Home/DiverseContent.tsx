@@ -9,7 +9,13 @@ import {
   getBollywoodContent,
   getKoreanContent,
   getJapaneseContent,
-  getChineseContent
+  getChineseContent,
+  getEastAfricanContent,
+  getSouthAfricanContent,
+  getSoutheastAsianContent,
+  getFilipinoContent,
+  getBrazilianContent,
+  getMexicanContent
 } from '../../services/home';
 import SectionSlider from '../Slider/SectionSlider';
 import Skeleton from '../Common/Skeleton';
@@ -24,6 +30,12 @@ const DiverseContent: React.FC = () => {
   const [koreanContent, setKoreanContent] = useState<Item[]>([]);
   const [japaneseContent, setJapaneseContent] = useState<Item[]>([]);
   const [chineseContent, setChineseContent] = useState<Item[]>([]);
+  const [eastAfricanContent, setEastAfricanContent] = useState<Item[]>([]);
+  const [southAfricanContent, setSouthAfricanContent] = useState<Item[]>([]);
+  const [southeastAsianContent, setSoutheastAsianContent] = useState<Item[]>([]);
+  const [filipinoContent, setFilipinoContent] = useState<Item[]>([]);
+  const [brazilianContent, setBrazilianContent] = useState<Item[]>([]);
+  const [mexicanContent, setMexicanContent] = useState<Item[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -41,7 +53,13 @@ const DiverseContent: React.FC = () => {
           bollywood,
           korean,
           japanese,
-          chinese
+          chinese,
+          eastAfrican,
+          southAfrican,
+          southeastAsian,
+          filipino,
+          brazilian,
+          mexican
         ] = await Promise.all([
           getAfricanContent(),
           getAsianContent(),
@@ -51,7 +69,13 @@ const DiverseContent: React.FC = () => {
           getBollywoodContent(),
           getKoreanContent(),
           getJapaneseContent(),
-          getChineseContent()
+          getChineseContent(),
+          getEastAfricanContent(),
+          getSouthAfricanContent(),
+          getSoutheastAsianContent(),
+          getFilipinoContent(),
+          getBrazilianContent(),
+          getMexicanContent()
         ]);
 
         setAfricanContent(african);
@@ -63,6 +87,12 @@ const DiverseContent: React.FC = () => {
         setKoreanContent(korean);
         setJapaneseContent(japanese);
         setChineseContent(chinese);
+        setEastAfricanContent(eastAfrican);
+        setSouthAfricanContent(southAfrican);
+        setSoutheastAsianContent(southeastAsian);
+        setFilipinoContent(filipino);
+        setBrazilianContent(brazilian);
+        setMexicanContent(mexican);
         
       } catch (error) {
         console.error('Error fetching diverse content:', error);
@@ -102,7 +132,10 @@ const DiverseContent: React.FC = () => {
   const totalContent = africanContent.length + asianContent.length + 
     latinAmericanContent.length + middleEasternContent.length + 
     nollywoodContent.length + bollywoodContent.length + 
-    koreanContent.length + japaneseContent.length + chineseContent.length;
+    koreanContent.length + japaneseContent.length + chineseContent.length +
+    eastAfricanContent.length + southAfricanContent.length +
+    southeastAsianContent.length + filipinoContent.length +
+    brazilianContent.length + mexicanContent.length;
 
   if (totalContent === 0) {
     return (
@@ -141,6 +174,26 @@ const DiverseContent: React.FC = () => {
         />
       )}
 
+      {/* East African Content */}
+      {eastAfricanContent.length > 0 && (
+        <SectionSlider
+          title="🌍 East African Cinema (Kenya, Tanzania, Uganda, Ethiopia)"
+          films={eastAfricanContent}
+          limitNumber={8}
+          isLoading={false}
+        />
+      )}
+
+      {/* South African Content */}
+      {southAfricanContent.length > 0 && (
+        <SectionSlider
+          title="🇿🇦 South African Cinema"
+          films={southAfricanContent}
+          limitNumber={8}
+          isLoading={false}
+        />
+      )}
+
       {/* Nollywood Content */}
       {nollywoodContent.length > 0 && (
         <SectionSlider
@@ -156,6 +209,26 @@ const DiverseContent: React.FC = () => {
         <SectionSlider
           title="🌏 Asian Cinema"
           films={asianContent}
+          limitNumber={8}
+          isLoading={false}
+        />
+      )}
+
+      {/* Southeast Asian Content */}
+      {southeastAsianContent.length > 0 && (
+        <SectionSlider
+          title="🌏 Southeast Asian Cinema (Thailand, Vietnam, Malaysia, Singapore, Indonesia)"
+          films={southeastAsianContent}
+          limitNumber={8}
+          isLoading={false}
+        />
+      )}
+
+      {/* Filipino Content */}
+      {filipinoContent.length > 0 && (
+        <SectionSlider
+          title="🇵🇭 Filipino Cinema & TV Shows"
+          films={filipinoContent}
           limitNumber={8}
           isLoading={false}
         />
@@ -206,6 +279,26 @@ const DiverseContent: React.FC = () => {
         <SectionSlider
           title="🌎 Latin American Cinema"
           films={latinAmericanContent}
+          limitNumber={8}
+          isLoading={false}
+        />
+      )}
+
+      {/* Brazilian Content */}
+      {brazilianContent.length > 0 && (
+        <SectionSlider
+          title="🇧🇷 Brazilian Cinema & TV Shows"
+          films={brazilianContent}
+          limitNumber={8}
+          isLoading={false}
+        />
+      )}
+
+      {/* Mexican Content */}
+      {mexicanContent.length > 0 && (
+        <SectionSlider
+          title="🇲🇽 Mexican Cinema & TV Shows"
+          films={mexicanContent}
           limitNumber={8}
           isLoading={false}
         />

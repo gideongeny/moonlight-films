@@ -152,7 +152,7 @@ const FilmDetail: FC<FilmInfo> = ({ similar, videos, detail, ...others }) => {
               className="bg-cover bg-center bg-no-repeat md:h-[400px] h-[300px] rounded-bl-2xl relative"
             >
               <div className="bg-gradient-to-br from-transparent to-black/70 h-full rounded-bl-2xl">
-                <div className="flex flex-col md:flex-row bottom-[-85%] md:bottom-[-20%]  items-start tw-absolute-center-horizontal w-full max-w-[1000px]">
+                <div className="flex flex-col md:flex-row bottom-[-40%] md:bottom-[-20%]  items-start tw-absolute-center-horizontal w-full max-w-[1000px]">
                   {/* POSTER */}
                   <div className="flex gap-5 items-center">
                     <div className="shrink-0 w-[185px] ml-3 md:ml-0">
