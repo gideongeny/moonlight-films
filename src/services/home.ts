@@ -147,6 +147,29 @@ export const getTrendingNow = async (): Promise<Item[]> => {
   return (await axios.get("/trending/all/day?page=2")).data.results;
 };
 
+// Helpers to enhance sourcing by networks/companies
+const searchIds = async (
+  type: "network" | "company",
+  names: string[]
+): Promise<number[]> => {
+  try {
+    const endpoint = type === "network" ? "/search/network" : "/search/company";
+    const searches = await Promise.all(
+      names.map((name) => axios.get(`${endpoint}`, { params: { query: name, page: 1 } }))
+    );
+
+    const ids = searches
+      .flatMap((res) => (res.data.results || []))
+      .map((r: any) => r.id)
+      .filter((id: any) => typeof id === "number");
+
+    // Remove duplicates
+    return Array.from(new Set(ids));
+  } catch (e) {
+    return [];
+  }
+};
+
 // Add methods for diverse content
 export const getAfricanContent = async (): Promise<Item[]> => {
   try {
@@ -471,15 +494,27 @@ export const getFilipinoContent = async (): Promise<Item[]> => {
       .filter((i: any) => Array.isArray(i.origin_country) && i.origin_country.includes("PH"))
       .map((i: any) => ({ ...i, media_type: "tv" }));
 
-    // Keyword brand searches (fallback)
-    const brandTerms = ["ABS-CBN", "Kapamilya", "Star Cinema", "iWantTFC"];
-    const brandSearch = await Promise.all(
-      brandTerms.map((term) => axios.get(`/search/tv?query=${encodeURIComponent(term)}&page=1`))
-    );
-    const brandResults = brandSearch
-      .flatMap((res) => res.data.results || [])
-      .filter((i: any) => Array.isArray(i.origin_country) && i.origin_country.includes("PH"))
-      .map((i: any) => ({ ...i, media_type: "tv" }));
+    // Search ABS-CBN network/company IDs and query discover with them
+    const absNetworks = await searchIds("network", ["ABS-CBN", "Kapamilya", "Kapamilya Channel", "iWantTFC"]);
+    const absCompanies = await searchIds("company", ["ABS-CBN", "ABS-CBN Film Productions", "Star Cinema"]);
+    const networkParam = absNetworks.join("|");
+    const companyParam = absCompanies.join("|");
+    const [absTvByNetwork, absMoviesByCompany] = await Promise.all([
+      networkParam
+        ? axios.get(`/discover/tv`, {
+            params: { with_networks: networkParam, with_origin_country: "PH", page: 1, sort_by: "popularity.desc" },
+          })
+        : Promise.resolve({ data: { results: [] } } as any),
+      companyParam
+        ? axios.get(`/discover/movie`, {
+            params: { with_companies: companyParam, with_origin_country: "PH", page: 1, sort_by: "popularity.desc" },
+          })
+        : Promise.resolve({ data: { results: [] } } as any),
+    ]);
+    const brandResults = [
+      ...(absTvByNetwork.data.results || []).map((i: any) => ({ ...i, media_type: "tv" })),
+      ...(absMoviesByCompany.data.results || []).map((i: any) => ({ ...i, media_type: "movie" })),
+    ];
 
     const combined = [...discoverMovies, ...discoverTV, ...absCbnResults, ...brandResults]
       .filter((i: any) => i.poster_path);
@@ -593,23 +628,67 @@ export const getMiddleEasternContent = async (): Promise<Item[]> => {
 
 export const getNollywoodContent = async (): Promise<Item[]> => {
   try {
-    // Fetch Nigerian (Nollywood) content with better keywords and include TV shows
-    const [movieResponse, tvResponse] = await Promise.all([
-      axios.get(
-        `/discover/movie?with_origin_country=NG&with_keywords=210024|210025|210026|210027|210028&sort_by=popularity.desc&page=1`
-      ),
-      axios.get(
-        `/discover/tv?with_origin_country=NG&sort_by=popularity.desc&page=1`
+    // Fetch Nigerian (Nollywood) content via multiple strategies
+    const moviePages = await Promise.all(
+      [1, 2].map((page) =>
+        axios.get(`/discover/movie`, {
+          params: { with_origin_country: "NG", sort_by: "popularity.desc", page },
+        })
       )
+    );
+    const tvPages = await Promise.all(
+      [1, 2].map((page) =>
+        axios.get(`/discover/tv`, {
+          params: { with_origin_country: "NG", sort_by: "popularity.desc", page },
+        })
+      )
+    );
+
+    // Networks/companies likely associated with Nollywood (e.g., Africa Magic, Showmax, iROKO)
+    const ngNetworks = await searchIds("network", [
+      "Africa Magic",
+      "Showmax",
+      "Africa Magic Showcase",
+      "Africa Magic Urban",
+      "Africa Magic Family",
     ]);
+    const ngCompanies = await searchIds("company", [
+      "iROKO Partners",
+      "iROKOtv",
+      "FilmOne Entertainment",
+      "FilmOne Studios",
+      "EbonyLife Films",
+      "Ebonylife Studios",
+      "Inkblot Productions",
+    ]);
+
+    const [tvByNetwork, movieByCompany] = await Promise.all([
+      ngNetworks.length
+        ? axios.get(`/discover/tv`, {
+            params: { with_networks: ngNetworks.join("|"), with_origin_country: "NG", sort_by: "popularity.desc", page: 1 },
+          })
+        : Promise.resolve({ data: { results: [] } } as any),
+      ngCompanies.length
+        ? axios.get(`/discover/movie`, {
+            params: { with_companies: ngCompanies.join("|"), with_origin_country: "NG", sort_by: "popularity.desc", page: 1 },
+          })
+        : Promise.resolve({ data: { results: [] } } as any),
+    ]);
+
+    const movieResults = moviePages.flatMap((res) => res.data.results || []);
+    const tvResults = tvPages.flatMap((res) => res.data.results || []);
+    const tvFromNetwork = (tvByNetwork.data.results || []);
+    const moviesFromCompany = (movieByCompany.data.results || []);
+
+    const movies = [...movieResults, ...moviesFromCompany]
+      .filter((i: any) => i.poster_path)
+      .map((item: any) => ({ ...item, media_type: "movie" }));
+    const tvs = [...tvResults, ...tvFromNetwork]
+      .filter((i: any) => i.poster_path)
+      .map((item: any) => ({ ...item, media_type: "tv" }));
     
-    const movieResults = movieResponse.data.results || [];
-    const tvResults = tvResponse.data.results || [];
-    
-    const movies = movieResults.map((item: any) => ({ ...item, media_type: "movie" }));
-    const tvs = tvResults.map((item: any) => ({ ...item, media_type: "tv" }));
-    
-    return [...movies, ...tvs];
+    const combined = [...movies, ...tvs];
+    return combined.filter((item, idx, self) => idx === self.findIndex((t) => t.id === item.id));
   } catch (error) {
     console.error("Error fetching Nollywood content:", error);
     return [];
@@ -795,7 +874,26 @@ export const getAfricanTVContent = async (): Promise<Item[]> => {
       .filter((item: any, index: number, self: any[]) => index === self.findIndex((t: any) => t.id === item.id))
       .map((item: any) => ({ ...item, media_type: "tv" }));
 
-    return uniqueResults;
+    // Additionally pull platform-branded titles (Showmax/MTV/Viusasa) via search + network/company
+    const [platformNetworks, platformCompanies] = await Promise.all([
+      searchIds("network", ["Showmax", "MTV Africa"]),
+      searchIds("company", ["Viusasa"]),
+    ]);
+    const [platformTV, platformMovies] = await Promise.all([
+      platformNetworks.length
+        ? axios.get(`/discover/tv`, { params: { with_networks: platformNetworks.join("|"), page: 1 } })
+        : Promise.resolve({ data: { results: [] } } as any),
+      platformCompanies.length
+        ? axios.get(`/discover/movie`, { params: { with_companies: platformCompanies.join("|"), page: 1 } })
+        : Promise.resolve({ data: { results: [] } } as any),
+    ]);
+    const platformItems = [
+      ...(platformTV.data.results || []).map((i: any) => ({ ...i, media_type: "tv" })),
+      ...(platformMovies.data.results || []).map((i: any) => ({ ...i, media_type: "movie" })),
+    ].filter((i: any) => i.poster_path);
+
+    const merged = [...uniqueResults, ...platformItems];
+    return merged.filter((item, idx, self) => idx === self.findIndex((t) => t.id === item.id));
   } catch (error) {
     console.error("Error fetching African TV content:", error);
     return [];
