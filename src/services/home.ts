@@ -256,38 +256,66 @@ export const getSouthAfricanContent = async (): Promise<Item[]> => {
 // Kenyan TV Shows - Popular shows from major Kenyan channels
 export const getKenyanTVShows = async (): Promise<Item[]> => {
   try {
-    // Search for popular Kenyan TV shows and series
-    const searchTerms = [
-      "Citizen TV Kenya",
-      "NTV Kenya", 
-      "KTN Kenya",
-      "Kenyan TV series",
-      "Kenyan drama",
-      "Kenyan soap opera",
-      "Kenyan comedy",
-      "Kenyan news",
-      "Kenyan reality show"
+    const curatedTitles = [
+      "Maria",
+      "Zora",
+      "Sultana",
+      "Selina",
+      "Kina",
+      "Njoro wa Uba",
+      "Inspekta Mwala",
+      "Tahidi High",
+      "Papa Shirandula",
+      "Machachari",
+      "Mother-in-Law",
+      "Varshita",
+      "The Real Househelps of Kawangware",
+      "Hulla Baloo Estate",
+      "Crime and Justice",
+      "Pepeta",
+      "Single Kiasi",
+      "Country Queen"
     ];
-    
-    const searchPromises = searchTerms.map(term => 
-      axios.get(`/search/tv?query=${encodeURIComponent(term)}&page=1`)
+
+    const discoverKeTv = axios.get(`/discover/tv`, {
+      params: {
+        with_origin_country: "KE",
+        sort_by: "popularity.desc",
+        page: 1,
+      },
+    });
+
+    const searchPromises = curatedTitles.map((title) =>
+      axios.get(`/search/tv?query=${encodeURIComponent(title)}&page=1`)
     );
-    
-    const searchResults = await Promise.all(searchPromises);
-    
-    // Combine all results and filter for Kenyan content
-    const allResults = searchResults.flatMap(response => 
-      response.data.results || []
+
+    const [discoverResponse, ...searchResponses] = await Promise.all([
+      discoverKeTv,
+      ...searchPromises,
+    ]);
+
+    const discoverResults = (discoverResponse.data.results || []).map((i: any) => ({
+      ...i,
+      media_type: "tv",
+    }));
+
+    const searchedResultsRaw = searchResponses.flatMap((res) => res.data.results || []);
+
+    const curatedNameSet = new Set(curatedTitles.map((t) => t.toLowerCase()));
+    const searchedResults = searchedResultsRaw
+      .filter((item: any) => {
+        const isKenyan = Array.isArray(item.origin_country) && item.origin_country.includes("KE");
+        const matchesCurated = curatedNameSet.has((item.name || "").toLowerCase());
+        return isKenyan || matchesCurated;
+      })
+      .map((i: any) => ({ ...i, media_type: "tv" }));
+
+    const combined = [...discoverResults, ...searchedResults];
+    const unique = combined.filter(
+      (item, index, self) => index === self.findIndex((t) => t.id === item.id)
     );
-    
-    // Remove duplicates and ensure media_type is set
-    const uniqueResults = allResults
-      .filter((item: any, index: number, self: any[]) => 
-        index === self.findIndex((t: any) => t.id === item.id)
-      )
-      .map((item: any) => ({ ...item, media_type: "tv" }));
-    
-    return uniqueResults;
+
+    return unique;
   } catch (error) {
     console.error("Error fetching Kenyan TV shows:", error);
     return [];
@@ -776,85 +804,89 @@ export const getEnhancedNollywoodContent = async (): Promise<Item[]> => {
 // Enhanced Kenyan content with specific channel shows
 export const getEnhancedKenyanContent = async (): Promise<Item[]> => {
   try {
-    const searchTerms = [
-      // Citizen TV shows
-      "Citizen TV",
-      "Citizen Digital",
-      "Nipashe",
-      "10 over 10",
-      "Power Breakfast",
-      "The Big Question",
-      "JKL",
-      "The Trend",
-      "Tuko Macho",
-      "Punchline",
-      // NTV Kenya shows
-      "NTV Kenya",
-      "NTV Tonight",
-      "Sidebar",
-      "The Property Show",
-      "NTV Wild",
-      "NTV This Morning",
-      "NTV News",
-      // KTN Kenya shows
-      "KTN Kenya",
-      "KTN News",
-      "KTN Home",
-      "KTN Farmers",
-      "KTN Business",
-      "KTN Sports",
-      // General Kenyan content
-      "Kenyan movie",
-      "Kenyan film",
-      "Kenyan drama",
-      "Kenyan comedy",
-      "Kenyan action",
-      "Kenyan romance",
-      "Kenyan thriller",
-      "Kenyan documentary",
-      "Kenyan TV series",
-      "Kenyan soap opera",
-      "Kenyan reality show",
-      "Kenyan news",
-      "Kenyan entertainment",
-      "Nairobi movie",
-      "Mombasa movie",
-      "Kisumu movie"
+    const curatedTvTitles = [
+      "Maria",
+      "Zora",
+      "Sultana",
+      "Selina",
+      "Kina",
+      "Njoro wa Uba",
+      "Inspekta Mwala",
+      "Tahidi High",
+      "Papa Shirandula",
+      "Machachari",
+      "Mother-in-Law",
+      "Varshita",
+      "The Real Househelps of Kawangware",
+      "Hulla Baloo Estate",
+      "Crime and Justice",
+      "Pepeta",
+      "Single Kiasi",
+      "Country Queen"
     ];
-    
-    const [moviePromises, tvPromises] = await Promise.all([
-      searchTerms.map(term => 
-        axios.get(`/search/movie?query=${encodeURIComponent(term)}&page=1`)
-      ),
-      searchTerms.map(term => 
-        axios.get(`/search/tv?query=${encodeURIComponent(term)}&page=1`)
-      )
+
+    const curatedMovieTitles = [
+      "Rafiki",
+      "Nairobi Half Life",
+      "Kati Kati",
+      "Supa Modo",
+      "Disconnect",
+      "Plan B",
+      "18 Hours",
+      "Poacher",
+      "You Again"
+    ];
+
+    const discoverKeMovie = axios.get(`/discover/movie`, {
+      params: { with_origin_country: "KE", sort_by: "popularity.desc", page: 1 },
+    });
+    const discoverKeTv = axios.get(`/discover/tv`, {
+      params: { with_origin_country: "KE", sort_by: "popularity.desc", page: 1 },
+    });
+
+    const tvSearchPromises = curatedTvTitles.map((t) =>
+      axios.get(`/search/tv?query=${encodeURIComponent(t)}&page=1`)
+    );
+    const movieSearchPromises = curatedMovieTitles.map((t) =>
+      axios.get(`/search/movie?query=${encodeURIComponent(t)}&page=1`)
+    );
+
+    const [discMovieRes, discTvRes, tvSearchResList, movieSearchResList] = await Promise.all([
+      discoverKeMovie,
+      discoverKeTv,
+      Promise.all(tvSearchPromises),
+      Promise.all(movieSearchPromises),
     ]);
-    
-    const movieResults = await Promise.all(moviePromises);
-    const tvResults = await Promise.all(tvPromises);
-    
-    const allMovieResults = movieResults.flatMap(response => 
-      response.data.results || []
+
+    const discMovies = (discMovieRes.data.results || []).map((i: any) => ({ ...i, media_type: "movie" }));
+    const discTvs = (discTvRes.data.results || []).map((i: any) => ({ ...i, media_type: "tv" }));
+
+    const tvCuratedSet = new Set(curatedTvTitles.map((t) => t.toLowerCase()));
+    const movieCuratedSet = new Set(curatedMovieTitles.map((t) => t.toLowerCase()));
+
+    const searchedTvs = tvSearchResList
+      .flatMap((res) => res.data.results || [])
+      .filter((item: any) => {
+        const isKenyan = Array.isArray(item.origin_country) && item.origin_country.includes("KE");
+        const matchesCurated = tvCuratedSet.has((item.name || "").toLowerCase());
+        return isKenyan || matchesCurated;
+      })
+      .map((i: any) => ({ ...i, media_type: "tv" }));
+
+    const searchedMovies = movieSearchResList
+      .flatMap((res) => res.data.results || [])
+      .filter((item: any) => {
+        const matchesCurated = movieCuratedSet.has((item.title || item.original_title || "").toLowerCase());
+        return matchesCurated;
+      })
+      .map((i: any) => ({ ...i, media_type: "movie" }));
+
+    const combined = [...discMovies, ...discTvs, ...searchedTvs, ...searchedMovies];
+    const unique = combined.filter(
+      (item, index, self) => index === self.findIndex((t) => t.id === item.id)
     );
-    const allTVResults = tvResults.flatMap(response => 
-      response.data.results || []
-    );
-    
-    // Remove duplicates and set media_type
-    const uniqueMovieResults = allMovieResults
-      .filter((item: any, index: number, self: any[]) => 
-        index === self.findIndex((t: any) => t.id === item.id)
-      )
-      .map((item: any) => ({ ...item, media_type: "movie" }));
-    
-    const uniqueTVResults = allTVResults
-      .filter((item: any, index: number, self: any[]) => 
-        index === self.findIndex((t: any) => t.id === item.id)
-      )
-      .map((item: any) => ({ ...item, media_type: "tv" }));
-    
-    return [...uniqueMovieResults, ...uniqueTVResults];
+
+    return unique;
   } catch (error) {
     console.error("Error fetching enhanced Kenyan content:", error);
     return [];
