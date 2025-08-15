@@ -42,7 +42,7 @@ const DiverseNavigation: React.FC = () => {
     },
     {
       title: "🎬 Nollywood",
-      description: "Nigerian movies & TV shows",
+      description: "Movies from the Nollywood industry (Nigeria)",
       icon: <FaFilm className="text-2xl" />,
       path: "/explore?region=nollywood",
       color: "from-yellow-500 to-yellow-700"

@@ -77,38 +77,63 @@ export const useTMDBCollectionQuery = (
         // Add region filter
         if (region) {
           switch (region) {
-            case "africa":
-              url += `&with_origin_country=NG&with_origin_country=KE&with_origin_country=ZA&with_origin_country=EG`;
+            case "africa": {
+              // Broaden coverage and use pipe-delimited multi-country filter (TMDB expects a single param)
+              const africanCountries = [
+                "NG", // Nigeria
+                "KE", // Kenya
+                "TZ", // Tanzania
+                "UG", // Uganda
+                "ET", // Ethiopia
+                "RW", // Rwanda
+                "ZM", // Zambia
+                "GH", // Ghana
+                "ZA", // South Africa
+                "EG"  // Egypt
+              ].join("|");
+              url += `&with_origin_country=${africanCountries}`;
               break;
-            case "asia":
-              url += `&with_origin_country=KR&with_origin_country=JP&with_origin_country=CN&with_origin_country=IN`;
+            }
+            case "asia": {
+              const asianCountries = ["KR", "JP", "CN", "IN"].join("|");
+              url += `&with_origin_country=${asianCountries}`;
               break;
-            case "latin":
-              url += `&with_origin_country=MX&with_origin_country=BR&with_origin_country=AR&with_origin_country=CO`;
+            }
+            case "latin": {
+              const latinCountries = ["MX", "BR", "AR", "CO"].join("|");
+              url += `&with_origin_country=${latinCountries}`;
               break;
-            case "middleeast":
-              url += `&with_origin_country=TR&with_origin_country=EG&with_origin_country=SA&with_origin_country=AE`;
+            }
+            case "middleeast": {
+              const middleEastCountries = ["TR", "EG", "SA", "AE"].join("|");
+              url += `&with_origin_country=${middleEastCountries}`;
               break;
+            }
             case "nollywood":
-              url += `&with_origin_country=NG&with_keywords=210024|210025|210026`;
+              // Focus on Nigerian productions (industry-based wording will be handled in UI labels)
+              url += `&with_origin_country=NG`;
               break;
             case "bollywood":
-              url += `&with_origin_country=IN&with_keywords=210024|210025|210026`;
+              url += `&with_origin_country=IN`;
               break;
             case "korea":
-              url += `&with_origin_country=KR&with_keywords=210024|210025|210026`;
+              url += `&with_origin_country=KR`;
               break;
             case "japan":
-              url += `&with_origin_country=JP&with_keywords=210024|210025|210026`;
+              url += `&with_origin_country=JP`;
               break;
             case "china":
-              url += `&with_origin_country=CN&with_keywords=210024|210025|210026`;
+              url += `&with_origin_country=CN`;
               break;
           }
         }
 
         const response = await axios.get(url);
-        setData(response.data.results || []);
+        const results: Item[] = (response.data.results || []).map((item: any) => ({
+          ...item,
+          media_type: mediaType,
+        }));
+        setData(results);
       } catch (err) {
         console.error("Error fetching collection data:", err);
         setError(err instanceof Error ? err.message : "Failed to fetch data");
