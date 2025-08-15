@@ -146,6 +146,16 @@ const FilmListViewForBookmarkAndHistory: FunctionComponent<
         </button>
       </div>
 
+      {/* Desktop header with clickable logo for easy navigation */}
+      <div className="hidden md:flex items-center mb-6 px-5">
+        <Link to="/" className="flex gap-2 items-center">
+          <LazyLoadImage src="/logo.png" className="h-10 w-10 rounded-full object-cover" />
+          <p className="text-xl text-white font-medium tracking-wider uppercase">
+            Moon<span className="text-primary">light</span>
+          </p>
+        </Link>
+      </div>
+
       <div className="md:flex hidden gap-6 items-center absolute top-4 right-5">
         {/* <div className="w-6 h-6 rounded-full border border-gray-lighten tw-flex-center cursor-pointer">
                 <IoMdNotificationsOutline size={17} />

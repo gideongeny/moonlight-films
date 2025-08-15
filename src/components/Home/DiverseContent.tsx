@@ -204,7 +204,7 @@ const DiverseContent: React.FC = () => {
       {/* Enhanced Nollywood Content */}
       {enhancedNollywood.length > 0 && (
         <SectionSlider
-          title="🎬 Enhanced Nollywood (Nigerian Movies & TV Shows)"
+          title="🎬 Enhanced: Movies from the Nollywood industry (Nigeria)"
           films={enhancedNollywood}
           limitNumber={8}
           isLoading={false}
@@ -264,7 +264,7 @@ const DiverseContent: React.FC = () => {
       {/* Nollywood Content */}
       {nollywoodContent.length > 0 && (
         <SectionSlider
-          title="🎬 Nollywood (Nigerian Movies & TV Shows)"
+          title="🎬 Movies from the Nollywood industry (Nigeria)"
           films={nollywoodContent}
           limitNumber={8}
           isLoading={false}

@@ -150,23 +150,42 @@ export const getTrendingNow = async (): Promise<Item[]> => {
 // Add methods for diverse content
 export const getAfricanContent = async (): Promise<Item[]> => {
   try {
-    // Fetch African movies and TV shows from multiple regions
+    const africanCountries = [
+      "NG",
+      "KE",
+      "TZ",
+      "UG",
+      "ET",
+      "RW",
+      "ZM",
+      "GH",
+      "ZA",
+      "EG",
+    ].join("|");
+
     const [movieResponse, tvResponse] = await Promise.all([
-      axios.get(
-        `/discover/movie?with_origin_country=NG&with_origin_country=KE&with_origin_country=TZ&with_origin_country=UG&with_origin_country=ZA&with_origin_country=EG&with_origin_country=GH&with_origin_country=ET&with_origin_country=RW&with_origin_country=ZM&sort_by=popularity.desc&page=1`
-      ),
-      axios.get(
-        `/discover/tv?with_origin_country=NG&with_origin_country=KE&with_origin_country=TZ&with_origin_country=UG&with_origin_country=ZA&with_origin_country=EG&with_origin_country=GH&with_origin_country=ET&with_origin_country=RW&with_origin_country=ZM&sort_by=popularity.desc&page=1`
-      )
+      axios.get(`/discover/movie`, {
+        params: {
+          with_origin_country: africanCountries,
+          sort_by: "popularity.desc",
+          page: 1,
+        },
+      }),
+      axios.get(`/discover/tv`, {
+        params: {
+          with_origin_country: africanCountries,
+          sort_by: "popularity.desc",
+          page: 1,
+        },
+      }),
     ]);
-    
-    const movieResults = movieResponse.data.results || [];
-    const tvResults = tvResponse.data.results || [];
-    
-    // Combine and ensure all items have media_type set
+
+    const movieResults = (movieResponse.data.results || []).filter((i: any) => i.poster_path);
+    const tvResults = (tvResponse.data.results || []).filter((i: any) => i.poster_path);
+
     const movies = movieResults.map((item: any) => ({ ...item, media_type: "movie" }));
     const tvs = tvResults.map((item: any) => ({ ...item, media_type: "tv" }));
-    
+
     return [...movies, ...tvs];
   } catch (error) {
     console.error("Error fetching African content:", error);
@@ -177,21 +196,31 @@ export const getAfricanContent = async (): Promise<Item[]> => {
 // Separate function for East African content
 export const getEastAfricanContent = async (): Promise<Item[]> => {
   try {
+    const eastAfricanCountries = ["KE", "TZ", "UG", "ET", "RW", "ZM"].join("|");
+
     const [movieResponse, tvResponse] = await Promise.all([
-      axios.get(
-        `/discover/movie?with_origin_country=KE&with_origin_country=TZ&with_origin_country=UG&with_origin_country=ET&with_origin_country=RW&with_origin_country=ZM&sort_by=popularity.desc&page=1`
-      ),
-      axios.get(
-        `/discover/tv?with_origin_country=KE&with_origin_country=TZ&with_origin_country=UG&with_origin_country=ET&with_origin_country=RW&with_origin_country=ZM&sort_by=popularity.desc&page=1`
-      )
+      axios.get(`/discover/movie`, {
+        params: {
+          with_origin_country: eastAfricanCountries,
+          sort_by: "popularity.desc",
+          page: 1,
+        },
+      }),
+      axios.get(`/discover/tv`, {
+        params: {
+          with_origin_country: eastAfricanCountries,
+          sort_by: "popularity.desc",
+          page: 1,
+        },
+      }),
     ]);
-    
-    const movieResults = movieResponse.data.results || [];
-    const tvResults = tvResponse.data.results || [];
-    
+
+    const movieResults = (movieResponse.data.results || []).filter((i: any) => i.poster_path);
+    const tvResults = (tvResponse.data.results || []).filter((i: any) => i.poster_path);
+
     const movies = movieResults.map((item: any) => ({ ...item, media_type: "movie" }));
     const tvs = tvResults.map((item: any) => ({ ...item, media_type: "tv" }));
-    
+
     return [...movies, ...tvs];
   } catch (error) {
     console.error("Error fetching East African content:", error);
