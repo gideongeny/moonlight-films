@@ -54,6 +54,21 @@ const DiverseNavigation: React.FC = () => {
       path: "/explore?region=bollywood",
       color: "from-red-500 to-red-700"
     }
+    ,
+    {
+      title: "🇵🇭 Filipino",
+      description: "ABS-CBN, iWantTFC shows & films",
+      icon: <FaTv className="text-2xl" />,
+      path: "/explore?region=philippines",
+      color: "from-pink-500 to-pink-700"
+    },
+    {
+      title: "🇰🇪 Kenyan",
+      description: "Citizen, NTV, KTN, Showmax",
+      icon: <FaTv className="text-2xl" />,
+      path: "/explore?region=kenya",
+      color: "from-emerald-500 to-emerald-700"
+    }
   ];
 
   return (

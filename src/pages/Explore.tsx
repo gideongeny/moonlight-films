@@ -50,7 +50,9 @@ const Explore = () => {
       "bollywood": "🎭 Bollywood (Indian Movies)",
       "korea": "🇰🇷 Korean Drama & Movies",
       "japan": "🇯🇵 Japanese Anime & Movies",
-      "china": "🇨🇳 Chinese Cinema"
+      "china": "🇨🇳 Chinese Cinema",
+      "philippines": "🇵🇭 Filipino Movies & TV (ABS-CBN/iWantTFC)",
+      "kenya": "🇰🇪 Kenyan Movies & TV (Citizen, NTV, KTN, Showmax)"
     };
     return regionTitles[region] || "Explore Movies & TV Shows";
   };

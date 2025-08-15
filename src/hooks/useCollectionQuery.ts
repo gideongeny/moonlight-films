@@ -125,6 +125,12 @@ export const useTMDBCollectionQuery = (
             case "china":
               url += `&with_origin_country=CN`;
               break;
+            case "philippines":
+              url += `&with_origin_country=PH`;
+              break;
+            case "kenya":
+              url += `&with_origin_country=KE`;
+              break;
           }
         }
 

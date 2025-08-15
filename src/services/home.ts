@@ -163,30 +163,39 @@ export const getAfricanContent = async (): Promise<Item[]> => {
       "EG",
     ].join("|");
 
-    const [movieResponse, tvResponse] = await Promise.all([
-      axios.get(`/discover/movie`, {
-        params: {
-          with_origin_country: africanCountries,
-          sort_by: "popularity.desc",
-          page: 1,
-        },
-      }),
-      axios.get(`/discover/tv`, {
-        params: {
-          with_origin_country: africanCountries,
-          sort_by: "popularity.desc",
-          page: 1,
-        },
-      }),
-    ]);
+    // Fetch first 2 pages for broader coverage
+    const moviePages = await Promise.all(
+      [1, 2].map((page) =>
+        axios.get(`/discover/movie`, {
+          params: {
+            with_origin_country: africanCountries,
+            sort_by: "popularity.desc",
+            page,
+          },
+        })
+      )
+    );
+    const tvPages = await Promise.all(
+      [1, 2].map((page) =>
+        axios.get(`/discover/tv`, {
+          params: {
+            with_origin_country: africanCountries,
+            sort_by: "popularity.desc",
+            page,
+          },
+        })
+      )
+    );
 
-    const movieResults = (movieResponse.data.results || []).filter((i: any) => i.poster_path);
-    const tvResults = (tvResponse.data.results || []).filter((i: any) => i.poster_path);
+    const movieResults = moviePages.flatMap((res) => res.data.results || []).filter((i: any) => i.poster_path);
+    const tvResults = tvPages.flatMap((res) => res.data.results || []).filter((i: any) => i.poster_path);
 
     const movies = movieResults.map((item: any) => ({ ...item, media_type: "movie" }));
     const tvs = tvResults.map((item: any) => ({ ...item, media_type: "tv" }));
 
-    return [...movies, ...tvs];
+    // Dedupe
+    const combined = [...movies, ...tvs];
+    return combined.filter((item, idx, self) => idx === self.findIndex((t) => t.id === item.id));
   } catch (error) {
     console.error("Error fetching African content:", error);
     return [];
@@ -198,30 +207,37 @@ export const getEastAfricanContent = async (): Promise<Item[]> => {
   try {
     const eastAfricanCountries = ["KE", "TZ", "UG", "ET", "RW", "ZM"].join("|");
 
-    const [movieResponse, tvResponse] = await Promise.all([
-      axios.get(`/discover/movie`, {
-        params: {
-          with_origin_country: eastAfricanCountries,
-          sort_by: "popularity.desc",
-          page: 1,
-        },
-      }),
-      axios.get(`/discover/tv`, {
-        params: {
-          with_origin_country: eastAfricanCountries,
-          sort_by: "popularity.desc",
-          page: 1,
-        },
-      }),
-    ]);
+    const moviePages = await Promise.all(
+      [1, 2].map((page) =>
+        axios.get(`/discover/movie`, {
+          params: {
+            with_origin_country: eastAfricanCountries,
+            sort_by: "popularity.desc",
+            page,
+          },
+        })
+      )
+    );
+    const tvPages = await Promise.all(
+      [1, 2].map((page) =>
+        axios.get(`/discover/tv`, {
+          params: {
+            with_origin_country: eastAfricanCountries,
+            sort_by: "popularity.desc",
+            page,
+          },
+        })
+      )
+    );
 
-    const movieResults = (movieResponse.data.results || []).filter((i: any) => i.poster_path);
-    const tvResults = (tvResponse.data.results || []).filter((i: any) => i.poster_path);
+    const movieResults = moviePages.flatMap((res) => res.data.results || []).filter((i: any) => i.poster_path);
+    const tvResults = tvPages.flatMap((res) => res.data.results || []).filter((i: any) => i.poster_path);
 
     const movies = movieResults.map((item: any) => ({ ...item, media_type: "movie" }));
     const tvs = tvResults.map((item: any) => ({ ...item, media_type: "tv" }));
 
-    return [...movies, ...tvs];
+    const combined = [...movies, ...tvs];
+    return combined.filter((item, idx, self) => idx === self.findIndex((t) => t.id === item.id));
   } catch (error) {
     console.error("Error fetching East African content:", error);
     return [];
@@ -311,7 +327,9 @@ export const getKenyanTVShows = async (): Promise<Item[]> => {
       .map((i: any) => ({ ...i, media_type: "tv" }));
 
     const combined = [...discoverResults, ...searchedResults];
-    const unique = combined.filter(
+    const unique = combined
+      .filter((i: any) => i.poster_path)
+      .filter(
       (item, index, self) => index === self.findIndex((t) => t.id === item.id)
     );
 
@@ -411,22 +429,62 @@ export const getSoutheastAsianContent = async (): Promise<Item[]> => {
 // Separate function for Filipino content
 export const getFilipinoContent = async (): Promise<Item[]> => {
   try {
-    const [movieResponse, tvResponse] = await Promise.all([
-      axios.get(
-        `/discover/movie?with_origin_country=PH&sort_by=popularity.desc&page=1`
-      ),
-      axios.get(
-        `/discover/tv?with_origin_country=PH&sort_by=popularity.desc&page=1`
+    // Discover PH content, pages 1-2 for both movies and TV
+    const moviePages = await Promise.all(
+      [1, 2].map((page) =>
+        axios.get(`/discover/movie`, {
+          params: { with_origin_country: "PH", sort_by: "popularity.desc", page },
+        })
       )
-    ]);
-    
-    const movieResults = movieResponse.data.results || [];
-    const tvResults = tvResponse.data.results || [];
-    
-    const movies = movieResults.map((item: any) => ({ ...item, media_type: "movie" }));
-    const tvs = tvResults.map((item: any) => ({ ...item, media_type: "tv" }));
-    
-    return [...movies, ...tvs];
+    );
+    const tvPages = await Promise.all(
+      [1, 2].map((page) =>
+        axios.get(`/discover/tv`, {
+          params: { with_origin_country: "PH", sort_by: "popularity.desc", page },
+        })
+      )
+    );
+
+    const discoverMovies = moviePages.flatMap((res) => res.data.results || []).map((i: any) => ({ ...i, media_type: "movie" }));
+    const discoverTV = tvPages.flatMap((res) => res.data.results || []).map((i: any) => ({ ...i, media_type: "tv" }));
+
+    // Curated ABS-CBN titles (Kapamilya/iWantTFC)
+    const curatedAbsCbn = [
+      "FPJ's Ang Probinsyano",
+      "The Killer Bride",
+      "La Luna Sangre",
+      "Bagani",
+      "The General's Daughter",
+      "A Love to Last",
+      "2 Good 2 Be True",
+      "Pangako Sa 'Yo",
+      "On the Wings of Love",
+      "Got to Believe",
+      "He's Into Her",
+      "The Broken Marriage Vow"
+    ];
+    const absCbnSearch = await Promise.all(
+      curatedAbsCbn.map((t) => axios.get(`/search/tv?query=${encodeURIComponent(t)}&page=1`))
+    );
+    const absCbnResults = absCbnSearch
+      .flatMap((res) => res.data.results || [])
+      .filter((i: any) => Array.isArray(i.origin_country) && i.origin_country.includes("PH"))
+      .map((i: any) => ({ ...i, media_type: "tv" }));
+
+    // Keyword brand searches (fallback)
+    const brandTerms = ["ABS-CBN", "Kapamilya", "Star Cinema", "iWantTFC"];
+    const brandSearch = await Promise.all(
+      brandTerms.map((term) => axios.get(`/search/tv?query=${encodeURIComponent(term)}&page=1`))
+    );
+    const brandResults = brandSearch
+      .flatMap((res) => res.data.results || [])
+      .filter((i: any) => Array.isArray(i.origin_country) && i.origin_country.includes("PH"))
+      .map((i: any) => ({ ...i, media_type: "tv" }));
+
+    const combined = [...discoverMovies, ...discoverTV, ...absCbnResults, ...brandResults]
+      .filter((i: any) => i.poster_path);
+
+    return combined.filter((item, idx, self) => idx === self.findIndex((t) => t.id === item.id));
   } catch (error) {
     console.error("Error fetching Filipino content:", error);
     return [];
@@ -681,6 +739,12 @@ export const getAfricanTVContent = async (): Promise<Item[]> => {
       "SABC",
       "eTV",
       "M-Net",
+      // Pan-African platforms and brands
+      "Showmax",
+      "Showmax Original",
+      "MTV Africa",
+      "MTV Shuga",
+      "Viusasa",
       // Tanzanian TV shows
       "Tanzanian TV",
       "TBC",
@@ -717,19 +781,20 @@ export const getAfricanTVContent = async (): Promise<Item[]> => {
     );
     
     const searchResults = await Promise.all(searchPromises);
-    
-    // Combine all results and filter for African content
-    const allResults = searchResults.flatMap(response => 
-      response.data.results || []
-    );
-    
+
+    const africanCountrySet = new Set(["NG","KE","TZ","UG","ET","RW","ZM","GH","ZA","EG"]);
+    // Combine all results and filter for African content by origin country
+    const allResults = searchResults.flatMap(response => response.data.results || []);
+
+    const filtered = allResults
+      .filter((item: any) => Array.isArray(item.origin_country) && item.origin_country.some((c: string) => africanCountrySet.has(c)))
+      .filter((i: any) => i.poster_path);
+
     // Remove duplicates and ensure media_type is set
-    const uniqueResults = allResults
-      .filter((item: any, index: number, self: any[]) => 
-        index === self.findIndex((t: any) => t.id === item.id)
-      )
+    const uniqueResults = filtered
+      .filter((item: any, index: number, self: any[]) => index === self.findIndex((t: any) => t.id === item.id))
       .map((item: any) => ({ ...item, media_type: "tv" }));
-    
+
     return uniqueResults;
   } catch (error) {
     console.error("Error fetching African TV content:", error);
