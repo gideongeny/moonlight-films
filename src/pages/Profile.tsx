@@ -154,7 +154,7 @@ const Profile: FunctionComponent<ProfileProps> = () => {
 
   return (
     <>
-      <Title value="Profile | Moonlight" />
+      <Title value="Profile | StreamLux" />
 
       <ToastContainer />
 

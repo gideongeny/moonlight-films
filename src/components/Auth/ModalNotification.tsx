@@ -60,7 +60,7 @@ const ModalNotification: FunctionComponent<ModalNotificationProps> = ({
           {message}
           <br></br>
           {type === "error" && <span>Keep calm and try again.</span>}
-          {type === "success" && <span>Let's "Moonlight and chill".</span>}
+          {type === "success" && <span>Welcome to StreamLux!</span>}
         </p>
         <button
           onClick={() => {

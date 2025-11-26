@@ -31,8 +31,8 @@ const Search: FunctionComponent<SearchProps> = () => {
   ];
   return (
     <>
-      {!query && <Title value="Search | Moonlight" />}
-      {query && <Title value={`Search: ${query} | Moonlight`} />}
+      {!query && <Title value="Search | StreamLux" />}
+      {query && <Title value={`Search: ${query} | StreamLux`} />}
 
       <div className="flex md:hidden justify-between items-center px-5 my-5">
         <Link to="/" className="flex gap-2 items-center">

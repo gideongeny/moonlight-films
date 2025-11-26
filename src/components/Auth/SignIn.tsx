@@ -63,7 +63,7 @@ const SignIn: FunctionComponent<SignInProps> = ({ setIsShowSignInBox }) => {
         <div className="flex flex-col items-center mb-5">
           <div className="text-[50px] font-semibold mb-1 mx-auto">
             <div className="text-primary leading-none mb-4 text-center">
-              Sign In To Moonlight
+              Sign In To StreamLux
             </div>
           </div>
           <div className="flex gap-4 mb-8">

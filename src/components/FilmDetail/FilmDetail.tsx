@@ -109,7 +109,7 @@ const FilmDetail: FC<FilmInfo> = ({ similar, videos, detail, ...others }) => {
         <Title
           value={`${
             (detail as DetailMovie).title || (detail as DetailTV).name
-          } | Moonlight`}
+          } | StreamLux`}
         />
       )}
 

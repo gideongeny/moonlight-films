@@ -91,8 +91,8 @@ const Sidebar: FC<SidebarProps> = ({ isSidebarActive, onCloseSidebar }) => {
               className="w-10 h-10"
             />
             <h1 className="text-xl text-white tracking-widest font-semibold uppercase">
-              <span>Moon</span>
-              <span className="text-primary">light</span>
+              <span>Stream</span>
+              <span className="text-primary">Lux</span>
             </h1>
           </Link>
         )}
@@ -116,16 +116,15 @@ const Sidebar: FC<SidebarProps> = ({ isSidebarActive, onCloseSidebar }) => {
             <p>Home</p>
           </Link>
 
-          <Link
-            to="/sports"
-            className={`flex gap-6 items-center  ${
-              location.pathname.startsWith("/sports") &&
-              "!text-primary border-r-4 border-primary font-medium"
-            } hover:text-white transition duration-300`}
+          <a
+            href="https://sportslive.run/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex gap-6 items-center hover:text-white transition duration-300"
           >
             <MdSportsSoccer size={25} />
             <p>Sports</p>
-          </Link>
+          </a>
 
           <Link
             to="/explore"

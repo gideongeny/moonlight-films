@@ -45,8 +45,8 @@ const SportsWatch: FC = () => {
       <Title
         value={
           fixture
-            ? `Watch: ${fixture.homeTeam} vs ${fixture.awayTeam} | Moonlight Sports`
-            : "Match not found | Moonlight Sports"
+            ? `Watch: ${fixture.homeTeam} vs ${fixture.awayTeam} | StreamLux Sports`
+            : "Match not found | StreamLux Sports"
         }
       />
 
@@ -211,7 +211,7 @@ const SportsWatch: FC = () => {
                       <p className="text-gray-300">{fixture.extraInfo}</p>
                     )}
                     <p className="text-xs text-gray-500 pt-3">
-                      Moonlight only provides a clean interface and does not
+                      StreamLux only provides a clean interface and does not
                       host any streams directly. Please ensure you have the
                       right to watch this content in your region.
                     </p>

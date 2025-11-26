@@ -1,75 +1,117 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  FaGlobeAfrica, 
-  FaGlobeAsia, 
-  FaGlobeAmericas, 
-  FaGlobeEurope,
-  FaFilm,
-  FaTv,
-  FaStar
-} from 'react-icons/fa';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { IMAGE_URL } from '../../shared/constants';
+import axios from '../../shared/axios';
+import { Item } from '../../shared/types';
+
+interface NavigationItem {
+  title: string;
+  description: string;
+  path: string;
+  image?: string;
+  fallbackImage: string;
+  fetchQuery?: { region?: string; with_origin_country?: string; with_genres?: string };
+}
 
 const DiverseNavigation: React.FC = () => {
-  const navigationItems = [
-    {
-      title: "🌍 African Cinema",
-      description: "Nollywood, South African, Kenyan & more",
-      icon: <FaGlobeAfrica className="text-2xl" />,
-      path: "/explore?region=africa",
-      color: "from-green-500 to-green-700"
-    },
-    {
-      title: "🌏 Asian Cinema",
-      description: "Bollywood, Korean, Japanese, Chinese",
-      icon: <FaGlobeAsia className="text-2xl" />,
-      path: "/explore?region=asia",
-      color: "from-blue-500 to-blue-700"
-    },
-    {
-      title: "🌎 Latin American",
-      description: "Mexican, Brazilian, Argentine cinema",
-      icon: <FaGlobeAmericas className="text-2xl" />,
-      path: "/explore?region=latin",
-      color: "from-orange-500 to-orange-700"
-    },
-    {
-      title: "🕌 Middle Eastern",
-      description: "Turkish, Egyptian, Saudi cinema",
-      icon: <FaGlobeEurope className="text-2xl" />,
-      path: "/explore?region=middleeast",
-      color: "from-purple-500 to-purple-700"
-    },
-    {
-      title: "🎬 Nollywood",
-      description: "Movies from the Nollywood industry (Nigeria)",
-      icon: <FaFilm className="text-2xl" />,
-      path: "/explore?region=nollywood",
-      color: "from-yellow-500 to-yellow-700"
-    },
-    {
-      title: "🎭 Bollywood",
-      description: "Indian movies & TV shows",
-      icon: <FaTv className="text-2xl" />,
-      path: "/explore?region=bollywood",
-      color: "from-red-500 to-red-700"
-    }
-    ,
-    {
-      title: "🇵🇭 Filipino",
-      description: "ABS-CBN, iWantTFC shows & films",
-      icon: <FaTv className="text-2xl" />,
-      path: "/explore?region=philippines",
-      color: "from-pink-500 to-pink-700"
-    },
-    {
-      title: "🇰🇪 Kenyan",
-      description: "Citizen, NTV, KTN, Showmax",
-      icon: <FaTv className="text-2xl" />,
-      path: "/explore?region=kenya",
-      color: "from-emerald-500 to-emerald-700"
-    }
-  ];
+  const [navigationItems, setNavigationItems] = useState<NavigationItem[]>([]);
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      const baseItems: NavigationItem[] = [
+        {
+          title: "African Cinema",
+          description: "Nollywood, South African, Kenyan & more",
+          path: "/explore?region=africa",
+          fallbackImage: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop",
+          fetchQuery: { with_origin_country: "NG|ZA|KE|GH" }
+        },
+        {
+          title: "Asian Cinema",
+          description: "Bollywood, Korean, Japanese, Chinese",
+          path: "/explore?region=asia",
+          fallbackImage: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop",
+          fetchQuery: { with_origin_country: "IN|KR|JP|CN" }
+        },
+        {
+          title: "Latin American",
+          description: "Mexican, Brazilian, Argentine cinema",
+          path: "/explore?region=latin",
+          fallbackImage: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop",
+          fetchQuery: { with_origin_country: "MX|BR|AR" }
+        },
+        {
+          title: "Middle Eastern",
+          description: "Turkish, Egyptian, Saudi cinema",
+          path: "/explore?region=middleeast",
+          fallbackImage: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop",
+          fetchQuery: { with_origin_country: "TR|EG|SA" }
+        },
+        {
+          title: "Nollywood",
+          description: "Movies from the Nollywood industry (Nigeria)",
+          path: "/explore?region=nollywood",
+          fallbackImage: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop",
+          fetchQuery: { with_origin_country: "NG" }
+        },
+        {
+          title: "Bollywood",
+          description: "Indian movies & TV shows",
+          path: "/explore?region=bollywood",
+          fallbackImage: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop",
+          fetchQuery: { with_origin_country: "IN" }
+        },
+        {
+          title: "Filipino",
+          description: "ABS-CBN, iWantTFC shows & films",
+          path: "/explore?region=philippines",
+          fallbackImage: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop",
+          fetchQuery: { with_origin_country: "PH" }
+        },
+        {
+          title: "Kenyan",
+          description: "Citizen, NTV, KTN, Showmax",
+          path: "/explore?region=kenya",
+          fallbackImage: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop",
+          fetchQuery: { with_origin_country: "KE" }
+        }
+      ];
+
+      const updatedItems = await Promise.all(
+        baseItems.map(async (item) => {
+          if (!item.fetchQuery) return item;
+          
+          try {
+            const response = await axios.get('/discover/movie', {
+              params: {
+                ...item.fetchQuery,
+                sort_by: 'popularity.desc',
+                page: 1,
+                'vote_count.gte': 10
+              }
+            });
+            
+            const movies: Item[] = response.data.results || [];
+            if (movies.length > 0 && movies[0].backdrop_path) {
+              return {
+                ...item,
+                image: `${IMAGE_URL}/w1280${movies[0].backdrop_path}`
+              };
+            }
+          } catch (error) {
+            console.error(`Error fetching image for ${item.title}:`, error);
+          }
+          
+          return item;
+        })
+      );
+      
+      setNavigationItems(updatedItems);
+    };
+
+    fetchImages();
+  }, []); // Only run once on mount
 
   return (
     <div className="py-8">
@@ -83,36 +125,34 @@ const DiverseNavigation: React.FC = () => {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto px-4">
-        {navigationItems.map((item, index) => (
+        {navigationItems.map((item) => (
           <Link
-            key={index}
+            key={item.path}
             to={item.path}
             className="group block"
           >
-            <div className={`
-              bg-gradient-to-br ${item.color} 
-              p-6 rounded-xl text-white 
-              transform transition-all duration-300 
-              hover:scale-105 hover:shadow-2xl
-              border border-white/20
-            `}>
-              <div className="flex items-center gap-4 mb-4">
-                <div className="text-white/90">
-                  {item.icon}
-                </div>
-                <h3 className="text-xl font-bold">
+            <div className="relative h-48 rounded-xl overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-gray-700/50">
+              <LazyLoadImage
+                src={item.image}
+                alt={item.title}
+                className="absolute inset-0 w-full h-full object-cover"
+                effect="blur"
+                onError={(e: any) => {
+                  e.target.src = item.fallbackImage;
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/30"></div>
+              <div className="absolute inset-0 p-6 flex flex-col justify-end text-white">
+                <h3 className="text-xl font-bold mb-2">
                   {item.title}
                 </h3>
-              </div>
-              
-              <p className="text-white/80 text-sm leading-relaxed">
-                {item.description}
-              </p>
-              
-              <div className="mt-4 flex items-center gap-2 text-white/70 text-sm">
-                <FaStar className="text-yellow-300" />
-                <span>Explore Now</span>
-                <span className="ml-auto">→</span>
+                <p className="text-white/90 text-sm leading-relaxed mb-3">
+                  {item.description}
+                </p>
+                <div className="flex items-center gap-2 text-white/80 text-sm">
+                  <span>Explore Now</span>
+                  <span className="ml-auto group-hover:translate-x-1 transition-transform">→</span>
+                </div>
               </div>
             </div>
           </Link>
