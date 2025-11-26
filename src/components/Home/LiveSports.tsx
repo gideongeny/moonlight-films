@@ -68,9 +68,8 @@ const LiveSports: FC = () => {
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-2">
-                      {league?.flag && <span className="text-sm">{league.flag}</span>}
                       <span className="text-xs text-gray-400 uppercase">
-                        {league?.shortName || league?.name}
+                        {fixture.league}
                       </span>
                     </div>
                     <span className="inline-flex items-center px-2 py-1 rounded-full bg-red-600/20 text-red-400 text-[10px] font-semibold border border-red-500/60">
