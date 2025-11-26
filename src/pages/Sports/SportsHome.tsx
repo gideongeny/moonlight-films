@@ -169,6 +169,7 @@ const SportsHome: FC = () => {
                 {league.flag && <span>{league.flag}</span>}
                 <span>{league.shortName}</span>
               </button>
+              {/* Fixed: using league.flag instead of league.icon */}
             ))}
           </div>
 
