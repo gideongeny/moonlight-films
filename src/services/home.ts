@@ -995,12 +995,17 @@ export const getAfricanTVContent = async (): Promise<Item[]> => {
               page: 1,
             },
           }),
-        ]).catch(() => ({ data: { results: [] } }))
+        ]).catch(() => Promise.resolve({ data: { results: [] } } as any))
       )
     );
     
     const genreResults = genrePages
-      .flatMap((pages) => pages.flatMap((res: any) => res.data?.results || []))
+      .flatMap((pages: any) => {
+        if (Array.isArray(pages)) {
+          return pages.flatMap((res: any) => res.data?.results || []);
+        }
+        return [];
+      })
       .filter((i: any) => i.poster_path && i.vote_count > 0)
       .map((i: any) => ({ ...i, media_type: "tv" }));
 
