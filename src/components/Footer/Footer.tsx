@@ -1,4 +1,5 @@
 import { FunctionComponent } from "react";
+import { Link } from "react-router-dom";
 import { SiTiktok } from "react-icons/si";
 import { BsInstagram, BsWhatsapp, BsFacebook } from "react-icons/bs";
 
@@ -8,8 +9,10 @@ const Footer: FunctionComponent<FooterProps> = () => {
   return (
     <div className="bg-dark-lighten text-white flex justify-between items-center py-3 px-4 shadow-md mt-3">
       <p className="flex gap-2">
-        <span>Copyright _gideongeny</span>
-        <span className="hidden md:block"> &copy; 19/7/2022</span>
+        <Link to="/copyright" className="hover:text-primary transition duration-300">
+          <span>Copyright StreamLux</span>
+          <span className="hidden md:block"> &copy; {new Date().getFullYear()}</span>
+        </Link>
       </p>
       <div className="flex gap-3 items-center">
         <p className="hidden md:block">Contact me: </p>

@@ -127,6 +127,28 @@ const DiverseNavigation: React.FC = () => {
               }
               return null;
             },
+            // Source 4: Try popular movies
+            async () => {
+              const response = await axios.get('/movie/popular', {
+                params: { page: 1 }
+              });
+              const movies: Item[] = response.data.results || [];
+              if (movies.length > 0 && movies[0].backdrop_path) {
+                return `${IMAGE_URL}/w1280${movies[0].backdrop_path}`;
+              }
+              return null;
+            },
+            // Source 5: Try top rated
+            async () => {
+              const response = await axios.get('/movie/top_rated', {
+                params: { page: 1 }
+              });
+              const movies: Item[] = response.data.results || [];
+              if (movies.length > 0 && movies[0].backdrop_path) {
+                return `${IMAGE_URL}/w1280${movies[0].backdrop_path}`;
+              }
+              return null;
+            },
           ];
 
           for (const source of sources) {

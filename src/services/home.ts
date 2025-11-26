@@ -835,12 +835,13 @@ export const getAfricanTVContent = async (): Promise<Item[]> => {
 
     const discoverResults = discoverPages
       .flatMap((pages) => pages.flatMap((res) => res.data.results || []))
-      .filter((i: any) => i.poster_path)
-      .map((i: any) => ({ ...i, media_type: "tv" }));
+      .filter((i: any) => i.poster_path && i.vote_count > 0) // Filter out low-quality entries
+      .map((i: any) => ({ ...i, media_type: "tv" }))
+      .filter((item, idx, self) => idx === self.findIndex((t) => t.id === item.id)); // Remove duplicates early
 
-    // Strategy 2: Search with multiple terms
+    // Strategy 2: Search with multiple terms - Enhanced with more specific shows
     const searchTerms = [
-      // Kenyan TV shows
+      // Kenyan TV shows - Specific titles
       "Citizen TV",
       "NTV Kenya", 
       "KTN Kenya",
@@ -848,22 +849,60 @@ export const getAfricanTVContent = async (): Promise<Item[]> => {
       "Kenyan drama",
       "Kenyan soap",
       "Kenyan comedy",
-      // Nigerian TV shows
+      "Papa Shirandula",
+      "Machachari",
+      "Inspekta Mwala",
+      "The Real Househelps of Kawangware",
+      "Mother-in-Law",
+      "Sue na Jonnie",
+      "Nairobi Diaries",
+      "Tahidi High",
+      "The Wives",
+      // Nigerian TV shows - Specific titles
       "Nigerian TV",
       "Nollywood TV",
       "Nigerian drama",
       "Nigerian soap",
-      // South African TV shows
+      "Tinsel",
+      "Super Story",
+      "Checkmate",
+      "Fuji House of Commotion",
+      "Nigerian Idol",
+      "Big Brother Naija",
+      "The Voice Nigeria",
+      "Jenifa's Diary",
+      "The Johnsons",
+      "Hush",
+      "Skinny Girl in Transit",
+      "Anikulapo",
+      "King of Boys",
+      // South African TV shows - Specific titles
       "South African TV",
       "SABC",
       "eTV",
       "M-Net",
+      "Generations",
+      "Isidingo",
+      "7de Laan",
+      "Rhythm City",
+      "Scandal",
+      "The Queen",
+      "Uzalo",
+      "Muvhango",
+      "Skeem Saam",
+      "Imbewu",
+      "The River",
+      "House of Zwide",
       // Pan-African platforms and brands
       "Showmax",
       "Showmax Original",
       "MTV Africa",
       "MTV Shuga",
       "Viusasa",
+      "Blood & Water",
+      "Queen Sono",
+      "How to Ruin Christmas",
+      "The Girl from St. Agnes",
       // Tanzanian TV shows
       "Tanzanian TV",
       "TBC",
@@ -906,8 +945,20 @@ export const getAfricanTVContent = async (): Promise<Item[]> => {
     const allResults = searchResults.flatMap(response => response.data.results || []);
 
     const filtered = allResults
-      .filter((item: any) => Array.isArray(item.origin_country) && item.origin_country.some((c: string) => africanCountrySet.has(c)))
-      .filter((i: any) => i.poster_path);
+      .filter((item: any) => {
+        // Check if it's from an African country OR has African-related keywords in title/overview
+        const isAfricanCountry = Array.isArray(item.origin_country) && 
+          item.origin_country.some((c: string) => africanCountrySet.has(c));
+        const title = (item.name || item.title || "").toLowerCase();
+        const overview = (item.overview || "").toLowerCase();
+        const hasAfricanKeywords = [
+          "nigerian", "nollywood", "kenyan", "south african", "ghanaian",
+          "tanzanian", "ugandan", "ethiopian", "rwandan", "zambian",
+          "african", "lagos", "nairobi", "johannesburg", "accra", "dar es salaam"
+        ].some(keyword => title.includes(keyword) || overview.includes(keyword));
+        
+        return (isAfricanCountry || hasAfricanKeywords) && item.poster_path && item.vote_count > 0;
+      });
 
     // Remove duplicates and ensure media_type is set
     const uniqueResults = filtered
@@ -932,8 +983,35 @@ export const getAfricanTVContent = async (): Promise<Item[]> => {
       ...(platformMovies.data.results || []).map((i: any) => ({ ...i, media_type: "movie" })),
     ].filter((i: any) => i.poster_path);
 
-    const merged = [...uniqueResults, ...platformItems];
-    return merged.filter((item, idx, self) => idx === self.findIndex((t) => t.id === item.id));
+    // Strategy 3: Also get from discover with genre filters (Drama, Comedy, etc.)
+    const genrePages = await Promise.all(
+      [18, 35, 10751].map(genreId => // Drama, Comedy, Family
+        Promise.all([
+          axios.get(`/discover/tv`, {
+            params: {
+              with_genres: genreId,
+              with_origin_country: "NG|KE|ZA|GH|TZ|UG|ET|RW|ZM|EG",
+              sort_by: "popularity.desc",
+              page: 1,
+            },
+          }),
+        ]).catch(() => ({ data: { results: [] } }))
+      )
+    );
+    
+    const genreResults = genrePages
+      .flatMap((pages) => pages.flatMap((res: any) => res.data?.results || []))
+      .filter((i: any) => i.poster_path && i.vote_count > 0)
+      .map((i: any) => ({ ...i, media_type: "tv" }));
+
+    const merged = [...uniqueResults, ...platformItems, ...genreResults, ...discoverResults];
+    // Final deduplication and sort by popularity
+    const final = merged
+      .filter((item, idx, self) => idx === self.findIndex((t) => t.id === item.id))
+      .sort((a: any, b: any) => (b.popularity || 0) - (a.popularity || 0))
+      .slice(0, 50); // Limit to top 50 to avoid too many results
+    
+    return final;
   } catch (error) {
     console.error("Error fetching African TV content:", error);
     return [];

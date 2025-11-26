@@ -7,6 +7,7 @@ import { Analytics } from '@vercel/analytics/react';
 import Protected from "./components/Common/Protected";
 import Auth from "./pages/Auth";
 import Bookmarked from "./pages/Bookmarked";
+import Copyright from "./pages/Copyright";
 import Error from "./pages/Error";
 import Explore from "./pages/Explore";
 import History from "./pages/History";
@@ -120,6 +121,7 @@ function App() {
         <Route path="explore" element={<Explore />} />
         <Route path="search" element={<Search />} />
         <Route path="auth" element={<Auth />} />
+        <Route path="copyright" element={<Copyright />} />
         <Route
           path="bookmarked"
           element={
