@@ -13,6 +13,7 @@ import RecommendGenres from "../components/Home/RecommendGenres";
 import TrendingNow from "../components/Home/TrendingNow";
 import DiverseNavigation from "../components/Common/DiverseNavigation";
 import DiverseContent from "../components/Home/DiverseContent";
+import LiveSports from "../components/Home/LiveSports";
 import { useHomeData } from "../hooks/useHomeData";
 import { useAppSelector } from "../store/hooks";
 
@@ -35,6 +36,14 @@ const Home: FC = () => {
   ///////////////////////////////////////////////////////////////////////////////////
   // WAY 2: USE useLocalStorage from @uidotdev/usehooks
   const [currentTab, setCurrentTab] = useLocalStorage("currentTab", "tv");
+  
+  const handleTabChange = (tab: "movie" | "tv" | "sports") => {
+    if (tab === "sports") {
+      window.location.href = "/sports";
+      return;
+    }
+    setCurrentTab(tab);
+  };
 
   const {
     data: dataMovie,
@@ -95,12 +104,17 @@ const Home: FC = () => {
               <FilmTypeButton
                 buttonType="tv"
                 currentTab={currentTab}
-                onSetCurrentTab={setCurrentTab}
+                onSetCurrentTab={handleTabChange}
               />
               <FilmTypeButton
                 buttonType="movie"
                 currentTab={currentTab}
-                onSetCurrentTab={setCurrentTab}
+                onSetCurrentTab={handleTabChange}
+              />
+              <FilmTypeButton
+                buttonType="sports"
+                currentTab={currentTab}
+                onSetCurrentTab={handleTabChange}
               />
             </div>
             <div className="flex gap-6 items-center">
@@ -136,6 +150,9 @@ const Home: FC = () => {
             />
           )}
 
+          {/* Live & Upcoming Sports Section (MovieBox-style) */}
+          <LiveSports />
+
           {/* Discover World navigation (moved from sidebar) */}
           <DiverseNavigation />
 
@@ -157,15 +174,27 @@ const Home: FC = () => {
 };
 
 interface FilmTypeButtonProps {
-  onSetCurrentTab: (currentTab: string) => void;
+  onSetCurrentTab: (currentTab: "movie" | "tv" | "sports") => void;
   currentTab: string;
-  buttonType: "movie" | "tv";
+  buttonType: "movie" | "tv" | "sports";
 }
 const FilmTypeButton: FC<FilmTypeButtonProps> = ({
   onSetCurrentTab,
   currentTab,
   buttonType,
 }) => {
+  const getButtonText = () => {
+    if (buttonType === "movie") return "Movies";
+    if (buttonType === "tv") return "TV Show";
+    return "Sports";
+  };
+
+  const getAfterPosition = () => {
+    if (buttonType === "movie") return "after:right-[9%]";
+    if (buttonType === "tv") return "after:left-[13%]";
+    return "after:left-[45%]";
+  };
+
   return (
     <button
       onClick={() => {
@@ -173,12 +202,10 @@ const FilmTypeButton: FC<FilmTypeButtonProps> = ({
       }}
       className={`${
         currentTab === buttonType &&
-        `text-white font-medium after:absolute after:bottom-0 ${
-          buttonType === "movie" ? "after:right-[9%]" : "after:left-[13%]"
-        } after:bg-white after:h-[3px] after:w-5`
+        `text-white font-medium after:absolute after:bottom-0 ${getAfterPosition()} after:bg-white after:h-[3px] after:w-5`
       } transition duration-300 hover:text-white`}
     >
-      {buttonType === "movie" ? "Movies" : "TV Show"}
+      {getButtonText()}
     </button>
   );
 };
