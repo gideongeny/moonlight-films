@@ -43,15 +43,25 @@ export const calculateTimePassed = (time: number): string => {
 };
 
 export const convertErrorCodeToMessage = (errorCode: string): string => {
-  if (errorCode === "auth/email-already-in-use")
-    return "Your email is already in use.";
-  if (errorCode === "auth/user-not-found")
-    return "Your email may be incorrect.";
-  if (errorCode === "auth/wrong-password") return "Your password is incorrect.";
-  if (errorCode === "auth/invalid-email") return "Your email is invalid";
-  if (errorCode === "auth/too-many-requests")
-    return "You request too many times!";
-  return "Something weird happened.";
+  const errorMessages: { [key: string]: string } = {
+    "auth/email-already-in-use": "This email is already registered. Please sign in instead.",
+    "auth/user-not-found": "No account found with this email. Please check your email or sign up.",
+    "auth/wrong-password": "Incorrect password. Please try again.",
+    "auth/invalid-email": "Please enter a valid email address.",
+    "auth/too-many-requests": "Too many failed attempts. Please try again later.",
+    "auth/weak-password": "Password is too weak. Please use at least 6 characters.",
+    "auth/network-request-failed": "Network error. Please check your internet connection.",
+    "auth/popup-closed-by-user": "Sign-in popup was closed. Please try again.",
+    "auth/cancelled-popup-request": "Sign-in was cancelled. Please try again.",
+    "auth/popup-blocked": "Popup was blocked by your browser. Please allow popups and try again.",
+    "auth/account-exists-with-different-credential": "An account already exists with this email using a different sign-in method.",
+    "auth/operation-not-allowed": "This sign-in method is not enabled. Please contact support.",
+    "auth/user-disabled": "This account has been disabled. Please contact support.",
+    "auth/invalid-credential": "Invalid credentials. Please check your email and password.",
+    "auth/requires-recent-login": "Please sign out and sign in again to continue.",
+  };
+  
+  return errorMessages[errorCode] || `Authentication error: ${errorCode}. Please try again or contact support.`;
 };
 
 export const getRandomAvatar = (): string => {

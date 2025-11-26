@@ -12,6 +12,7 @@ import { RiLockPasswordLine } from "react-icons/ri";
 import { auth } from "../../shared/firebase";
 import { convertErrorCodeToMessage } from "../../shared/utils";
 import { useAppSelector } from "../../store/hooks";
+import { toast } from "react-toastify";
 import ModalNotification from "./ModalNotification";
 import { signInWithProvider } from "./signInWithProvider";
 
@@ -49,9 +50,21 @@ const SignIn: FunctionComponent<SignInProps> = ({ setIsShowSignInBox }) => {
     if (!email.trim() || !password.trim()) return;
 
     setIsLoading(true);
+    setError("");
     signInWithEmailAndPassword(auth, email, password)
+      .then(() => {
+        toast.success("Signed in successfully!", {
+          position: "top-right",
+          autoClose: 2000,
+        });
+      })
       .catch((error) => {
-        setError(convertErrorCodeToMessage(error.code));
+        const errorMessage = convertErrorCodeToMessage(error.code);
+        setError(errorMessage);
+        toast.error(errorMessage, {
+          position: "top-right",
+          autoClose: 4000,
+        });
       })
       .finally(() => setIsLoading(false));
   };
@@ -67,11 +80,23 @@ const SignIn: FunctionComponent<SignInProps> = ({ setIsShowSignInBox }) => {
         </div>
       )}
       {error && (
-        <ModalNotification
-          type="error"
-          message={error}
-          onCloseModal={() => setError("")}
-        />
+        <>
+          <ModalNotification
+            type="error"
+            message={error}
+            onCloseModal={() => setError("")}
+          />
+          <div className="fixed top-4 right-4 z-50 bg-red-600 text-white px-6 py-4 rounded-lg shadow-lg max-w-md">
+            <p className="font-semibold mb-1">Sign In Failed</p>
+            <p className="text-sm">{error}</p>
+            <button
+              onClick={() => setError("")}
+              className="mt-2 text-sm underline hover:no-underline"
+            >
+              Dismiss
+            </button>
+          </div>
+        </>
       )}
 
       <div className="px-4 py-2 rounded-xl max-w-xl w-full min-h-[500px] text-white/70 tw-absolute-center">
@@ -83,18 +108,38 @@ const SignIn: FunctionComponent<SignInProps> = ({ setIsShowSignInBox }) => {
           </div>
           <div className="flex gap-4 mb-8">
             <button
-              onClick={() =>
-                signInWithProvider(new GoogleAuthProvider(), "google")
-              }
-              className="h-12 w-12 rounded-full bg-white tw-flex-center hover:brightness-75 transition duration-300"
+              type="button"
+              onClick={async () => {
+                setIsLoading(true);
+                setError("");
+                try {
+                  await signInWithProvider(new GoogleAuthProvider(), "google");
+                } catch (err: any) {
+                  setError(err.message || "Failed to sign in with Google");
+                } finally {
+                  setIsLoading(false);
+                }
+              }}
+              disabled={isLoading}
+              className="h-12 w-12 rounded-full bg-white tw-flex-center hover:brightness-75 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <FcGoogle size={25} className="text-primary" />
             </button>
             <button
-              onClick={() =>
-                signInWithProvider(new FacebookAuthProvider(), "facebook")
-              }
-              className="h-12 w-12 rounded-full bg-white tw-flex-center hover:brightness-75 transition duration-300"
+              type="button"
+              onClick={async () => {
+                setIsLoading(true);
+                setError("");
+                try {
+                  await signInWithProvider(new FacebookAuthProvider(), "facebook");
+                } catch (err: any) {
+                  setError(err.message || "Failed to sign in with Facebook");
+                } finally {
+                  setIsLoading(false);
+                }
+              }}
+              disabled={isLoading}
+              className="h-12 w-12 rounded-full bg-white tw-flex-center hover:brightness-75 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <FaFacebookF size={25} className="text-primary" />
             </button>

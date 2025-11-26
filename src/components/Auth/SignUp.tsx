@@ -15,6 +15,7 @@ import * as Yup from "yup";
 import { auth, db } from "../../shared/firebase";
 import { convertErrorCodeToMessage, getRandomAvatar } from "../../shared/utils";
 import { useAppSelector } from "../../store/hooks";
+import { toast } from "react-toastify";
 import ModalNotification from "./ModalNotification";
 import { signInWithProvider } from "./signInWithProvider";
 interface SignUpProps {
@@ -29,6 +30,8 @@ const SignUp: FunctionComponent<SignUpProps> = ({ setIsShowSignInBox }) => {
   const signUpHandler = async (values: { [key: string]: string }) => {
     try {
       setIsLoading(true);
+      setError("");
+      
       const user = (
         await createUserWithEmailAndPassword(
           auth,
@@ -37,18 +40,30 @@ const SignUp: FunctionComponent<SignUpProps> = ({ setIsShowSignInBox }) => {
         )
       ).user;
 
-      setDoc(doc(db, "users", user.uid), {
+      await setDoc(doc(db, "users", user.uid), {
         firstName: values.firstName,
         lastName: values.lastName,
         photoUrl: getRandomAvatar(),
         bookmarks: [],
         recentlyWatch: [],
       });
-    } catch (error: any) {
-      setError(convertErrorCodeToMessage(error.code));
-    }
 
-    setIsLoading(false);
+      // Show success message
+      toast.success("Account created successfully!", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+    } catch (error: any) {
+      console.error("Sign up error:", error);
+      const errorMessage = convertErrorCodeToMessage(error.code) || error.message || "Failed to create account. Please try again.";
+      setError(errorMessage);
+      toast.error(errorMessage, {
+        position: "top-right",
+        autoClose: 4000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -59,14 +74,27 @@ const SignUp: FunctionComponent<SignUpProps> = ({ setIsShowSignInBox }) => {
       {isLoading && (
         <div className="z-10 tw-flex-center h-screen relative">
           <div className="w-28 h-28 border-[10px] rounded-full border-primary border-t-transparent animate-spin "></div>
+          <p className="absolute top-[60%] text-white text-lg">Creating your account...</p>
         </div>
       )}
       {error && (
-        <ModalNotification
-          type="error"
-          message={error}
-          onCloseModal={() => setError("")}
-        />
+        <>
+          <ModalNotification
+            type="error"
+            message={error}
+            onCloseModal={() => setError("")}
+          />
+          <div className="fixed top-4 right-4 z-50 bg-red-600 text-white px-6 py-4 rounded-lg shadow-lg max-w-md">
+            <p className="font-semibold mb-1">Sign Up Failed</p>
+            <p className="text-sm">{error}</p>
+            <button
+              onClick={() => setError("")}
+              className="mt-2 text-sm underline hover:no-underline"
+            >
+              Dismiss
+            </button>
+          </div>
+        </>
       )}
       <div className="px-4 py-2 rounded-xl max-w-xl w-full min-h-[500px] text-white/70 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2">
         <div className="flex flex-col items-center mb-5">
@@ -81,18 +109,38 @@ const SignUp: FunctionComponent<SignUpProps> = ({ setIsShowSignInBox }) => {
 
           <div className="flex gap-4 mb-8">
             <button
-              onClick={() =>
-                signInWithProvider(new GoogleAuthProvider(), "google")
-              }
-              className="h-12 w-12 rounded-full bg-white tw-flex-center hover:brightness-75 transition duration-300"
+              type="button"
+              onClick={async () => {
+                setIsLoading(true);
+                setError("");
+                try {
+                  await signInWithProvider(new GoogleAuthProvider(), "google");
+                } catch (err: any) {
+                  setError(err.message || "Failed to sign up with Google");
+                } finally {
+                  setIsLoading(false);
+                }
+              }}
+              disabled={isLoading}
+              className="h-12 w-12 rounded-full bg-white tw-flex-center hover:brightness-75 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <FcGoogle size={25} className="text-primary" />
             </button>
             <button
-              onClick={() =>
-                signInWithProvider(new FacebookAuthProvider(), "facebook")
-              }
-              className="h-12 w-12 rounded-full bg-white tw-flex-center hover:brightness-75 transition duration-300"
+              type="button"
+              onClick={async () => {
+                setIsLoading(true);
+                setError("");
+                try {
+                  await signInWithProvider(new FacebookAuthProvider(), "facebook");
+                } catch (err: any) {
+                  setError(err.message || "Failed to sign up with Facebook");
+                } finally {
+                  setIsLoading(false);
+                }
+              }}
+              disabled={isLoading}
+              className="h-12 w-12 rounded-full bg-white tw-flex-center hover:brightness-75 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <FaFacebookF size={25} className="text-primary" />
             </button>
