@@ -6,11 +6,12 @@ import { getSearchKeyword } from "../../services/search";
 
 interface SearchBoxProps {
   autoFocus?: boolean;
+  relative?: boolean;
 }
 
 let isInitial = true;
 
-const SearchBox: FC<SearchBoxProps> = ({ autoFocus = false }) => {
+const SearchBox: FC<SearchBoxProps> = ({ autoFocus = false, relative = false }) => {
   const [searchParams] = useSearchParams();
   const location = useLocation();
 
@@ -60,7 +61,7 @@ const SearchBox: FC<SearchBoxProps> = ({ autoFocus = false }) => {
 
   return (
     <div
-      className={`absolute z-30 shadow-md left-6 right-6 top-7 group bg-dark-lighten rounded-full ${
+      className={`${relative ? "relative" : "absolute z-30 left-6 right-6 top-7"} shadow-md group bg-dark-lighten rounded-full ${
         suggestions.length > 0 && "!rounded-3xl"
       }`}
     >

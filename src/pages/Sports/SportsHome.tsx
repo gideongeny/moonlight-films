@@ -84,8 +84,8 @@ const SportsHome: FC = () => {
           </div>
           
           {!isMobile && (
-            <div className="mb-6">
-              <SearchBox />
+            <div className="mb-6 max-w-md">
+              <SearchBox relative={true} />
             </div>
           )}
 

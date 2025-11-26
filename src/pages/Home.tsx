@@ -189,23 +189,21 @@ const FilmTypeButton: FC<FilmTypeButtonProps> = ({
     return "Sports";
   };
 
-  const getAfterPosition = () => {
-    if (buttonType === "movie") return "after:right-[9%]";
-    if (buttonType === "tv") return "after:left-[13%]";
-    return "after:left-[45%]";
-  };
+  const isActive = currentTab === buttonType;
 
   return (
     <button
       onClick={() => {
         onSetCurrentTab(buttonType);
       }}
-      className={`${
-        currentTab === buttonType &&
-        `text-white font-medium after:absolute after:bottom-0 ${getAfterPosition()} after:bg-white after:h-[3px] after:w-5`
-      } transition duration-300 hover:text-white`}
+      className={`relative transition duration-300 hover:text-white ${
+        isActive ? "text-white font-medium" : ""
+      }`}
     >
       {getButtonText()}
+      {isActive && (
+        <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-white" />
+      )}
     </button>
   );
 };
