@@ -37,10 +37,9 @@ const SidebarMini: FunctionComponent = () => {
 
       <div className="shrink-0 max-w-[80px] w-full py-8 flex flex-col items-center justify-between h-screen sticky top-0">
         <Link to="/">
-          <LazyLoadImage
-            alt="Logo"
-            src="/logo.png"
-            effect="opacity"
+          <img
+            alt="StreamLux Logo"
+            src="/logo.svg"
             className="w-10 h-10"
           />
         </Link>

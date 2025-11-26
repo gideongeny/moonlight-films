@@ -132,15 +132,26 @@ const DiverseNavigation: React.FC = () => {
             className="group block"
           >
             <div className="relative h-48 rounded-xl overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-gray-700/50">
-              <LazyLoadImage
-                src={item.image}
-                alt={item.title}
-                className="absolute inset-0 w-full h-full object-cover"
-                effect="blur"
-                onError={(e: any) => {
-                  e.target.src = item.fallbackImage;
-                }}
-              />
+              {item.image ? (
+                <LazyLoadImage
+                  src={item.image}
+                  alt={item.title}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  effect="blur"
+                  onError={(e: any) => {
+                    e.target.src = item.fallbackImage;
+                  }}
+                />
+              ) : (
+                <div 
+                  className="absolute inset-0 w-full h-full object-cover"
+                  style={{
+                    backgroundImage: `url(${item.fallbackImage})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center'
+                  }}
+                />
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/30"></div>
               <div className="absolute inset-0 p-6 flex flex-col justify-end text-white">
                 <h3 className="text-xl font-bold mb-2">

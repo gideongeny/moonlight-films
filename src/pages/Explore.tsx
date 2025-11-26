@@ -63,9 +63,9 @@ const Explore = () => {
         {/* Mobile header with clickable logo, consistent with other pages */}
         <div className="flex md:hidden justify-between items-center mb-5">
           <Link to="/" className="flex gap-2 items-center">
-            <LazyLoadImage src="/logo.png" className="h-10 w-10 rounded-full object-cover" />
+            <img src="/logo.svg" alt="StreamLux Logo" className="h-10 w-10" />
             <p className="text-xl text-white font-medium tracking-wider uppercase">
-              Moon<span className="text-primary">light</span>
+              Stream<span className="text-primary">Lux</span>
             </p>
           </Link>
           <button onClick={() => setIsSidebarActive((prev) => !prev)}>
@@ -81,9 +81,9 @@ const Explore = () => {
         {/* Desktop header with logo */}
         <div className="hidden md:flex items-center mb-6">
           <Link to="/" className="flex gap-2 items-center">
-            <LazyLoadImage src="/logo.png" className="h-10 w-10 rounded-full object-cover" />
+            <img src="/logo.svg" alt="StreamLux Logo" className="h-10 w-10" />
             <p className="text-xl text-white font-medium tracking-wider uppercase">
-              Moon<span className="text-primary">light</span>
+              Stream<span className="text-primary">Lux</span>
             </p>
           </Link>
         </div>

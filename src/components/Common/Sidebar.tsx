@@ -84,10 +84,9 @@ const Sidebar: FC<SidebarProps> = ({ isSidebarActive, onCloseSidebar }) => {
       >
         {!isMobile && (
           <Link to="/" className="flex items-center gap-3">
-            <LazyLoadImage
-              alt="Logo"
-              src="/logo.png"
-              effect="opacity"
+            <img
+              alt="StreamLux Logo"
+              src="/logo.svg"
               className="w-10 h-10"
             />
             <h1 className="text-xl text-white tracking-widest font-semibold uppercase">

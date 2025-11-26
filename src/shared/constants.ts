@@ -87,6 +87,9 @@ export interface SportsFixtureConfig {
   broadcast?: string[];
   streamSources?: string[];
   extraInfo?: string;
+  homeScore?: number;
+  awayScore?: number;
+  minute?: string;
 }
 
 export const SPORTS_LEAGUES: SportsLeagueConfig[] = [
@@ -198,13 +201,16 @@ export const SPORTS_FIXTURES: SportsFixtureConfig[] = [
     ],
     extraInfo:
       "Multi‑angle camera support recommended. For the best experience, use a stable broadband connection.",
+    homeScore: 2,
+    awayScore: 1,
+    minute: "67'",
   },
   {
     id: "epl-ars-che",
     leagueId: "epl",
     homeTeam: "Arsenal",
     awayTeam: "Chelsea",
-    status: "upcoming",
+    status: "live",
     kickoffTimeFormatted: "Saturday · 18:30 (Your local time)",
     venue: "Emirates Stadium, London",
     round: "Matchweek 12",
@@ -215,32 +221,41 @@ export const SPORTS_FIXTURES: SportsFixtureConfig[] = [
     ],
     extraInfo:
       "Stream will unlock 15 minutes before kick‑off once the broadcaster feed is configured.",
+    homeScore: 1,
+    awayScore: 0,
+    minute: "23'",
   },
   {
     id: "laliga-elclasico",
     leagueId: "laliga",
     homeTeam: "Barcelona",
     awayTeam: "Real Madrid",
-    status: "replay",
-    kickoffTimeFormatted: "Replay • Full 90'",
+    status: "live",
+    kickoffTimeFormatted: "Live Now",
     venue: "Spotify Camp Nou, Barcelona",
     round: "Matchweek 27",
     broadcast: ["LaLigaTV", "beIN Sports"],
     streamSources: ["https://sportslive.run/", "https://streamed.pk/"],
+    homeScore: 0,
+    awayScore: 2,
+    minute: "45'",
   },
   {
     id: "afcon-final",
     leagueId: "afcon",
     homeTeam: "Nigeria",
     awayTeam: "Senegal",
-    status: "replay",
-    kickoffTimeFormatted: "Replay • Extended highlights",
+    status: "live",
+    kickoffTimeFormatted: "Live Now",
     venue: "Abidjan, Côte d'Ivoire",
     round: "Final",
     broadcast: ["DStv SuperSport", "StarTimes"],
     streamSources: ["https://sportslive.run/", "https://streamed.pk/"],
     extraInfo:
       "Celebrating African football. Add your AFCON streams, highlights and analysis shows here.",
+    homeScore: 1,
+    awayScore: 1,
+    minute: "78'",
   },
   {
     id: "rugby-wc-final",
