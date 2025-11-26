@@ -45,18 +45,27 @@ export const getLiveFixtures = async (): Promise<LiveFixture[]> => {
     }
     
     if (allEvents.length > 0) {
-      const fixtures = allEvents.map((event: any) => ({
-        id: `live-${event.idEvent}`,
-        homeTeam: event.strHomeTeam || "Team A",
-        awayTeam: event.strAwayTeam || "Team B",
-        homeScore: event.intHomeScore ? parseInt(event.intHomeScore) : undefined,
-        awayScore: event.intAwayScore ? parseInt(event.intAwayScore) : undefined,
-        minute: event.strTime ? event.strTime : undefined,
-        status: event.strStatus === "Live" ? "live" : event.strStatus === "Finished" ? "finished" : "upcoming",
-        league: event.strLeague || "Premier League",
-        kickoffTime: event.strTimestamp || event.dateEvent,
-        venue: event.strVenue || "",
-      }));
+      const fixtures: LiveFixture[] = allEvents.map((event: any) => {
+        let status: "live" | "upcoming" | "finished" = "upcoming";
+        if (event.strStatus === "Live") {
+          status = "live";
+        } else if (event.strStatus === "Finished") {
+          status = "finished";
+        }
+        
+        return {
+          id: `live-${event.idEvent}`,
+          homeTeam: event.strHomeTeam || "Team A",
+          awayTeam: event.strAwayTeam || "Team B",
+          homeScore: event.intHomeScore ? parseInt(event.intHomeScore) : undefined,
+          awayScore: event.intAwayScore ? parseInt(event.intAwayScore) : undefined,
+          minute: event.strTime ? event.strTime : undefined,
+          status: status,
+          league: event.strLeague || "Premier League",
+          kickoffTime: event.strTimestamp || event.dateEvent,
+          venue: event.strVenue || "",
+        };
+      });
       
       // Return live games first, then upcoming
       const live = fixtures.filter(f => f.status === "live");
