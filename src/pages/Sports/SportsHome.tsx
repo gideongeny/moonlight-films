@@ -166,7 +166,7 @@ const SportsHome: FC = () => {
                     : "border-gray-700 text-gray-300 hover:border-gray-300"
                 }`}
               >
-                <span>{league.icon}</span>
+                {league.flag && <span>{league.flag}</span>}
                 <span>{league.shortName}</span>
               </button>
             ))}
