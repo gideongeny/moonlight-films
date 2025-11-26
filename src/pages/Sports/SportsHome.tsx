@@ -68,27 +68,26 @@ const SportsHome: FC = () => {
         )}
 
         <div className="flex-grow px-[2vw] md:pt-11 pt-0 pb-10">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-3">
-                <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-primary/20 text-primary">
-                  <MdSportsSoccer size={20} />
-                </span>
-                Live Football & Tournaments
-              </h1>
-              <p className="text-gray-400 mt-2 text-sm md:text-base max-w-2xl">
-                Stream EPL, UEFA Champions League, La Liga, Ligue&nbsp;1,
-                Serie&nbsp;A and AFCON-style tournaments. Times are shown in your
-                local timezone. Streams are provided by secure third‑party
-                partners you configure.
-              </p>
-            </div>
-            {!isMobile && (
-              <div className="w-full md:w-80">
-                <SearchBox />
-              </div>
-            )}
+          <div className="mb-6">
+            <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-3 mb-2">
+              <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-primary/20 text-primary">
+                <MdSportsSoccer size={20} />
+              </span>
+              Live Sports & Tournaments
+            </h1>
+            <p className="text-gray-400 text-sm md:text-base max-w-2xl">
+              Stream EPL, UEFA Champions League, La Liga, Ligue&nbsp;1,
+              Serie&nbsp;A, AFCON, Rugby, UFC, WWE and more. Times are shown in your
+              local timezone. Streams are provided by secure third‑party
+              partners you configure.
+            </p>
           </div>
+          
+          {!isMobile && (
+            <div className="mb-6">
+              <SearchBox />
+            </div>
+          )}
 
           <div className="flex flex-wrap gap-3 mb-6">
             <button
@@ -123,25 +122,28 @@ const SportsHome: FC = () => {
             </button>
           </div>
 
-          {/* Simple match tracker summary */}
+          {/* MovieBox-style match tracker summary */}
           <div className="grid grid-cols-3 gap-3 mb-6 text-xs md:text-sm">
-            <div className="rounded-lg border border-red-600/40 bg-red-600/10 px-3 py-2">
-              <p className="text-red-300 font-semibold">Live now</p>
-              <p className="text-white text-lg md:text-xl font-bold">
+            <div className="rounded-lg border border-red-600/40 bg-red-600/10 px-4 py-3">
+              <p className="text-red-300 font-semibold mb-1">Live</p>
+              <p className="text-white text-2xl md:text-3xl font-bold">
                 {liveCount}
               </p>
+              <p className="text-red-400/70 text-[10px] mt-1">matches now</p>
             </div>
-            <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2">
-              <p className="text-amber-200 font-semibold">Upcoming</p>
-              <p className="text-white text-lg md:text-xl font-bold">
+            <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3">
+              <p className="text-amber-200 font-semibold mb-1">Upcoming</p>
+              <p className="text-white text-2xl md:text-3xl font-bold">
                 {upcomingCount}
               </p>
+              <p className="text-amber-300/70 text-[10px] mt-1">scheduled</p>
             </div>
-            <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-2">
-              <p className="text-emerald-200 font-semibold">Replays</p>
-              <p className="text-white text-lg md:text-xl font-bold">
+            <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-4 py-3">
+              <p className="text-emerald-200 font-semibold mb-1">Replays</p>
+              <p className="text-white text-2xl md:text-3xl font-bold">
                 {replayCount}
               </p>
+              <p className="text-emerald-300/70 text-[10px] mt-1">available</p>
             </div>
           </div>
 

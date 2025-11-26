@@ -252,7 +252,10 @@ export const SPORTS_FIXTURES: SportsFixtureConfig[] = [
     venue: "Stade de France, Paris",
     round: "Final",
     broadcast: ["SuperSport Rugby", "ITV"],
-    streamSources: ["https://streamed.pk/"], // rugby category
+    streamSources: [
+      "https://sportslive.run/", // rugby matches
+      "https://streamed.pk/", // rugby category
+    ],
     extraInfo:
       "Rugby fans can enjoy full‑match replays and highlights here once streams are configured.",
   },
@@ -266,7 +269,10 @@ export const SPORTS_FIXTURES: SportsFixtureConfig[] = [
     venue: "Twickenham Stadium, London",
     round: "Round 3",
     broadcast: ["ITV", "SuperSport Rugby"],
-    streamSources: ["https://streamed.pk/"],
+    streamSources: [
+      "https://sportslive.run/", // rugby matches
+      "https://streamed.pk/", // rugby category
+    ],
   },
   {
     id: "ufc-ppv-main",
@@ -278,7 +284,10 @@ export const SPORTS_FIXTURES: SportsFixtureConfig[] = [
     venue: "T-Mobile Arena, Las Vegas",
     round: "Main Event",
     broadcast: ["ESPN+", "UFC Fight Pass"],
-    streamSources: ["https://streamed.pk/"], // fight/UFC section
+    streamSources: [
+      "https://sportslive.run/", // UFC/MMA events
+      "https://streamed.pk/", // fight/UFC section
+    ],
     extraInfo:
       "Add your official UFC Pay‑Per‑View or Fight Pass embeds here. Respect all regional and licensing restrictions.",
   },
@@ -292,7 +301,10 @@ export const SPORTS_FIXTURES: SportsFixtureConfig[] = [
     venue: "AT&T Stadium, Texas",
     round: "Main Event",
     broadcast: ["WWE Network", "Peacock"],
-    streamSources: ["https://streamed.pk/"],
+    streamSources: [
+      "https://sportslive.run/", // WWE events
+      "https://streamed.pk/", // wrestling section
+    ],
   },
   {
     id: "athletics-diamond-100m",
@@ -304,7 +316,10 @@ export const SPORTS_FIXTURES: SportsFixtureConfig[] = [
     venue: "Diamond League Meeting",
     round: "Final",
     broadcast: ["World Athletics", "SuperSport"],
-    streamSources: ["https://streamed.pk/"], // athletics/other
+    streamSources: [
+      "https://sportslive.run/", // athletics events
+      "https://streamed.pk/", // athletics/other
+    ],
     extraInfo:
       "Use this slot for live track & field, marathons or Diamond League meets with your official streams.",
   },
