@@ -814,9 +814,31 @@ export const getChineseContent = async (): Promise<Item[]> => {
 };
 
 // Enhanced African TV content fetching with alternative methods
+// Enhanced function to get more African TV content
 export const getAfricanTVContent = async (): Promise<Item[]> => {
   try {
-    // Since TMDB has limited African TV content, we'll use multiple search strategies
+    // Enhanced: Use multiple strategies to get more African TV content
+    // Strategy 1: Discover by country (multiple pages)
+    const discoverPages = await Promise.all(
+      [1, 2, 3].map((page) =>
+        Promise.all([
+          axios.get(`/discover/tv`, {
+            params: {
+              with_origin_country: "NG|KE|ZA|GH|TZ|UG|ET|RW|ZM|EG",
+              sort_by: "popularity.desc",
+              page,
+            },
+          }),
+        ])
+      )
+    );
+
+    const discoverResults = discoverPages
+      .flatMap((pages) => pages.flatMap((res) => res.data.results || []))
+      .filter((i: any) => i.poster_path)
+      .map((i: any) => ({ ...i, media_type: "tv" }));
+
+    // Strategy 2: Search with multiple terms
     const searchTerms = [
       // Kenyan TV shows
       "Citizen TV",

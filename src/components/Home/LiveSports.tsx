@@ -1,10 +1,34 @@
-import { FC } from "react";
-import { SPORTS_FIXTURES, SPORTS_LEAGUES } from "../../shared/constants";
+import { FC, useEffect, useState } from "react";
 import { MdSportsSoccer } from "react-icons/md";
+import { getLiveFixtures, getUpcomingFixtures, LiveFixture } from "../../services/sports";
 
 const LiveSports: FC = () => {
-  const liveMatches = SPORTS_FIXTURES.filter((f) => f.status === "live").slice(0, 6);
-  const upcomingMatches = SPORTS_FIXTURES.filter((f) => f.status === "upcoming").slice(0, 6);
+  const [liveMatches, setLiveMatches] = useState<LiveFixture[]>([]);
+  const [upcomingMatches, setUpcomingMatches] = useState<LiveFixture[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFixtures = async () => {
+      setIsLoading(true);
+      try {
+        const [live, upcoming] = await Promise.all([
+          getLiveFixtures(),
+          getUpcomingFixtures(),
+        ]);
+        setLiveMatches(live.filter(f => f.status === "live").slice(0, 6));
+        setUpcomingMatches(upcoming.slice(0, 6));
+      } catch (error) {
+        console.error("Error fetching fixtures:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFixtures();
+    // Refresh every 2 minutes
+    const interval = setInterval(fetchFixtures, 120000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleMatchClick = () => {
     window.open("https://sportslive.run/", "_blank");
@@ -36,7 +60,6 @@ const LiveSports: FC = () => {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {liveMatches.map((fixture) => {
-              const league = SPORTS_LEAGUES.find((l) => l.id === fixture.leagueId);
               return (
                 <button
                   key={fixture.id}
@@ -83,8 +106,14 @@ const LiveSports: FC = () => {
                     </div>
                   </div>
                   
-                  <p className="text-xs text-gray-400">{fixture.kickoffTimeFormatted}</p>
-                  <p className="text-xs text-gray-500 mt-1">{fixture.venue}</p>
+                  {fixture.kickoffTime && (
+                    <p className="text-xs text-gray-400">
+                      {new Date(fixture.kickoffTime).toLocaleString()}
+                    </p>
+                  )}
+                  {fixture.venue && (
+                    <p className="text-xs text-gray-500 mt-1">{fixture.venue}</p>
+                  )}
                   
                   <div className="mt-3 flex items-center gap-2 text-primary text-xs group-hover:text-primary/80 transition">
                     <MdSportsSoccer size={14} />
@@ -119,7 +148,6 @@ const LiveSports: FC = () => {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {upcomingMatches.map((fixture) => {
-              const league = SPORTS_LEAGUES.find((l) => l.id === fixture.leagueId);
               return (
                 <button
                   key={fixture.id}
@@ -128,9 +156,8 @@ const LiveSports: FC = () => {
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-2">
-                      {league?.flag && <span className="text-sm">{league.flag}</span>}
                       <span className="text-xs text-gray-400 uppercase">
-                        {league?.shortName || league?.name}
+                        {fixture.league}
                       </span>
                     </div>
                     <span className="inline-flex items-center px-2 py-1 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-semibold border border-amber-400/60">
@@ -150,8 +177,14 @@ const LiveSports: FC = () => {
                     <span className="text-xs text-gray-400">VS</span>
                   </div>
                   
-                  <p className="text-xs text-gray-400">{fixture.kickoffTimeFormatted}</p>
-                  <p className="text-xs text-gray-500 mt-1">{fixture.venue}</p>
+                  {fixture.kickoffTime && (
+                    <p className="text-xs text-gray-400">
+                      {new Date(fixture.kickoffTime).toLocaleString()}
+                    </p>
+                  )}
+                  {fixture.venue && (
+                    <p className="text-xs text-gray-500 mt-1">{fixture.venue}</p>
+                  )}
                   
                   <div className="mt-3 flex items-center gap-2 text-amber-400 text-xs group-hover:text-amber-300 transition">
                     <MdSportsSoccer size={14} />
@@ -165,7 +198,14 @@ const LiveSports: FC = () => {
         </div>
       )}
 
-      {liveMatches.length === 0 && upcomingMatches.length === 0 && (
+      {isLoading && (
+        <div className="text-center py-8">
+          <div className="inline-block h-8 w-8 rounded-full border-[3px] border-primary border-t-transparent animate-spin"></div>
+          <p className="text-gray-400 mt-4">Loading live fixtures...</p>
+        </div>
+      )}
+
+      {!isLoading && liveMatches.length === 0 && upcomingMatches.length === 0 && (
         <div className="rounded-lg bg-dark-lighten border border-gray-800 p-6 text-center">
           <p className="text-white text-lg mb-3">
             No live or upcoming matches at the moment

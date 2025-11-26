@@ -82,25 +82,62 @@ const DiverseNavigation: React.FC = () => {
         baseItems.map(async (item) => {
           if (!item.fetchQuery) return item;
           
-          try {
-            const response = await axios.get('/discover/movie', {
-              params: {
-                ...item.fetchQuery,
-                sort_by: 'popularity.desc',
-                page: 1,
-                'vote_count.gte': 10
+          // Try multiple sources with fallbacks
+          const sources = [
+            // Source 1: Primary TMDB discover
+            async () => {
+              const response = await axios.get('/discover/movie', {
+                params: {
+                  ...item.fetchQuery,
+                  sort_by: 'popularity.desc',
+                  page: 1,
+                  'vote_count.gte': 10
+                }
+              });
+              const movies: Item[] = response.data.results || [];
+              if (movies.length > 0 && movies[0].backdrop_path) {
+                return `${IMAGE_URL}/w1280${movies[0].backdrop_path}`;
               }
-            });
-            
-            const movies: Item[] = response.data.results || [];
-            if (movies.length > 0 && movies[0].backdrop_path) {
-              return {
-                ...item,
-                image: `${IMAGE_URL}/w1280${movies[0].backdrop_path}`
-              };
+              return null;
+            },
+            // Source 2: Try page 2
+            async () => {
+              const response = await axios.get('/discover/movie', {
+                params: {
+                  ...item.fetchQuery,
+                  sort_by: 'popularity.desc',
+                  page: 2,
+                  'vote_count.gte': 5
+                }
+              });
+              const movies: Item[] = response.data.results || [];
+              if (movies.length > 0 && movies[0].backdrop_path) {
+                return `${IMAGE_URL}/w1280${movies[0].backdrop_path}`;
+              }
+              return null;
+            },
+            // Source 3: Try trending
+            async () => {
+              const response = await axios.get('/trending/movie/day', {
+                params: { page: 1 }
+              });
+              const movies: Item[] = response.data.results || [];
+              if (movies.length > 0 && movies[0].backdrop_path) {
+                return `${IMAGE_URL}/w1280${movies[0].backdrop_path}`;
+              }
+              return null;
+            },
+          ];
+
+          for (const source of sources) {
+            try {
+              const imageUrl = await source();
+              if (imageUrl) {
+                return { ...item, image: imageUrl };
+              }
+            } catch (error) {
+              // Continue to next source
             }
-          } catch (error) {
-            console.error(`Error fetching image for ${item.title}:`, error);
           }
           
           return item;

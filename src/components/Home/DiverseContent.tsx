@@ -212,13 +212,45 @@ const DiverseContent: React.FC = () => {
     return origin.includes("TH") && genres.includes(18);
   });
 
-  const mustWatchBlackShows = africanTVContent.filter(
-    (item) => item.media_type === "tv"
-  );
+  // Combine multiple sources for Must-watch Black Shows
+  const mustWatchBlackShows = [
+    ...africanTVContent.filter((item) => item.media_type === "tv"),
+    ...nigerianTVShows.filter((item) => item.media_type === "tv"),
+    ...kenyanTVShows.filter((item) => item.media_type === "tv"),
+    ...enhancedKenyan.filter((item) => item.media_type === "tv"),
+  ]
+    .filter((item, index, self) => 
+      index === self.findIndex((t) => t.id === item.id)
+    )
+    .slice(0, 20);
 
-  const mustWatchBlackMovies = africanContent.filter(
-    (item) => item.media_type === "movie"
-  );
+  // Combine multiple sources for Must-watch Black Movies
+  const mustWatchBlackMovies = [
+    ...africanContent.filter((item) => item.media_type === "movie"),
+    ...enhancedNollywood.filter((item) => item.media_type === "movie"),
+    ...eastAfricanContent.filter((item) => item.media_type === "movie"),
+    ...southAfricanContent.filter((item) => item.media_type === "movie"),
+  ]
+    .filter((item, index, self) => 
+      index === self.findIndex((t) => t.id === item.id)
+    )
+    .slice(0, 20);
+
+  // Enhanced African Cinema & TV Shows - combine all African sources
+  const enhancedAfricanCinema = [
+    ...africanContent,
+    ...enhancedNollywood,
+    ...enhancedKenyan,
+    ...eastAfricanContent,
+    ...southAfricanContent,
+    ...africanTVContent,
+    ...nigerianTVShows,
+    ...kenyanTVShows,
+  ]
+    .filter((item, index, self) => 
+      index === self.findIndex((t) => t.id === item.id)
+    )
+    .slice(0, 20);
   return (
     <div className="space-y-8 mt-8">
       <div className="text-center mb-8">
@@ -270,11 +302,21 @@ const DiverseContent: React.FC = () => {
         />
       )}
       {/* Enhanced African Content */}
-      {africanContent.length > 0 && (
+      {enhancedAfricanCinema.length > 0 && (
         <SectionSlider
           title="🌍 African Cinema & TV Shows"
-          films={africanContent}
-          limitNumber={8}
+          films={enhancedAfricanCinema}
+          limitNumber={10}
+          isLoading={false}
+        />
+      )}
+
+      {/* African TV Shows & Series */}
+      {mustWatchBlackShows.length > 0 && (
+        <SectionSlider
+          title="📺 African TV Shows & Series"
+          films={mustWatchBlackShows}
+          limitNumber={10}
           isLoading={false}
         />
       )}
