@@ -3,7 +3,8 @@ import {
   GoogleAuthProvider,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { FormEvent, FunctionComponent, useRef, useState } from "react";
+import { FormEvent, FunctionComponent, useEffect, useRef, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { AiOutlineMail } from "react-icons/ai";
 import { FaFacebookF } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
@@ -24,6 +25,20 @@ const SignIn: FunctionComponent<SignInProps> = ({ setIsShowSignInBox }) => {
   const currentUser = useAppSelector((state) => state.auth.user);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirect = searchParams.get("redirect");
+  
+  // Redirect after successful sign in
+  useEffect(() => {
+    if (currentUser) {
+      if (redirect) {
+        navigate(redirect, { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
+    }
+  }, [currentUser, navigate, redirect]);
 
   const signInHandler = (e: FormEvent) => {
     e.preventDefault();

@@ -1,4 +1,5 @@
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import SignIn from "../components/Auth/SignIn";
 import SignUp from "../components/Auth/SignUp";
 import Title from "../components/Common/Title";
@@ -7,8 +8,17 @@ import { useCurrentViewportView } from "../hooks/useCurrentViewportView";
 interface AuthProps {}
 
 const Auth: FunctionComponent<AuthProps> = () => {
+  const [searchParams] = useSearchParams();
+  const redirect = searchParams.get("redirect");
   const [isShowSignInBox, setIsShowSignInBox] = useState(true);
   const { isMobile } = useCurrentViewportView();
+  
+  // If there's a redirect param, show sign in by default
+  useEffect(() => {
+    if (redirect) {
+      setIsShowSignInBox(true);
+    }
+  }, [redirect]);
   return (
     <>
       <Title value={"Sign In | StreamLux"} />
