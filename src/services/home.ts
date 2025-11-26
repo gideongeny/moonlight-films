@@ -1,7 +1,5 @@
 import axios from "../shared/axios";
-import { BannerInfo, Item, DetailMovie, DetailTV } from "../shared/types";
-import { HomeFilms } from "../shared/types";
-import { API_URL } from "../shared/constants";
+import { BannerInfo, Item, HomeFilms } from "../shared/types";
 
 // MOVIE TAB
 ///////////////////////////////////////////////////////////////

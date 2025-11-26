@@ -219,7 +219,6 @@ const DiverseContent: React.FC = () => {
   const mustWatchBlackMovies = africanContent.filter(
     (item) => item.media_type === "movie"
   );
-
   return (
     <div className="space-y-8 mt-8">
       <div className="text-center mb-8">
@@ -270,7 +269,6 @@ const DiverseContent: React.FC = () => {
           isLoading={false}
         />
       )}
-
       {/* Enhanced African Content */}
       {africanContent.length > 0 && (
         <SectionSlider
@@ -350,7 +348,6 @@ const DiverseContent: React.FC = () => {
           isLoading={false}
         />
       )}
-
       {/* Nollywood Content */}
       {nollywoodContent.length > 0 && (
         <SectionSlider
@@ -370,7 +367,6 @@ const DiverseContent: React.FC = () => {
           isLoading={false}
         />
       )}
-
       {/* Nigerian TV Shows */}
       {nigerianTVShows.length > 0 && (
         <SectionSlider
@@ -410,7 +406,6 @@ const DiverseContent: React.FC = () => {
           isLoading={false}
         />
       )}
-
       {/* Filipino Content */}
       {filipinoContent.length > 0 && (
         <SectionSlider

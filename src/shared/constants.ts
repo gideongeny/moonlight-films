@@ -309,7 +309,6 @@ export const SPORTS_FIXTURES: SportsFixtureConfig[] = [
       "Use this slot for live track & field, marathons or Diamond League meets with your official streams.",
   },
 ];
-
 export const reactionColorForTailwindCSS = {
   haha: "text-yellow-500",
   like: "text-primary",
