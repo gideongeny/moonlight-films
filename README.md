@@ -1,14 +1,18 @@
-# Moonlight Films
+# StreamLux
 
-Hot TV Show / Movie Watching Website
+Free Movies, TV Shows & Live Sports Streaming Platform
 
 ## Live demo
 
-Official website: [https://moonlight-films-five.vercel.app//](https://moonlight-films-five.vercel.app/)
+Official website: [https://streamlux.vercel.app/](https://streamlux.vercel.app/)
 
-## Movie sources
+**Note:** The website has been rebranded from Moonlight Films to StreamLux.
 
-The Movie Database API
+## Content Sources
+
+- **Movies & TV Shows:** The Movie Database (TMDB) API
+- **Sports Data:** TheSportsDB API (free tier)
+- **Streaming Links:** Multiple embed sources for movies, TV shows, and sports content
 
 ## Main technology used
 
@@ -22,14 +26,30 @@ The Movie Database API
 
 ## Features
 
-- Well-designed homepage/detail/watching pages.
-- Sort/filter (query-params based).
-- Search by name, with suggestion keywords, filter result by type.
-- Skeleton loading, infinite scrolling, query-based pagination and smooth animation.
-- Authentication by email/password or Google/Facebook. Fully validated sign-up form.
-- Bookmark favourite films, store recently watched films. Allowing to edit films list: Select All -> Clear.
-- Profile page: allowing to change profile photo, name, email, password, verify, delete account after reauthentication.
-- Comment: Allowing to give reactions, see who reacts to a comment (sorted and filter out the 3 most popular reactions), reply to a comment, edit, delete, hide, sort by latest/popular and load more comment.
+### Core Features
+- **Well-designed homepage/detail/watching pages** with modern UI
+- **Sort/filter** (query-params based) for movies, TV shows, and sports
+- **Search by name** with suggestion keywords, filter result by type
+- **Skeleton loading**, infinite scrolling, query-based pagination and smooth animation
+- **Authentication** by email/password or Google/Facebook. Fully validated sign-up form
+- **Bookmark favourite films**, store recently watched films. Allowing to edit films list: Select All -> Clear
+- **Profile page**: allowing to change profile photo, name, email, password, verify, delete account after reauthentication
+- **Comment system**: Allowing to give reactions, see who reacts to a comment (sorted and filter out the 3 most popular reactions), reply to a comment, edit, delete, hide, sort by latest/popular and load more comment
+
+### New Features (StreamLux)
+- **Live Sports Streaming**: Real-time fixtures and scores from multiple leagues (EPL, La Liga, Bundesliga, Serie A, Ligue 1, Champions League, AFCON, etc.)
+- **World Cinema Discovery**: Explore movies and TV shows from Africa, Asia, Latin America, Middle East, and more
+- **Enhanced Content Categories**:
+  - Most Trending Now
+  - Horror Movies
+  - Must-watch Black Shows & Movies
+  - Latest Nollywood Movies
+  - SA Drama, Thai Drama, C-Drama
+  - African Cinema & TV Shows
+  - And many more curated sections
+- **Multiple Streaming Sources**: Access to various embed sources for movies, TV shows, and sports
+- **Real-time Sports Updates**: Live scores and upcoming fixtures with auto-refresh
+- **Responsive Design**: Optimized for mobile, tablet, and desktop
 
 ## Screenshots, Preview
 
@@ -57,9 +77,11 @@ The Movie Database API
 
 ![Screenshot 12](https://i.ibb.co/LrYHgCF/mobile.png)
 
-## Start
+## Project Timeline
 
-From July 2, 2024 to August 9, 2025
+- **Original Development**: July 2, 2024 to August 9, 2025
+- **Rebranded to StreamLux**: 2025
+- **Current Version**: StreamLux v2.0 with enhanced features
 
 ## How to clone this project
 
@@ -69,5 +91,38 @@ In that file, assign the API KEY that you get from the previous step to a variab
 
 It looks like this:
 REACT_APP_API_KEY = a8a6fa2f944128e971223235bc3cxxxxx
+
+## Tech Stack
+
+- **Frontend Framework**: React 18+ with TypeScript
+- **Styling**: TailwindCSS
+- **State Management**: Redux Toolkit
+- **Data Fetching**: React Query (TanStack Query), Axios
+- **Authentication**: Firebase Auth
+- **Database**: Firebase Firestore
+- **UI Components**: Swiper, React-AutoAnimate, React-Select, React-Toastify
+- **Routing**: React Router DOM v6
+- **Image Optimization**: React-Lazy-Load-Image-Component
+- **Form Handling**: Formik, Yup
+- **Icons**: React-Icons
+
+## Deployment
+
+This project is deployed on Vercel. The build process uses:
+- Node.js 24.x (auto-upgraded from engines requirement)
+- npm with `--force --legacy-peer-deps --no-optional` flags
+- Create React App build system
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+Copyright © 2025 StreamLux. All rights reserved.
+
+See [Copyright Page](/copyright) for more information.
+
+---
 
 ### 👉 If you like this project, give it a star ✨ and share 👨🏻‍💻 it to your friends 👈

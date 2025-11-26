@@ -154,15 +154,32 @@ const DiverseNavigation: React.FC = () => {
           for (const source of sources) {
             try {
               const imageUrl = await source();
-              if (imageUrl) {
+              if (imageUrl && imageUrl !== 'undefined' && imageUrl.startsWith('http')) {
+                // Verify the image URL is valid
                 return { ...item, image: imageUrl };
               }
             } catch (error) {
               // Continue to next source
+              console.error(`Error fetching image from source for ${item.title}:`, error);
             }
           }
           
-          return item;
+          // If all sources fail, use a default image based on category
+          const defaultImages: { [key: string]: string } = {
+            'African Cinema': 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop',
+            'Asian Cinema': 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop',
+            'Latin American': 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop',
+            'Middle Eastern': 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop',
+            'Nollywood': 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop',
+            'Bollywood': 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop',
+            'Filipino': 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop',
+            'Kenyan': 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop',
+          };
+          
+          return { 
+            ...item, 
+            image: defaultImages[item.title] || item.fallbackImage 
+          };
         })
       );
       
@@ -191,25 +208,34 @@ const DiverseNavigation: React.FC = () => {
             className="group block"
           >
             <div className="relative h-48 rounded-xl overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-gray-700/50">
-              {item.image ? (
+              {item.image && item.image !== 'undefined' ? (
                 <LazyLoadImage
                   src={item.image}
                   alt={item.title}
                   className="absolute inset-0 w-full h-full object-cover"
                   effect="blur"
+                  placeholderSrc={item.fallbackImage}
                   onError={(e: any) => {
-                    e.target.src = item.fallbackImage;
+                    if (e.target.src !== item.fallbackImage) {
+                      e.target.src = item.fallbackImage;
+                    }
                   }}
                 />
               ) : (
                 <div 
-                  className="absolute inset-0 w-full h-full object-cover"
+                  className="absolute inset-0 w-full h-full object-cover bg-gradient-to-br from-primary/20 to-primary/40"
                   style={{
-                    backgroundImage: `url(${item.fallbackImage})`,
+                    backgroundImage: item.fallbackImage ? `url(${item.fallbackImage})` : 'none',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center'
                   }}
-                />
+                >
+                  {!item.fallbackImage && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-4xl opacity-50">{item.title.charAt(0)}</span>
+                    </div>
+                  )}
+                </div>
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/30"></div>
               <div className="absolute inset-0 p-6 flex flex-col justify-end text-white">
