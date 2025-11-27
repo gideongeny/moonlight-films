@@ -757,41 +757,41 @@ const DiverseContent: React.FC<DiverseContentProps> = ({ currentTab }) => {
         ) : null;
       })()}
 
-      {/* Latin American Content */}
-      {latinAmericanContent.length > 0 && (
+      {/* Latin American Content - Filter by media type */}
+      {latinAmericanContent.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv").length > 0 && (
         <SectionSlider
-          title="🌎 Latin American Cinema & TV Shows"
-          films={latinAmericanContent}
+          title={`🌎 Latin American ${currentTab === "movie" ? "Cinema" : "TV Shows"}`}
+          films={latinAmericanContent.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv")}
           limitNumber={8}
           isLoading={false}
         />
       )}
 
-      {/* Brazilian Content */}
-      {brazilianContent.length > 0 && (
+      {/* Brazilian Content - Filter by media type */}
+      {brazilianContent.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv").length > 0 && (
         <SectionSlider
-          title="🇧🇷 Brazilian Cinema & TV Shows"
-          films={brazilianContent}
+          title={`🇧🇷 Brazilian ${currentTab === "movie" ? "Cinema" : "TV Shows"}`}
+          films={brazilianContent.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv")}
           limitNumber={8}
           isLoading={false}
         />
       )}
 
-      {/* Mexican Content */}
-      {mexicanContent.length > 0 && (
+      {/* Mexican Content - Filter by media type */}
+      {mexicanContent.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv").length > 0 && (
         <SectionSlider
-          title="🇲🇽 Mexican Cinema & TV Shows"
-          films={mexicanContent}
+          title={`🇲🇽 Mexican ${currentTab === "movie" ? "Cinema" : "TV Shows"}`}
+          films={mexicanContent.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv")}
           limitNumber={8}
           isLoading={false}
         />
       )}
 
-      {/* Middle Eastern Content */}
-      {middleEasternContent.length > 0 && (
+      {/* Middle Eastern Content - Filter by media type */}
+      {middleEasternContent.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv").length > 0 && (
         <SectionSlider
-          title="🕌 Middle Eastern Cinema & TV Shows"
-          films={middleEasternContent}
+          title={`🕌 Middle Eastern ${currentTab === "movie" ? "Cinema" : "TV Shows"}`}
+          films={middleEasternContent.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv")}
           limitNumber={8}
           isLoading={false}
         />
