@@ -1,10 +1,11 @@
 import { FC, useEffect, useState } from "react";
 import { MdSportsSoccer } from "react-icons/md";
-import { getLiveFixtures, getUpcomingFixtures, LiveFixture } from "../../services/sports";
+import { SportsFixtureConfig } from "../../shared/constants";
+import { getLiveScores, getUpcomingFixturesAPI } from "../../services/sportsAPI";
 
 const LiveSports: FC = () => {
-  const [liveMatches, setLiveMatches] = useState<LiveFixture[]>([]);
-  const [upcomingMatches, setUpcomingMatches] = useState<LiveFixture[]>([]);
+  const [liveMatches, setLiveMatches] = useState<SportsFixtureConfig[]>([]);
+  const [upcomingMatches, setUpcomingMatches] = useState<SportsFixtureConfig[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -12,8 +13,8 @@ const LiveSports: FC = () => {
       setIsLoading(true);
       try {
         const [live, upcoming] = await Promise.all([
-          getLiveFixtures(),
-          getUpcomingFixtures(),
+          getLiveScores(),
+          getUpcomingFixturesAPI(),
         ]);
         setLiveMatches(live.filter(f => f.status === "live").slice(0, 6));
         setUpcomingMatches(upcoming.slice(0, 6));
@@ -25,8 +26,8 @@ const LiveSports: FC = () => {
     };
 
     fetchFixtures();
-    // Refresh every 2 minutes
-    const interval = setInterval(fetchFixtures, 120000);
+    // Refresh every 30 seconds for live scores
+    const interval = setInterval(fetchFixtures, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -69,7 +70,7 @@ const LiveSports: FC = () => {
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-gray-400 uppercase">
-                        {fixture.league}
+                        {fixture.leagueId}
                       </span>
                     </div>
                     <span className="inline-flex items-center px-2 py-1 rounded-full bg-red-600/20 text-red-400 text-[10px] font-semibold border border-red-500/60">
@@ -77,41 +78,72 @@ const LiveSports: FC = () => {
                     </span>
                   </div>
                   
-                  {/* Score Display */}
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex-1">
-                      <p className="text-white font-semibold text-sm mb-1">
-                        {fixture.homeTeam}
-                      </p>
-                      <p className="text-white font-semibold text-sm">
-                        {fixture.awayTeam}
-                      </p>
-                    </div>
-                    <div className="text-center">
-                      {fixture.homeScore !== undefined && fixture.awayScore !== undefined ? (
-                        <>
-                          <div className="text-2xl font-bold text-white mb-1">
-                            {fixture.homeScore} - {fixture.awayScore}
+                  {/* Teams with Logos and Score Display */}
+                  <div className="space-y-2 mb-2">
+                    {/* Home Team */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 flex-1">
+                        {fixture.homeTeamLogo ? (
+                          <img
+                            src={fixture.homeTeamLogo}
+                            alt={fixture.homeTeam}
+                            className="w-6 h-6 object-contain"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.display = 'none';
+                            }}
+                          />
+                        ) : (
+                          <div className="w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center text-[10px] font-bold text-gray-400">
+                            {fixture.homeTeam.charAt(0)}
                           </div>
-                          {fixture.minute && (
-                            <span className="text-xs text-red-400 font-semibold">
-                              {fixture.minute}
-                            </span>
-                          )}
-                        </>
-                      ) : (
-                        <span className="text-xs text-gray-400">VS</span>
+                        )}
+                        <p className="text-white font-semibold text-sm">
+                          {fixture.homeTeam}
+                        </p>
+                      </div>
+                      {fixture.homeScore !== undefined && (
+                        <span className="text-xl font-bold text-white">
+                          {fixture.homeScore}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Away Team */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 flex-1">
+                        {fixture.awayTeamLogo ? (
+                          <img
+                            src={fixture.awayTeamLogo}
+                            alt={fixture.awayTeam}
+                            className="w-6 h-6 object-contain"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.display = 'none';
+                            }}
+                          />
+                        ) : (
+                          <div className="w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center text-[10px] font-bold text-gray-400">
+                            {fixture.awayTeam.charAt(0)}
+                          </div>
+                        )}
+                        <p className="text-white font-semibold text-sm">
+                          {fixture.awayTeam}
+                        </p>
+                      </div>
+                      {fixture.awayScore !== undefined && (
+                        <span className="text-xl font-bold text-white">
+                          {fixture.awayScore}
+                        </span>
                       )}
                     </div>
                   </div>
-                  
-                  {fixture.kickoffTime && (
-                    <p className="text-xs text-gray-400">
-                      {new Date(fixture.kickoffTime).toLocaleString()}
+
+                  {fixture.minute && (
+                    <p className="text-xs text-red-400 font-semibold mb-1">
+                      {fixture.minute}
                     </p>
                   )}
                   {fixture.venue && (
-                    <p className="text-xs text-gray-500 mt-1">{fixture.venue}</p>
+                    <p className="text-xs text-gray-500">{fixture.venue}</p>
                   )}
                   
                   <div className="mt-3 flex items-center gap-2 text-primary text-xs group-hover:text-primary/80 transition">
@@ -156,7 +188,7 @@ const LiveSports: FC = () => {
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-gray-400 uppercase">
-                        {fixture.league}
+                        {fixture.leagueId}
                       </span>
                     </div>
                     <span className="inline-flex items-center px-2 py-1 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-semibold border border-amber-400/60">
@@ -164,23 +196,51 @@ const LiveSports: FC = () => {
                     </span>
                   </div>
                   
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex-1">
-                      <p className="text-white font-semibold text-sm mb-1">
+                  {/* Teams with Logos */}
+                  <div className="space-y-2 mb-2">
+                    <div className="flex items-center gap-2">
+                      {fixture.homeTeamLogo ? (
+                        <img
+                          src={fixture.homeTeamLogo}
+                          alt={fixture.homeTeam}
+                          className="w-6 h-6 object-contain"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        <div className="w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center text-[10px] font-bold text-gray-400">
+                          {fixture.homeTeam.charAt(0)}
+                        </div>
+                      )}
+                      <p className="text-white font-semibold text-sm">
                         {fixture.homeTeam}
                       </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {fixture.awayTeamLogo ? (
+                        <img
+                          src={fixture.awayTeamLogo}
+                          alt={fixture.awayTeam}
+                          className="w-6 h-6 object-contain"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        <div className="w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center text-[10px] font-bold text-gray-400">
+                          {fixture.awayTeam.charAt(0)}
+                        </div>
+                      )}
                       <p className="text-white font-semibold text-sm">
                         {fixture.awayTeam}
                       </p>
                     </div>
-                    <span className="text-xs text-gray-400">VS</span>
                   </div>
                   
-                  {fixture.kickoffTime && (
-                    <p className="text-xs text-gray-400">
-                      {new Date(fixture.kickoffTime).toLocaleString()}
-                    </p>
-                  )}
+                  <p className="text-xs text-gray-400">
+                    {fixture.kickoffTimeFormatted}
+                  </p>
                   {fixture.venue && (
                     <p className="text-xs text-gray-500 mt-1">{fixture.venue}</p>
                   )}

@@ -1,4 +1,4 @@
-import { FC, useMemo, useState } from "react";
+import { FC, useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { GiHamburgerMenu } from "react-icons/gi";
@@ -9,33 +9,79 @@ import SidebarMini from "../../components/Common/SidebarMini";
 import SearchBox from "../../components/Common/SearchBox";
 import Title from "../../components/Common/Title";
 import Footer from "../../components/Footer/Footer";
+import LiveScoreboard from "../../components/Sports/LiveScoreboard";
 import { useCurrentViewportView } from "../../hooks/useCurrentViewportView";
-import { SPORTS_FIXTURES, SPORTS_LEAGUES } from "../../shared/constants";
+import { SPORTS_FIXTURES, SPORTS_LEAGUES, SportsFixtureConfig } from "../../shared/constants";
+import { getLiveScores, getUpcomingFixturesAPI, subscribeToLiveScores } from "../../services/sportsAPI";
+import { useEffect, useState } from "react";
 
 const SportsHome: FC = () => {
   const { isMobile } = useCurrentViewportView();
   const [isSidebarActive, setIsSidebarActive] = useState(false);
   const [activeLeague, setActiveLeague] = useState<string>("all");
   const [activeStatus, setActiveStatus] = useState<"live" | "upcoming" | "replay">("live");
+  const [liveFixtures, setLiveFixtures] = useState<SportsFixtureConfig[]>([]);
+  const [upcomingFixtures, setUpcomingFixtures] = useState<SportsFixtureConfig[]>([]);
+  const [isLoadingRealData, setIsLoadingRealData] = useState(true);
+
+  // Fetch real live data
+  useEffect(() => {
+    const fetchRealData = async () => {
+      setIsLoadingRealData(true);
+      try {
+        const [live, upcoming] = await Promise.all([
+          getLiveScores(),
+          getUpcomingFixturesAPI(),
+        ]);
+        setLiveFixtures(live);
+        setUpcomingFixtures(upcoming);
+      } catch (error) {
+        console.error("Error fetching real sports data:", error);
+      } finally {
+        setIsLoadingRealData(false);
+      }
+    };
+
+    fetchRealData();
+
+    // Subscribe to live updates
+    const unsubscribe = subscribeToLiveScores((fixtures) => {
+      setLiveFixtures(fixtures);
+    }, 30000);
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  // Combine real data with static data
+  const allFixtures = useMemo(() => {
+    const combined = [...liveFixtures, ...upcomingFixtures, ...SPORTS_FIXTURES];
+    // Remove duplicates by id
+    const unique = combined.filter((fixture, index, self) =>
+      index === self.findIndex((f) => f.id === fixture.id)
+    );
+    return unique;
+  }, [liveFixtures, upcomingFixtures]);
 
   const filteredFixtures = useMemo(
     () =>
-      SPORTS_FIXTURES.filter((fixture) => {
+      allFixtures.filter((fixture) => {
         const matchLeague =
           activeLeague === "all" || fixture.leagueId === activeLeague;
         const matchStatus = fixture.status === activeStatus;
         return matchLeague && matchStatus;
       }),
-    [activeLeague, activeStatus]
+    [activeLeague, activeStatus, allFixtures]
   );
 
-  const liveCount = SPORTS_FIXTURES.filter(
+  const liveCount = allFixtures.filter(
     (fixture) => fixture.status === "live"
   ).length;
-  const upcomingCount = SPORTS_FIXTURES.filter(
+  const upcomingCount = allFixtures.filter(
     (fixture) => fixture.status === "upcoming"
   ).length;
-  const replayCount = SPORTS_FIXTURES.filter(
+  const replayCount = allFixtures.filter(
     (fixture) => fixture.status === "replay"
   ).length;
 
@@ -89,6 +135,11 @@ const SportsHome: FC = () => {
               <SearchBox relative={true} />
             </div>
           )}
+
+          {/* Live Scoreboard */}
+          <div className="mb-8">
+            <LiveScoreboard />
+          </div>
 
           <div className="flex flex-wrap gap-3 mb-6">
             <button

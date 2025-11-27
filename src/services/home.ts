@@ -255,6 +255,282 @@ export const getHorrorMovies = async (): Promise<Item[]> => {
   }
 };
 
+// Additional categories from moviebox.ph
+export const getActionMovies = async (): Promise<Item[]> => {
+  try {
+    const [tmdbResponse, fzAction] = await Promise.all([
+      axios.get(`/discover/movie`, {
+        params: { with_genres: 28, sort_by: "popularity.desc", page: 1 },
+      }),
+      getFZContentByGenre(28, "movie", 1),
+    ]);
+    const tmdbItems = (tmdbResponse.data.results || []).map((item: any) => ({
+      ...item,
+      media_type: "movie",
+    }));
+    const combined = [...tmdbItems, ...fzAction];
+    const seen = new Set<number>();
+    return combined.filter((item) => {
+      if (seen.has(item.id)) return false;
+      seen.add(item.id);
+      return item.poster_path;
+    });
+  } catch (error) {
+    console.error("Error fetching action movies:", error);
+    return [];
+  }
+};
+
+export const getComedyMovies = async (): Promise<Item[]> => {
+  try {
+    const [tmdbResponse, fzComedy] = await Promise.all([
+      axios.get(`/discover/movie`, {
+        params: { with_genres: 35, sort_by: "popularity.desc", page: 1 },
+      }),
+      getFZContentByGenre(35, "movie", 1),
+    ]);
+    const tmdbItems = (tmdbResponse.data.results || []).map((item: any) => ({
+      ...item,
+      media_type: "movie",
+    }));
+    const combined = [...tmdbItems, ...fzComedy];
+    const seen = new Set<number>();
+    return combined.filter((item) => {
+      if (seen.has(item.id)) return false;
+      seen.add(item.id);
+      return item.poster_path;
+    });
+  } catch (error) {
+    console.error("Error fetching comedy movies:", error);
+    return [];
+  }
+};
+
+export const getDramaMovies = async (): Promise<Item[]> => {
+  try {
+    const [tmdbResponse, fzDrama] = await Promise.all([
+      axios.get(`/discover/movie`, {
+        params: { with_genres: 18, sort_by: "popularity.desc", page: 1 },
+      }),
+      getFZContentByGenre(18, "movie", 1),
+    ]);
+    const tmdbItems = (tmdbResponse.data.results || []).map((item: any) => ({
+      ...item,
+      media_type: "movie",
+    }));
+    const combined = [...tmdbItems, ...fzDrama];
+    const seen = new Set<number>();
+    return combined.filter((item) => {
+      if (seen.has(item.id)) return false;
+      seen.add(item.id);
+      return item.poster_path;
+    });
+  } catch (error) {
+    console.error("Error fetching drama movies:", error);
+    return [];
+  }
+};
+
+export const getThrillerMovies = async (): Promise<Item[]> => {
+  try {
+    const [tmdbResponse, fzThriller] = await Promise.all([
+      axios.get(`/discover/movie`, {
+        params: { with_genres: 53, sort_by: "popularity.desc", page: 1 },
+      }),
+      getFZContentByGenre(53, "movie", 1),
+    ]);
+    const tmdbItems = (tmdbResponse.data.results || []).map((item: any) => ({
+      ...item,
+      media_type: "movie",
+    }));
+    const combined = [...tmdbItems, ...fzThriller];
+    const seen = new Set<number>();
+    return combined.filter((item) => {
+      if (seen.has(item.id)) return false;
+      seen.add(item.id);
+      return item.poster_path;
+    });
+  } catch (error) {
+    console.error("Error fetching thriller movies:", error);
+    return [];
+  }
+};
+
+export const getRomanceMovies = async (): Promise<Item[]> => {
+  try {
+    const [tmdbResponse, fzRomance] = await Promise.all([
+      axios.get(`/discover/movie`, {
+        params: { with_genres: 10749, sort_by: "popularity.desc", page: 1 },
+      }),
+      getFZContentByGenre(10749, "movie", 1),
+    ]);
+    const tmdbItems = (tmdbResponse.data.results || []).map((item: any) => ({
+      ...item,
+      media_type: "movie",
+    }));
+    const combined = [...tmdbItems, ...fzRomance];
+    const seen = new Set<number>();
+    return combined.filter((item) => {
+      if (seen.has(item.id)) return false;
+      seen.add(item.id);
+      return item.poster_path;
+    });
+  } catch (error) {
+    console.error("Error fetching romance movies:", error);
+    return [];
+  }
+};
+
+export const getSciFiMovies = async (): Promise<Item[]> => {
+  try {
+    const [tmdbResponse, fzSciFi] = await Promise.all([
+      axios.get(`/discover/movie`, {
+        params: { with_genres: 878, sort_by: "popularity.desc", page: 1 },
+      }),
+      getFZContentByGenre(878, "movie", 1),
+    ]);
+    const tmdbItems = (tmdbResponse.data.results || []).map((item: any) => ({
+      ...item,
+      media_type: "movie",
+    }));
+    const combined = [...tmdbItems, ...fzSciFi];
+    const seen = new Set<number>();
+    return combined.filter((item) => {
+      if (seen.has(item.id)) return false;
+      seen.add(item.id);
+      return item.poster_path;
+    });
+  } catch (error) {
+    console.error("Error fetching sci-fi movies:", error);
+    return [];
+  }
+};
+
+export const getAnimationMovies = async (): Promise<Item[]> => {
+  try {
+    const [tmdbResponse, fzAnimation] = await Promise.all([
+      axios.get(`/discover/movie`, {
+        params: { with_genres: 16, sort_by: "popularity.desc", page: 1 },
+      }),
+      getFZContentByGenre(16, "movie", 1),
+    ]);
+    const tmdbItems = (tmdbResponse.data.results || []).map((item: any) => ({
+      ...item,
+      media_type: "movie",
+    }));
+    const combined = [...tmdbItems, ...fzAnimation];
+    const seen = new Set<number>();
+    return combined.filter((item) => {
+      if (seen.has(item.id)) return false;
+      seen.add(item.id);
+      return item.poster_path;
+    });
+  } catch (error) {
+    console.error("Error fetching animation movies:", error);
+    return [];
+  }
+};
+
+export const getDocumentaryMovies = async (): Promise<Item[]> => {
+  try {
+    const [tmdbResponse, fzDoc] = await Promise.all([
+      axios.get(`/discover/movie`, {
+        params: { with_genres: 99, sort_by: "popularity.desc", page: 1 },
+      }),
+      getFZContentByGenre(99, "movie", 1),
+    ]);
+    const tmdbItems = (tmdbResponse.data.results || []).map((item: any) => ({
+      ...item,
+      media_type: "movie",
+    }));
+    const combined = [...tmdbItems, ...fzDoc];
+    const seen = new Set<number>();
+    return combined.filter((item) => {
+      if (seen.has(item.id)) return false;
+      seen.add(item.id);
+      return item.poster_path;
+    });
+  } catch (error) {
+    console.error("Error fetching documentary movies:", error);
+    return [];
+  }
+};
+
+export const getCrimeMovies = async (): Promise<Item[]> => {
+  try {
+    const [tmdbResponse, fzCrime] = await Promise.all([
+      axios.get(`/discover/movie`, {
+        params: { with_genres: 80, sort_by: "popularity.desc", page: 1 },
+      }),
+      getFZContentByGenre(80, "movie", 1),
+    ]);
+    const tmdbItems = (tmdbResponse.data.results || []).map((item: any) => ({
+      ...item,
+      media_type: "movie",
+    }));
+    const combined = [...tmdbItems, ...fzCrime];
+    const seen = new Set<number>();
+    return combined.filter((item) => {
+      if (seen.has(item.id)) return false;
+      seen.add(item.id);
+      return item.poster_path;
+    });
+  } catch (error) {
+    console.error("Error fetching crime movies:", error);
+    return [];
+  }
+};
+
+export const getAdventureMovies = async (): Promise<Item[]> => {
+  try {
+    const [tmdbResponse, fzAdventure] = await Promise.all([
+      axios.get(`/discover/movie`, {
+        params: { with_genres: 12, sort_by: "popularity.desc", page: 1 },
+      }),
+      getFZContentByGenre(12, "movie", 1),
+    ]);
+    const tmdbItems = (tmdbResponse.data.results || []).map((item: any) => ({
+      ...item,
+      media_type: "movie",
+    }));
+    const combined = [...tmdbItems, ...fzAdventure];
+    const seen = new Set<number>();
+    return combined.filter((item) => {
+      if (seen.has(item.id)) return false;
+      seen.add(item.id);
+      return item.poster_path;
+    });
+  } catch (error) {
+    console.error("Error fetching adventure movies:", error);
+    return [];
+  }
+};
+
+export const getFantasyMovies = async (): Promise<Item[]> => {
+  try {
+    const [tmdbResponse, fzFantasy] = await Promise.all([
+      axios.get(`/discover/movie`, {
+        params: { with_genres: 14, sort_by: "popularity.desc", page: 1 },
+      }),
+      getFZContentByGenre(14, "movie", 1),
+    ]);
+    const tmdbItems = (tmdbResponse.data.results || []).map((item: any) => ({
+      ...item,
+      media_type: "movie",
+    }));
+    const combined = [...tmdbItems, ...fzFantasy];
+    const seen = new Set<number>();
+    return combined.filter((item) => {
+      if (seen.has(item.id)) return false;
+      seen.add(item.id);
+      return item.poster_path;
+    });
+  } catch (error) {
+    console.error("Error fetching fantasy movies:", error);
+    return [];
+  }
+};
+
 // Helpers to enhance sourcing by networks/companies
 const searchIds = async (
   type: "network" | "company",

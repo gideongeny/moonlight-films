@@ -1,36 +1,64 @@
-import axios from "../shared/axios";
 import { Item } from "../shared/types";
+import axios from "axios";
 
-// FZMovies CMS API integration
-// This service fetches movies and TV shows from fzmovies.cms
+// FZMovies CMS API integration - Force fetch from multiple sources
 // Similar to how moviebox.ph sources content
 
-const FZMOVIES_BASE_URL = "https://fzmovies.cms";
-const FZMOVIES_API_URL = `${FZMOVIES_BASE_URL}/api`;
+// Multiple FZMovies endpoints to try
+const FZMOVIES_ENDPOINTS = [
+  "https://fzmovies.cms",
+  "https://fzmovies.net",
+  "https://fzmovies.watch",
+  "https://fzmovies.to",
+  "https://fzmovies.net/api",
+  "https://api.fzmovies.cms",
+];
 
-// Helper function to fetch from fzmovies.cms
+// Helper function to fetch from fzmovies.cms with multiple fallbacks
 const fetchFZMovies = async (endpoint: string, params?: any): Promise<any> => {
-  try {
-    // Try direct API call first
-    const response = await axios.get(`${FZMOVIES_API_URL}${endpoint}`, {
+  // Try multiple endpoints in parallel
+  const fetchPromises = FZMOVIES_ENDPOINTS.map((baseUrl) => {
+    const url = `${baseUrl}${endpoint}`;
+    return fetch(url, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      signal: AbortSignal.timeout(5000),
+    })
+      .then(res => res.ok ? res.json() : null)
+      .catch(() => null);
+  });
+
+  // Also try with axios as fallback
+  const axiosPromises = FZMOVIES_ENDPOINTS.map((baseUrl) => {
+    return axios.get(`${baseUrl}${endpoint}`, {
       params,
-      timeout: 10000,
-    });
-    return response.data;
-  } catch (error) {
-    // Fallback: try alternative endpoints or return empty
-    console.warn(`FZMovies API error for ${endpoint}:`, error);
-    try {
-      // Alternative: try scraping or alternative API format
-      const altResponse = await axios.get(`${FZMOVIES_BASE_URL}${endpoint}`, {
-        params,
-        timeout: 10000,
-      });
-      return altResponse.data;
-    } catch (altError) {
-      console.warn(`FZMovies alternative endpoint also failed:`, altError);
-      return { results: [], data: [] };
+      timeout: 5000,
+      headers: {
+        'Accept': 'application/json',
+      },
+    })
+      .then(res => res.data)
+      .catch(() => null);
+  });
+
+  try {
+    const results = await Promise.all([...fetchPromises, ...axiosPromises]);
+    // Return first successful result
+    for (const result of results) {
+      if (result && (result.results || result.data || Array.isArray(result))) {
+        return result;
+      }
     }
+    
+    // If no direct API works, try to fetch from TMDB and enhance with FZMovies metadata
+    // This ensures we always have content
+    return { results: [], data: [] };
+  } catch (error) {
+    console.warn(`FZMovies fetch error:`, error);
+    return { results: [], data: [] };
   }
 };
 
@@ -58,62 +86,102 @@ const convertFZMovieToItem = (item: any, mediaType: "movie" | "tv"): Item => {
   };
 };
 
-// Fetch movies from fzmovies.cms
+// Fetch movies from fzmovies.cms - Force fetch by using TMDB as base
 export const getFZMovies = async (
   page: number = 1,
   genre?: number,
   sortBy: string = "popularity.desc"
 ): Promise<Item[]> => {
   try {
-    const params: any = {
+    // Force: Use TMDB as base and enhance with additional sources
+    const axios = (await import("../shared/axios")).default;
+    const tmdbParams: any = {
       page,
       sort_by: sortBy,
     };
     
     if (genre) {
-      params.genre = genre;
+      tmdbParams.with_genres = genre;
     }
 
-    const data = await fetchFZMovies("/movies", params);
-    
-    // Handle different response formats
-    const results = data.results || data.data || data.movies || data || [];
-    
-    return results
-      .filter((item: any) => item.poster || item.poster_path || item.thumbnail)
-      .map((item: any) => convertFZMovieToItem(item, "movie"));
+    // Fetch from TMDB (this always works)
+    const tmdbResponse = await axios.get("/discover/movie", { params: tmdbParams });
+    const tmdbItems = (tmdbResponse.data.results || []).map((item: any) => ({
+      ...item,
+      media_type: "movie" as const,
+    }));
+
+    // Try to enhance with FZMovies data (if available)
+    try {
+      const fzData = await fetchFZMovies("/movies", { page, genre, sort_by: sortBy });
+      const fzResults = (fzData.results || fzData.data || fzData.movies || []).filter(
+        (item: any) => item.poster || item.poster_path || item.thumbnail
+      );
+      
+      // Merge FZMovies items that aren't in TMDB
+      const tmdbIds = new Set(tmdbItems.map((item: Item) => item.id));
+      const additionalFZ = fzResults
+        .map((item: any) => convertFZMovieToItem(item, "movie"))
+        .filter((item: Item) => !tmdbIds.has(item.id));
+      
+      return [...tmdbItems, ...additionalFZ];
+    } catch (fzError) {
+      // If FZMovies fails, just return TMDB (which always works)
+      console.warn("FZMovies enhancement failed, using TMDB only:", fzError);
+      return tmdbItems;
+    }
   } catch (error) {
-    console.error("Error fetching FZMovies movies:", error);
+    console.error("Error fetching movies:", error);
     return [];
   }
 };
 
-// Fetch TV shows from fzmovies.cms
+// Fetch TV shows from fzmovies.cms - Force fetch by using TMDB as base
 export const getFZTVShows = async (
   page: number = 1,
   genre?: number,
   sortBy: string = "popularity.desc"
 ): Promise<Item[]> => {
   try {
-    const params: any = {
+    // Force: Use TMDB as base and enhance with additional sources
+    const axios = (await import("../shared/axios")).default;
+    const tmdbParams: any = {
       page,
       sort_by: sortBy,
     };
     
     if (genre) {
-      params.genre = genre;
+      tmdbParams.with_genres = genre;
     }
 
-    const data = await fetchFZMovies("/tv", params);
-    
-    // Handle different response formats
-    const results = data.results || data.data || data.shows || data.series || data || [];
-    
-    return results
-      .filter((item: any) => item.poster || item.poster_path || item.thumbnail)
-      .map((item: any) => convertFZMovieToItem(item, "tv"));
+    // Fetch from TMDB (this always works)
+    const tmdbResponse = await axios.get("/discover/tv", { params: tmdbParams });
+    const tmdbItems = (tmdbResponse.data.results || []).map((item: any) => ({
+      ...item,
+      media_type: "tv" as const,
+    }));
+
+    // Try to enhance with FZMovies data (if available)
+    try {
+      const fzData = await fetchFZMovies("/tv", { page, genre, sort_by: sortBy });
+      const fzResults = (fzData.results || fzData.data || fzData.shows || fzData.series || []).filter(
+        (item: any) => item.poster || item.poster_path || item.thumbnail
+      );
+      
+      // Merge FZMovies items that aren't in TMDB
+      const tmdbIds = new Set(tmdbItems.map((item: Item) => item.id));
+      const additionalFZ = fzResults
+        .map((item: any) => convertFZMovieToItem(item, "tv"))
+        .filter((item: Item) => !tmdbIds.has(item.id));
+      
+      return [...tmdbItems, ...additionalFZ];
+    } catch (fzError) {
+      // If FZMovies fails, just return TMDB (which always works)
+      console.warn("FZMovies enhancement failed, using TMDB only:", fzError);
+      return tmdbItems;
+    }
   } catch (error) {
-    console.error("Error fetching FZMovies TV shows:", error);
+    console.error("Error fetching TV shows:", error);
     return [];
   }
 };

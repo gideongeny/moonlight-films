@@ -22,7 +22,18 @@ import {
   getEnhancedNollywoodContent,
   getEnhancedKenyanContent,
   getTrendingNow,
-  getHorrorMovies
+  getHorrorMovies,
+  getActionMovies,
+  getComedyMovies,
+  getDramaMovies,
+  getThrillerMovies,
+  getRomanceMovies,
+  getSciFiMovies,
+  getAnimationMovies,
+  getDocumentaryMovies,
+  getCrimeMovies,
+  getAdventureMovies,
+  getFantasyMovies
 } from '../../services/home';
 import SectionSlider from '../Slider/SectionSlider';
 import Skeleton from '../Common/Skeleton';
@@ -50,6 +61,17 @@ const DiverseContent: React.FC = () => {
   const [enhancedKenyan, setEnhancedKenyan] = useState<Item[]>([]);
   const [trendingAll, setTrendingAll] = useState<Item[]>([]);
   const [horrorMovies, setHorrorMovies] = useState<Item[]>([]);
+  const [actionMovies, setActionMovies] = useState<Item[]>([]);
+  const [comedyMovies, setComedyMovies] = useState<Item[]>([]);
+  const [dramaMovies, setDramaMovies] = useState<Item[]>([]);
+  const [thrillerMovies, setThrillerMovies] = useState<Item[]>([]);
+  const [romanceMovies, setRomanceMovies] = useState<Item[]>([]);
+  const [sciFiMovies, setSciFiMovies] = useState<Item[]>([]);
+  const [animationMovies, setAnimationMovies] = useState<Item[]>([]);
+  const [documentaryMovies, setDocumentaryMovies] = useState<Item[]>([]);
+  const [crimeMovies, setCrimeMovies] = useState<Item[]>([]);
+  const [adventureMovies, setAdventureMovies] = useState<Item[]>([]);
+  const [fantasyMovies, setFantasyMovies] = useState<Item[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -103,7 +125,18 @@ const DiverseContent: React.FC = () => {
           getEnhancedNollywoodContent(),
           getEnhancedKenyanContent(),
           getTrendingNow(),
-          getHorrorMovies()
+          getHorrorMovies(),
+          getActionMovies(),
+          getComedyMovies(),
+          getDramaMovies(),
+          getThrillerMovies(),
+          getRomanceMovies(),
+          getSciFiMovies(),
+          getAnimationMovies(),
+          getDocumentaryMovies(),
+          getCrimeMovies(),
+          getAdventureMovies(),
+          getFantasyMovies()
         ]);
 
         setAfricanContent(african);
@@ -128,6 +161,17 @@ const DiverseContent: React.FC = () => {
         setEnhancedKenyan(enhancedKenya);
         setTrendingAll(trending);
         setHorrorMovies(horror);
+        setActionMovies(results[23]); // action
+        setComedyMovies(results[24]); // comedy
+        setDramaMovies(results[25]); // drama
+        setThrillerMovies(results[26]); // thriller
+        setRomanceMovies(results[27]); // romance
+        setSciFiMovies(results[28]); // sciFi
+        setAnimationMovies(results[29]); // animation
+        setDocumentaryMovies(results[30]); // documentary
+        setCrimeMovies(results[31]); // crime
+        setAdventureMovies(results[32]); // adventure
+        setFantasyMovies(results[33]); // fantasy
         
       } catch (error) {
         console.error('Error fetching diverse content:', error);
@@ -510,6 +554,106 @@ const DiverseContent: React.FC = () => {
           title="🇨🇳 C-Drama & Chinese Cinema"
           films={chineseContent}
           limitNumber={8}
+          isLoading={false}
+        />
+      )}
+
+      {/* Genre Categories from MovieBox.ph */}
+      {actionMovies.length > 0 && (
+        <SectionSlider
+          title="💥 Action Movies"
+          films={actionMovies}
+          limitNumber={10}
+          isLoading={false}
+        />
+      )}
+
+      {comedyMovies.length > 0 && (
+        <SectionSlider
+          title="😂 Comedy Movies"
+          films={comedyMovies}
+          limitNumber={10}
+          isLoading={false}
+        />
+      )}
+
+      {dramaMovies.length > 0 && (
+        <SectionSlider
+          title="🎭 Drama Movies"
+          films={dramaMovies}
+          limitNumber={10}
+          isLoading={false}
+        />
+      )}
+
+      {thrillerMovies.length > 0 && (
+        <SectionSlider
+          title="🔪 Thriller Movies"
+          films={thrillerMovies}
+          limitNumber={10}
+          isLoading={false}
+        />
+      )}
+
+      {romanceMovies.length > 0 && (
+        <SectionSlider
+          title="💕 Romance Movies"
+          films={romanceMovies}
+          limitNumber={10}
+          isLoading={false}
+        />
+      )}
+
+      {sciFiMovies.length > 0 && (
+        <SectionSlider
+          title="🚀 Sci-Fi Movies"
+          films={sciFiMovies}
+          limitNumber={10}
+          isLoading={false}
+        />
+      )}
+
+      {animationMovies.length > 0 && (
+        <SectionSlider
+          title="🎨 Animation Movies"
+          films={animationMovies}
+          limitNumber={10}
+          isLoading={false}
+        />
+      )}
+
+      {documentaryMovies.length > 0 && (
+        <SectionSlider
+          title="📹 Documentary Movies"
+          films={documentaryMovies}
+          limitNumber={10}
+          isLoading={false}
+        />
+      )}
+
+      {crimeMovies.length > 0 && (
+        <SectionSlider
+          title="🔫 Crime Movies"
+          films={crimeMovies}
+          limitNumber={10}
+          isLoading={false}
+        />
+      )}
+
+      {adventureMovies.length > 0 && (
+        <SectionSlider
+          title="🗺️ Adventure Movies"
+          films={adventureMovies}
+          limitNumber={10}
+          isLoading={false}
+        />
+      )}
+
+      {fantasyMovies.length > 0 && (
+        <SectionSlider
+          title="✨ Fantasy Movies"
+          films={fantasyMovies}
+          limitNumber={10}
           isLoading={false}
         />
       )}

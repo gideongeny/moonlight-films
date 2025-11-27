@@ -13,6 +13,7 @@ import TrendingNow from "../components/Home/TrendingNow";
 import DiverseNavigation from "../components/Common/DiverseNavigation";
 import DiverseContent from "../components/Home/DiverseContent";
 import LiveSports from "../components/Home/LiveSports";
+import LiveSportsTicker from "../components/Sports/LiveSportsTicker";
 import { useHomeData } from "../hooks/useHomeData";
 import { useAppSelector } from "../store/hooks";
 
@@ -149,6 +150,9 @@ const Home: FC = () => {
               isLoadingSection={isLoadingTV}
             />
           )}
+
+          {/* Live Sports Ticker (MovieBox.ph style) */}
+          <LiveSportsTicker />
 
           {/* Live & Upcoming Sports Section (MovieBox-style) */}
           <LiveSports />
