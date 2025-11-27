@@ -165,10 +165,10 @@ const FilmDetail: FC<FilmInfo> = ({ similar, videos, detail, ...others }) => {
                       />
                     </div>
                     {isMobile && (
-                      <div className="flex gap-3 items-center mt-4 ml-3 md:ml-0 w-full">
+                      <div className="flex flex-col gap-3 mt-4 ml-3 md:ml-0 w-full">
                         <Link
                           to="watch"
-                          className="flex gap-2 items-center px-4 py-2.5 rounded-full bg-primary text-white hover:bg-blue-600 transition duration-300 flex-1 justify-center"
+                          className="flex gap-2 items-center justify-center px-4 py-2.5 rounded-full bg-primary text-white hover:bg-blue-600 transition duration-300 w-full"
                         >
                           <BsFillPlayFill size={18} />
                           <span className="text-sm font-medium">WATCH</span>
@@ -182,7 +182,7 @@ const FilmDetail: FC<FilmInfo> = ({ similar, videos, detail, ...others }) => {
                             )}
                             variant="outline"
                             size="sm"
-                            className="flex-1 justify-center"
+                            className="w-full justify-center"
                           />
                         )}
                       </div>
