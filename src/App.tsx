@@ -1,6 +1,6 @@
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, onSnapshot } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { Analytics } from '@vercel/analytics/react';
 
@@ -29,9 +29,6 @@ function App() {
   const location = useLocation();
   const dispatch = useAppDispatch();
 
-  // const [isSignedIn, setIsSignedIn] = useState<boolean>(
-  //   Number(localStorage.getItem("isSignedIn")) ? true : false
-  // );
   const [isSignedIn, setIsSignedIn] = useLocalStorage("isSignedIn", false);
 
   useEffect(() => {
