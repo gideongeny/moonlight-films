@@ -108,18 +108,22 @@ export class DownloadService {
         `${EMBED_ALTERNATIVES.YOUTUBE}/movie/${id}`,
         `${EMBED_ALTERNATIVES.VIMEO}/movie/${id}`,
         `${EMBED_ALTERNATIVES.DAILYMOTION}/movie/${id}`,
-        // FZMovies CMS sources - primary source for movies
+        // FZMovies CMS sources - using proper embed formats
+        `${EMBED_ALTERNATIVES.FZMOVIES_WATCH}/movie/${id}`,
         `${EMBED_ALTERNATIVES.FZMOVIES_EMBED}/movie/${id}`,
         `${EMBED_ALTERNATIVES.FZMOVIES_PLAYER}/movie/${id}`,
-        `${EMBED_ALTERNATIVES.FZMOVIES}/watch/movie/${id}`,
+        `${EMBED_ALTERNATIVES.FZMOVIES}/movie/${id}`,
         `${EMBED_ALTERNATIVES.FZMOVIES_ALT1}/embed/movie/${id}`,
-        `${EMBED_ALTERNATIVES.FZMOVIES_ALT2}/player/movie/${id}`,
-        `${EMBED_ALTERNATIVES.FZMOVIES_ALT3}/watch/movie/${id}`,
-        // New video sources
-        `${EMBED_ALTERNATIVES.YOUTUBE_EMBED}?v=${id}`,
-        `${EMBED_ALTERNATIVES.KISSKH}/movie/${id}`,
-        `${EMBED_ALTERNATIVES.UGC_ANIME}/movie/${id}`,
+        `${EMBED_ALTERNATIVES.FZMOVIES_ALT2}/watch/movie/${id}`,
+        `${EMBED_ALTERNATIVES.FZMOVIES_ALT3}/movie/${id}`,
+        // New video sources - using proper embed formats
+        `${EMBED_ALTERNATIVES.KISSKH_EMBED}/drama/${id}`,
+        `${EMBED_ALTERNATIVES.KISSKH}/drama/${id}`,
+        `${EMBED_ALTERNATIVES.UGC_ANIME_EMBED}/anime/${id}`,
+        `${EMBED_ALTERNATIVES.UGC_ANIME}/anime/${id}`,
+        `${EMBED_ALTERNATIVES.AILOK_EMBED}/movie/${id}`,
         `${EMBED_ALTERNATIVES.AILOK}/movie/${id}`,
+        `${EMBED_ALTERNATIVES.SZ_GOOGOTV_EMBED}/movie/${id}`,
         `${EMBED_ALTERNATIVES.SZ_GOOGOTV}/movie/${id}`,
       ];
     } else {
@@ -168,18 +172,22 @@ export class DownloadService {
         `${EMBED_ALTERNATIVES.YOUTUBE}/tv/${id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.VIMEO}/tv/${id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.DAILYMOTION}/tv/${id}/${seasonId}/${episodeId}`,
-        // FZMovies CMS sources - primary source for TV shows
+        // FZMovies CMS sources - using proper embed formats
+        `${EMBED_ALTERNATIVES.FZMOVIES_WATCH}/tv/${id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.FZMOVIES_EMBED}/tv/${id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.FZMOVIES_PLAYER}/tv/${id}/${seasonId}/${episodeId}`,
-        `${EMBED_ALTERNATIVES.FZMOVIES}/watch/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.FZMOVIES}/tv/${id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.FZMOVIES_ALT1}/embed/tv/${id}/${seasonId}/${episodeId}`,
-        `${EMBED_ALTERNATIVES.FZMOVIES_ALT2}/player/tv/${id}/${seasonId}/${episodeId}`,
-        `${EMBED_ALTERNATIVES.FZMOVIES_ALT3}/watch/tv/${id}/${seasonId}/${episodeId}`,
-        // New video sources
-        `${EMBED_ALTERNATIVES.YOUTUBE_EMBED}?v=${id}`,
-        `${EMBED_ALTERNATIVES.KISSKH}/tv/${id}/${seasonId}/${episodeId}`,
-        `${EMBED_ALTERNATIVES.UGC_ANIME}/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.FZMOVIES_ALT2}/watch/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.FZMOVIES_ALT3}/tv/${id}/${seasonId}/${episodeId}`,
+        // New video sources - using proper embed formats
+        `${EMBED_ALTERNATIVES.KISSKH_EMBED}/drama/${id}/episode/${episodeId}`,
+        `${EMBED_ALTERNATIVES.KISSKH}/drama/${id}/episode/${episodeId}`,
+        `${EMBED_ALTERNATIVES.UGC_ANIME_EMBED}/anime/${id}/episode/${episodeId}`,
+        `${EMBED_ALTERNATIVES.UGC_ANIME}/anime/${id}/episode/${episodeId}`,
+        `${EMBED_ALTERNATIVES.AILOK_EMBED}/tv/${id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.AILOK}/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.SZ_GOOGOTV_EMBED}/tv/${id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.SZ_GOOGOTV}/tv/${id}/${seasonId}/${episodeId}`,
       ];
     }

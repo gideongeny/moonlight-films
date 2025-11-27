@@ -64,19 +64,25 @@ export const EMBED_ALTERNATIVES = {
   DSTV: "https://dstv.com", // South African satellite TV
   GOTV: "https://gotvafrica.com", // African satellite TV
   // FZMovies CMS integration - primary source for movies and TV shows
+  // Use proper embed formats
   FZMOVIES: "https://fzmovies.cms",
   FZMOVIES_EMBED: "https://fzmovies.cms/embed",
   FZMOVIES_PLAYER: "https://fzmovies.cms/player",
+  FZMOVIES_WATCH: "https://fzmovies.cms/watch",
   // Additional FZMovies alternative endpoints
   FZMOVIES_ALT1: "https://fzmovies.net",
   FZMOVIES_ALT2: "https://fzmovies.watch",
   FZMOVIES_ALT3: "https://fzmovies.to",
-  // New video sources
+  // New video sources - using proper embed formats
   YOUTUBE_EMBED: "https://www.youtube.com/embed",
   KISSKH: "https://kisskh.com",
+  KISSKH_EMBED: "https://kisskh.com/embed",
   UGC_ANIME: "https://ugc-anime.com",
+  UGC_ANIME_EMBED: "https://ugc-anime.com/embed",
   AILOK: "https://ailok.pe",
+  AILOK_EMBED: "https://ailok.pe/embed",
   SZ_GOOGOTV: "https://sz.googotv.com",
+  SZ_GOOGOTV_EMBED: "https://sz.googotv.com/embed",
 };
 
 export interface SportsLeagueConfig {
