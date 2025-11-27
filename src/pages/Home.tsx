@@ -161,7 +161,7 @@ const Home: FC = () => {
           <DiverseNavigation />
 
           {/* Discover World content */}
-          <DiverseContent currentTab={currentTab} />
+          <DiverseContent currentTab={currentTab as "movie" | "tv" | "sports"} />
         </div>
 
         <div className="shrink-0 max-w-[310px] w-full hidden lg:block px-6 top-0 sticky ">
