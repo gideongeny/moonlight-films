@@ -98,6 +98,12 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
         `${EMBED_ALTERNATIVES.FZMOVIES_PLAYER}/movie/${detail?.id}`,
         `${EMBED_ALTERNATIVES.FZMOVIES}/watch/movie/${detail?.id}`,
         `${EMBED_ALTERNATIVES.FZMOVIES_ALT1}/embed/movie/${detail?.id}`,
+        // New video sources
+        `${EMBED_ALTERNATIVES.YOUTUBE_EMBED}?v=${detail?.id}`,
+        `${EMBED_ALTERNATIVES.KISSKH}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.UGC_ANIME}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.AILOK}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.SZ_GOOGOTV}/movie/${detail?.id}`,
         `${EMBED_ALTERNATIVES.FZMOVIES_ALT2}/player/movie/${detail?.id}`,
         `${EMBED_ALTERNATIVES.FZMOVIES_ALT3}/watch/movie/${detail?.id}`,
       ];
@@ -145,6 +151,12 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
         `${EMBED_ALTERNATIVES.FZMOVIES_PLAYER}/tv/${detail?.id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.FZMOVIES}/watch/tv/${detail?.id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.FZMOVIES_ALT1}/embed/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        // New video sources
+        `${EMBED_ALTERNATIVES.YOUTUBE_EMBED}?v=${detail?.id}`,
+        `${EMBED_ALTERNATIVES.KISSKH}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.UGC_ANIME}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.AILOK}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.SZ_GOOGOTV}/tv/${detail?.id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.FZMOVIES_ALT2}/player/tv/${detail?.id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.FZMOVIES_ALT3}/watch/tv/${detail?.id}/${seasonId}/${episodeId}`,
       ];

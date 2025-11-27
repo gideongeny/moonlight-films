@@ -71,6 +71,12 @@ export const EMBED_ALTERNATIVES = {
   FZMOVIES_ALT1: "https://fzmovies.net",
   FZMOVIES_ALT2: "https://fzmovies.watch",
   FZMOVIES_ALT3: "https://fzmovies.to",
+  // New video sources
+  YOUTUBE_EMBED: "https://www.youtube.com/embed",
+  KISSKH: "https://kisskh.com",
+  UGC_ANIME: "https://ugc-anime.com",
+  AILOK: "https://ailok.pe",
+  SZ_GOOGOTV: "https://sz.googotv.com",
 };
 
 export interface SportsLeagueConfig {

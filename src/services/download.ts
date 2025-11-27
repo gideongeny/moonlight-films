@@ -115,6 +115,12 @@ export class DownloadService {
         `${EMBED_ALTERNATIVES.FZMOVIES_ALT1}/embed/movie/${id}`,
         `${EMBED_ALTERNATIVES.FZMOVIES_ALT2}/player/movie/${id}`,
         `${EMBED_ALTERNATIVES.FZMOVIES_ALT3}/watch/movie/${id}`,
+        // New video sources
+        `${EMBED_ALTERNATIVES.YOUTUBE_EMBED}?v=${id}`,
+        `${EMBED_ALTERNATIVES.KISSKH}/movie/${id}`,
+        `${EMBED_ALTERNATIVES.UGC_ANIME}/movie/${id}`,
+        `${EMBED_ALTERNATIVES.AILOK}/movie/${id}`,
+        `${EMBED_ALTERNATIVES.SZ_GOOGOTV}/movie/${id}`,
       ];
     } else {
       return [
@@ -169,6 +175,12 @@ export class DownloadService {
         `${EMBED_ALTERNATIVES.FZMOVIES_ALT1}/embed/tv/${id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.FZMOVIES_ALT2}/player/tv/${id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.FZMOVIES_ALT3}/watch/tv/${id}/${seasonId}/${episodeId}`,
+        // New video sources
+        `${EMBED_ALTERNATIVES.YOUTUBE_EMBED}?v=${id}`,
+        `${EMBED_ALTERNATIVES.KISSKH}/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.UGC_ANIME}/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.AILOK}/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.SZ_GOOGOTV}/tv/${id}/${seasonId}/${episodeId}`,
       ];
     }
   }

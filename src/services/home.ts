@@ -8,6 +8,7 @@ import {
   getFZContentByGenre,
   getFZContentByCountry,
 } from "./fzmovies";
+import { getAllSourceContent, mergeContentSources } from "./contentSources";
 
 // MOVIE TAB
 ///////////////////////////////////////////////////////////////
@@ -20,18 +21,19 @@ export const getHomeMovies = async (): Promise<HomeFilms> => {
     Upcoming: "/movie/upcoming",
   };
 
-  // Fetch from both TMDB and FZMovies in parallel
-  const [tmdbResponses, fzTrending, fzPopular, fzTopRated, fzLatest] = await Promise.all([
+  // Fetch from TMDB, FZMovies, and other sources in parallel
+  const [tmdbResponses, fzTrending, fzPopular, fzTopRated, fzLatest, otherSources] = await Promise.all([
     Promise.all(Object.entries(endpoints).map((endpoint) => axios.get(endpoint[1]))),
     getFZTrending("movie"),
     getFZPopular("movie", 1),
     getFZTopRated("movie", 1),
     getFZLatest("movie", 1),
+    getAllSourceContent("movie", 1),
   ]);
 
-  // Helper function to merge and deduplicate items
-  const mergeAndDedupe = (tmdbItems: Item[], fzItems: Item[]): Item[] => {
-    const combined = [...tmdbItems, ...fzItems];
+  // Helper function to merge and deduplicate items from all sources
+  const mergeAndDedupe = (tmdbItems: Item[], fzItems: Item[], otherItems: Item[] = []): Item[] => {
+    const combined = [...tmdbItems, ...fzItems, ...otherItems];
     const seen = new Set<number>();
     return combined.filter((item) => {
       if (seen.has(item.id)) return false;
@@ -123,18 +125,19 @@ export const getHomeTVs = async (): Promise<HomeFilms> => {
     "On the air": "/tv/on_the_air",
   };
 
-  // Fetch from both TMDB and FZMovies in parallel
-  const [tmdbResponses, fzTrending, fzPopular, fzTopRated, fzLatest] = await Promise.all([
+  // Fetch from TMDB, FZMovies, and other sources in parallel
+  const [tmdbResponses, fzTrending, fzPopular, fzTopRated, fzLatest, otherSources] = await Promise.all([
     Promise.all(Object.entries(endpoints).map((endpoint) => axios.get(endpoint[1]))),
     getFZTrending("tv"),
     getFZPopular("tv", 1),
     getFZTopRated("tv", 1),
     getFZLatest("tv", 1),
+    getAllSourceContent("tv", 1),
   ]);
 
-  // Helper function to merge and deduplicate items
-  const mergeAndDedupe = (tmdbItems: Item[], fzItems: Item[]): Item[] => {
-    const combined = [...tmdbItems, ...fzItems];
+  // Helper function to merge and deduplicate items from all sources
+  const mergeAndDedupe = (tmdbItems: Item[], fzItems: Item[], otherItems: Item[] = []): Item[] => {
+    const combined = [...tmdbItems, ...fzItems, ...otherItems];
     const seen = new Set<number>();
     return combined.filter((item) => {
       if (seen.has(item.id)) return false;
@@ -162,7 +165,7 @@ export const getHomeTVs = async (): Promise<HomeFilms> => {
       fzItems = fzLatest;
     }
 
-    final[key] = mergeAndDedupe(tmdbItems, fzItems);
+    final[key] = mergeAndDedupe(tmdbItems, fzItems, otherSources);
 
     return final;
   }, {} as HomeFilms);
@@ -208,13 +211,14 @@ export const getTVBannerInfo = async (tvs: Item[]): Promise<BannerInfo[]> => {
 // GENERAL
 ///////////////////////////////////////////////////////////////
 export const getTrendingNow = async (): Promise<Item[]> => {
-  const [tmdbResults, fzResults] = await Promise.all([
+  const [tmdbResults, fzResults, otherSources] = await Promise.all([
     axios.get("/trending/all/day?page=2"),
     getFZTrending("all"),
+    getAllSourceContent("movie", 1),
   ]);
 
   const tmdbItems = tmdbResults.data.results || [];
-  const combined = [...tmdbItems, ...fzResults];
+  const combined = [...tmdbItems, ...fzResults, ...otherSources];
   const seen = new Set<number>();
   return combined.filter((item) => {
     if (seen.has(item.id)) return false;
@@ -242,7 +246,8 @@ export const getHorrorMovies = async (): Promise<Item[]> => {
       media_type: "movie",
     }));
 
-    const combined = [...tmdbItems, ...fzHorror];
+    const otherSources = await getAllSourceContent("movie", 1);
+    const combined = [...tmdbItems, ...fzHorror, ...otherSources];
     const seen = new Set<number>();
     return combined.filter((item) => {
       if (seen.has(item.id)) return false;

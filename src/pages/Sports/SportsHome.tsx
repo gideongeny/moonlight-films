@@ -53,14 +53,19 @@ const SportsHome: FC = () => {
     };
   }, []);
 
-  // Combine real data with static data
+  // Prioritize real API data over static data
   const allFixtures = useMemo(() => {
-    const combined = [...liveFixtures, ...upcomingFixtures, ...SPORTS_FIXTURES];
-    // Remove duplicates by id
-    const unique = combined.filter((fixture, index, self) =>
-      index === self.findIndex((f) => f.id === fixture.id)
-    );
-    return unique;
+    // If we have real data, use it. Otherwise fall back to static data
+    if (liveFixtures.length > 0 || upcomingFixtures.length > 0) {
+      const combined = [...liveFixtures, ...upcomingFixtures];
+      // Remove duplicates by id
+      const unique = combined.filter((fixture, index, self) =>
+        index === self.findIndex((f) => f.id === fixture.id)
+      );
+      return unique;
+    }
+    // Fallback to static data only if no real data available
+    return SPORTS_FIXTURES;
   }, [liveFixtures, upcomingFixtures]);
 
   const filteredFixtures = useMemo(

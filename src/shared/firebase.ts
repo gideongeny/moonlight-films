@@ -24,9 +24,15 @@ export const auth = getAuth(app);
 // Set persistence to LOCAL (persists across browser sessions and app restarts)
 // This ensures users stay logged in even after closing the app or restarting their phone
 // browserLocalPersistence: Auth state persists in localStorage and persists across browser sessions
-setPersistence(auth, browserLocalPersistence).catch((error) => {
-  console.error("Error setting auth persistence:", error);
-});
+// IMPORTANT: Set persistence BEFORE any auth operations
+(async () => {
+  try {
+    await setPersistence(auth, browserLocalPersistence);
+    console.log("Auth persistence set to browserLocalPersistence");
+  } catch (error) {
+    console.error("Error setting auth persistence:", error);
+  }
+})();
 
 // Initialize Analytics (only in browser environment)
 let analytics: ReturnType<typeof getAnalytics> | undefined;
