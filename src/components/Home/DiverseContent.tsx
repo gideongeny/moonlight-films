@@ -580,12 +580,16 @@ const DiverseContent: React.FC<DiverseContentProps> = ({ currentTab }) => {
         />
       )}
 
-      {/* Genre Categories from MovieBox.ph - Properly filtered by genre */}
+      {/* Genre Categories from MovieBox.ph - Properly filtered by genre and media type */}
       {(() => {
-        const filtered = actionMovies.filter((item) => item.genre_ids && item.genre_ids.includes(28));
+        const filtered = actionMovies.filter((item) => {
+          const hasGenre = item.genre_ids && item.genre_ids.includes(28);
+          const matchesMediaType = currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv";
+          return hasGenre && matchesMediaType;
+        });
         return filtered.length > 0 ? (
           <SectionSlider
-            title="💥 Action Movies"
+            title={`💥 Action ${currentTab === "movie" ? "Movies" : "TV Shows"}`}
             films={filtered}
             limitNumber={10}
             isLoading={false}
