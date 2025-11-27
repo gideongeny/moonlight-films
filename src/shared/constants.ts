@@ -63,6 +63,14 @@ export const EMBED_ALTERNATIVES = {
   STARTIMES: "https://startimes.com", // African satellite TV
   DSTV: "https://dstv.com", // South African satellite TV
   GOTV: "https://gotvafrica.com", // African satellite TV
+  // FZMovies CMS integration - primary source for movies and TV shows
+  FZMOVIES: "https://fzmovies.cms",
+  FZMOVIES_EMBED: "https://fzmovies.cms/embed",
+  FZMOVIES_PLAYER: "https://fzmovies.cms/player",
+  // Additional FZMovies alternative endpoints
+  FZMOVIES_ALT1: "https://fzmovies.net",
+  FZMOVIES_ALT2: "https://fzmovies.watch",
+  FZMOVIES_ALT3: "https://fzmovies.to",
 };
 
 export interface SportsLeagueConfig {
@@ -79,6 +87,8 @@ export interface SportsFixtureConfig {
   leagueId: string;
   homeTeam: string;
   awayTeam: string;
+  homeTeamLogo?: string;
+  awayTeamLogo?: string;
   status: "live" | "upcoming" | "replay";
   kickoffTimeFormatted: string;
   venue: string;
@@ -90,6 +100,7 @@ export interface SportsFixtureConfig {
   homeScore?: number;
   awayScore?: number;
   minute?: string;
+  isLive?: boolean;
 }
 
 export const SPORTS_LEAGUES: SportsLeagueConfig[] = [
@@ -189,6 +200,8 @@ export const SPORTS_FIXTURES: SportsFixtureConfig[] = [
     leagueId: "ucl",
     homeTeam: "Manchester City",
     awayTeam: "Real Madrid",
+    homeTeamLogo: "https://www.thesportsdb.com/images/media/team/badge/manchester-city.png",
+    awayTeamLogo: "https://www.thesportsdb.com/images/media/team/badge/real-madrid.png",
     status: "live",
     kickoffTimeFormatted: "Tonight · 21:00 (Your local time)",
     venue: "Wembley Stadium, London",
@@ -204,12 +217,15 @@ export const SPORTS_FIXTURES: SportsFixtureConfig[] = [
     homeScore: 2,
     awayScore: 1,
     minute: "67'",
+    isLive: true,
   },
   {
     id: "epl-ars-che",
     leagueId: "epl",
     homeTeam: "Arsenal",
     awayTeam: "Chelsea",
+    homeTeamLogo: "https://www.thesportsdb.com/images/media/team/badge/arsenal.png",
+    awayTeamLogo: "https://www.thesportsdb.com/images/media/team/badge/chelsea.png",
     status: "live",
     kickoffTimeFormatted: "Saturday · 18:30 (Your local time)",
     venue: "Emirates Stadium, London",
@@ -224,12 +240,15 @@ export const SPORTS_FIXTURES: SportsFixtureConfig[] = [
     homeScore: 1,
     awayScore: 0,
     minute: "23'",
+    isLive: true,
   },
   {
     id: "laliga-elclasico",
     leagueId: "laliga",
     homeTeam: "Barcelona",
     awayTeam: "Real Madrid",
+    homeTeamLogo: "https://www.thesportsdb.com/images/media/team/badge/barcelona.png",
+    awayTeamLogo: "https://www.thesportsdb.com/images/media/team/badge/real-madrid.png",
     status: "live",
     kickoffTimeFormatted: "Live Now",
     venue: "Spotify Camp Nou, Barcelona",
@@ -239,12 +258,15 @@ export const SPORTS_FIXTURES: SportsFixtureConfig[] = [
     homeScore: 0,
     awayScore: 2,
     minute: "45'",
+    isLive: true,
   },
   {
     id: "afcon-final",
     leagueId: "afcon",
     homeTeam: "Nigeria",
     awayTeam: "Senegal",
+    homeTeamLogo: "https://www.thesportsdb.com/images/media/team/badge/nigeria.png",
+    awayTeamLogo: "https://www.thesportsdb.com/images/media/team/badge/senegal.png",
     status: "live",
     kickoffTimeFormatted: "Live Now",
     venue: "Abidjan, Côte d'Ivoire",
@@ -256,6 +278,7 @@ export const SPORTS_FIXTURES: SportsFixtureConfig[] = [
     homeScore: 1,
     awayScore: 1,
     minute: "78'",
+    isLive: true,
   },
   {
     id: "rugby-wc-final",

@@ -204,7 +204,7 @@ const SportsHome: FC = () => {
                       </span>
                     </div>
                     <div className="flex-1">
-                      <div className="flex items-center justify-between gap-3 mb-1">
+                      <div className="flex items-center justify-between gap-3 mb-3">
                         <p className="text-xs uppercase tracking-wide text-gray-400 flex items-center gap-2">
                           <span className="inline-flex items-center gap-1">
                             {league?.flag && (
@@ -222,24 +222,87 @@ const SportsHome: FC = () => {
                         <span
                           className={`text-[10px] px-2 py-1 rounded-full font-semibold tracking-wide ${
                             fixture.status === "live"
-                              ? "bg-red-600/20 text-red-400 border border-red-500/60"
+                              ? "bg-red-600/20 text-red-400 border border-red-500/60 animate-pulse"
                               : fixture.status === "upcoming"
                               ? "bg-amber-500/15 text-amber-300 border border-amber-400/60"
                               : "bg-emerald-500/15 text-emerald-300 border border-emerald-500/60"
                           }`}
                         >
                           {fixture.status === "live"
-                            ? "LIVE"
+                            ? "🔴 LIVE"
                             : fixture.status === "upcoming"
                             ? "UPCOMING"
                             : "REPLAY"}
                         </span>
                       </div>
 
-                      <p className="text-white font-semibold text-base md:text-lg mb-1">
-                        {fixture.homeTeam} <span className="text-gray-400">vs</span>{" "}
-                        {fixture.awayTeam}
-                      </p>
+                      {/* Club logos and scores display */}
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3 flex-1">
+                          {fixture.homeTeamLogo ? (
+                            <img
+                              src={fixture.homeTeamLogo}
+                              alt={fixture.homeTeam}
+                              className="w-10 h-10 object-contain"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).style.display = 'none';
+                              }}
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-xs font-bold text-gray-400">
+                              {fixture.homeTeam.charAt(0)}
+                            </div>
+                          )}
+                          <div className="flex-1">
+                            <p className="text-white font-semibold text-sm md:text-base">
+                              {fixture.homeTeam}
+                            </p>
+                            {fixture.status === "live" && fixture.homeScore !== undefined && (
+                              <p className="text-2xl font-bold text-white mt-1">
+                                {fixture.homeScore}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        {fixture.status === "live" && (
+                          <div className="px-3">
+                            <span className="text-red-500 font-bold text-lg">VS</span>
+                            {fixture.minute && (
+                              <p className="text-xs text-red-400 font-semibold mt-1 text-center">
+                                {fixture.minute}
+                              </p>
+                            )}
+                          </div>
+                        )}
+
+                        <div className="flex items-center gap-3 flex-1 justify-end">
+                          <div className="flex-1 text-right">
+                            <p className="text-white font-semibold text-sm md:text-base">
+                              {fixture.awayTeam}
+                            </p>
+                            {fixture.status === "live" && fixture.awayScore !== undefined && (
+                              <p className="text-2xl font-bold text-white mt-1">
+                                {fixture.awayScore}
+                              </p>
+                            )}
+                          </div>
+                          {fixture.awayTeamLogo ? (
+                            <img
+                              src={fixture.awayTeamLogo}
+                              alt={fixture.awayTeam}
+                              className="w-10 h-10 object-contain"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).style.display = 'none';
+                              }}
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-xs font-bold text-gray-400">
+                              {fixture.awayTeam.charAt(0)}
+                            </div>
+                          )}
+                        </div>
+                      </div>
 
                       <p className="text-xs text-gray-400 mb-2">
                         {fixture.kickoffTimeFormatted} • {fixture.venue}

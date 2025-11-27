@@ -1,5 +1,13 @@
 import axios from "../shared/axios";
 import { BannerInfo, Item, HomeFilms } from "../shared/types";
+import {
+  getFZTrending,
+  getFZPopular,
+  getFZTopRated,
+  getFZLatest,
+  getFZContentByGenre,
+  getFZContentByCountry,
+} from "./fzmovies";
 
 // MOVIE TAB
 ///////////////////////////////////////////////////////////////
@@ -12,17 +20,46 @@ export const getHomeMovies = async (): Promise<HomeFilms> => {
     Upcoming: "/movie/upcoming",
   };
 
-  const responses = await Promise.all(
-    Object.entries(endpoints).map((endpoint) => axios.get(endpoint[1]))
-  );
+  // Fetch from both TMDB and FZMovies in parallel
+  const [tmdbResponses, fzTrending, fzPopular, fzTopRated, fzLatest] = await Promise.all([
+    Promise.all(Object.entries(endpoints).map((endpoint) => axios.get(endpoint[1]))),
+    getFZTrending("movie"),
+    getFZPopular("movie", 1),
+    getFZTopRated("movie", 1),
+    getFZLatest("movie", 1),
+  ]);
 
-  const data = responses.reduce((final, current, index) => {
-    final[Object.entries(endpoints)[index][0]] = current.data.results.map(
-      (item: Item) => ({
-        ...item,
-        media_type: "movie",
-      })
-    );
+  // Helper function to merge and deduplicate items
+  const mergeAndDedupe = (tmdbItems: Item[], fzItems: Item[]): Item[] => {
+    const combined = [...tmdbItems, ...fzItems];
+    const seen = new Set<number>();
+    return combined.filter((item) => {
+      if (seen.has(item.id)) return false;
+      seen.add(item.id);
+      return item.poster_path; // Only include items with posters
+    });
+  };
+
+  const data = tmdbResponses.reduce((final, current, index) => {
+    const key = Object.entries(endpoints)[index][0];
+    const tmdbItems = current.data.results.map((item: Item) => ({
+      ...item,
+      media_type: "movie" as const,
+    }));
+
+    // Merge with FZMovies content based on category
+    let fzItems: Item[] = [];
+    if (key === "Trending" || key === "Hot") {
+      fzItems = fzTrending;
+    } else if (key === "Popular") {
+      fzItems = fzPopular;
+    } else if (key === "Top Rated") {
+      fzItems = fzTopRated;
+    } else if (key === "Upcoming") {
+      fzItems = fzLatest;
+    }
+
+    final[key] = mergeAndDedupe(tmdbItems, fzItems);
 
     return final;
   }, {} as HomeFilms);
@@ -86,17 +123,46 @@ export const getHomeTVs = async (): Promise<HomeFilms> => {
     "On the air": "/tv/on_the_air",
   };
 
-  const responses = await Promise.all(
-    Object.entries(endpoints).map((endpoint) => axios.get(endpoint[1]))
-  );
+  // Fetch from both TMDB and FZMovies in parallel
+  const [tmdbResponses, fzTrending, fzPopular, fzTopRated, fzLatest] = await Promise.all([
+    Promise.all(Object.entries(endpoints).map((endpoint) => axios.get(endpoint[1]))),
+    getFZTrending("tv"),
+    getFZPopular("tv", 1),
+    getFZTopRated("tv", 1),
+    getFZLatest("tv", 1),
+  ]);
 
-  const data = responses.reduce((final, current, index) => {
-    final[Object.entries(endpoints)[index][0]] = current.data.results.map(
-      (item: Item) => ({
-        ...item,
-        media_type: "tv",
-      })
-    );
+  // Helper function to merge and deduplicate items
+  const mergeAndDedupe = (tmdbItems: Item[], fzItems: Item[]): Item[] => {
+    const combined = [...tmdbItems, ...fzItems];
+    const seen = new Set<number>();
+    return combined.filter((item) => {
+      if (seen.has(item.id)) return false;
+      seen.add(item.id);
+      return item.poster_path; // Only include items with posters
+    });
+  };
+
+  const data = tmdbResponses.reduce((final, current, index) => {
+    const key = Object.entries(endpoints)[index][0];
+    const tmdbItems = current.data.results.map((item: Item) => ({
+      ...item,
+      media_type: "tv" as const,
+    }));
+
+    // Merge with FZMovies content based on category
+    let fzItems: Item[] = [];
+    if (key === "Trending" || key === "Hot") {
+      fzItems = fzTrending;
+    } else if (key === "Popular") {
+      fzItems = fzPopular;
+    } else if (key === "Top Rated") {
+      fzItems = fzTopRated;
+    } else if (key === "On the air") {
+      fzItems = fzLatest;
+    }
+
+    final[key] = mergeAndDedupe(tmdbItems, fzItems);
 
     return final;
   }, {} as HomeFilms);
@@ -142,23 +208,47 @@ export const getTVBannerInfo = async (tvs: Item[]): Promise<BannerInfo[]> => {
 // GENERAL
 ///////////////////////////////////////////////////////////////
 export const getTrendingNow = async (): Promise<Item[]> => {
-  return (await axios.get("/trending/all/day?page=2")).data.results;
+  const [tmdbResults, fzResults] = await Promise.all([
+    axios.get("/trending/all/day?page=2"),
+    getFZTrending("all"),
+  ]);
+
+  const tmdbItems = tmdbResults.data.results || [];
+  const combined = [...tmdbItems, ...fzResults];
+  const seen = new Set<number>();
+  return combined.filter((item) => {
+    if (seen.has(item.id)) return false;
+    seen.add(item.id);
+    return item.poster_path;
+  });
 };
 
 // Global horror movies (for Horror Movies shelf)
 export const getHorrorMovies = async (): Promise<Item[]> => {
   try {
-    const response = await axios.get(`/discover/movie`, {
-      params: {
-        with_genres: 27, // Horror
-        sort_by: "popularity.desc",
-        page: 1,
-      },
-    });
-    return (response.data.results || []).map((item: any) => ({
+    const [tmdbResponse, fzHorror] = await Promise.all([
+      axios.get(`/discover/movie`, {
+        params: {
+          with_genres: 27, // Horror
+          sort_by: "popularity.desc",
+          page: 1,
+        },
+      }),
+      getFZContentByGenre(27, "movie", 1), // Horror genre ID is 27
+    ]);
+
+    const tmdbItems = (tmdbResponse.data.results || []).map((item: any) => ({
       ...item,
       media_type: "movie",
     }));
+
+    const combined = [...tmdbItems, ...fzHorror];
+    const seen = new Set<number>();
+    return combined.filter((item) => {
+      if (seen.has(item.id)) return false;
+      seen.add(item.id);
+      return item.poster_path;
+    });
   } catch (error) {
     console.error("Error fetching horror movies:", error);
     return [];
@@ -204,29 +294,44 @@ export const getAfricanContent = async (): Promise<Item[]> => {
       "EG",
     ].join("|");
 
-    // Fetch first 2 pages for broader coverage
-    const moviePages = await Promise.all(
-      [1, 2].map((page) =>
-        axios.get(`/discover/movie`, {
-          params: {
-            with_origin_country: africanCountries,
-            sort_by: "popularity.desc",
-            page,
-          },
-        })
-      )
-    );
-    const tvPages = await Promise.all(
-      [1, 2].map((page) =>
-        axios.get(`/discover/tv`, {
-          params: {
-            with_origin_country: africanCountries,
-            sort_by: "popularity.desc",
-            page,
-          },
-        })
-      )
-    );
+    // Fetch from both TMDB and FZMovies in parallel
+    const [moviePages, tvPages, fzMovies, fzTV] = await Promise.all([
+      Promise.all(
+        [1, 2].map((page) =>
+          axios.get(`/discover/movie`, {
+            params: {
+              with_origin_country: africanCountries,
+              sort_by: "popularity.desc",
+              page,
+            },
+          })
+        )
+      ),
+      Promise.all(
+        [1, 2].map((page) =>
+          axios.get(`/discover/tv`, {
+            params: {
+              with_origin_country: africanCountries,
+              sort_by: "popularity.desc",
+              page,
+            },
+          })
+        )
+      ),
+      // Fetch from FZMovies for African countries
+      Promise.all([
+        getFZContentByCountry("NG", "movie", 1),
+        getFZContentByCountry("KE", "movie", 1),
+        getFZContentByCountry("ZA", "movie", 1),
+        getFZContentByCountry("GH", "movie", 1),
+      ]).then(results => results.flat()),
+      Promise.all([
+        getFZContentByCountry("NG", "tv", 1),
+        getFZContentByCountry("KE", "tv", 1),
+        getFZContentByCountry("ZA", "tv", 1),
+        getFZContentByCountry("GH", "tv", 1),
+      ]).then(results => results.flat()),
+    ]);
 
     const movieResults = moviePages.flatMap((res) => res.data.results || []).filter((i: any) => i.poster_path);
     const tvResults = tvPages.flatMap((res) => res.data.results || []).filter((i: any) => i.poster_path);
@@ -234,8 +339,8 @@ export const getAfricanContent = async (): Promise<Item[]> => {
     const movies = movieResults.map((item: any) => ({ ...item, media_type: "movie" }));
     const tvs = tvResults.map((item: any) => ({ ...item, media_type: "tv" }));
 
-    // Dedupe
-    const combined = [...movies, ...tvs];
+    // Merge with FZMovies content and dedupe
+    const combined = [...movies, ...tvs, ...fzMovies, ...fzTV];
     return combined.filter((item, idx, self) => idx === self.findIndex((t) => t.id === item.id));
   } catch (error) {
     console.error("Error fetching African content:", error);

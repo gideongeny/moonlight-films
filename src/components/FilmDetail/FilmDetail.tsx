@@ -197,6 +197,16 @@ const FilmDetail: FC<FilmInfo> = ({ similar, videos, detail, ...others }) => {
                           (detail as DetailTV).name}
                       </h1>
                     </div>
+                    {/* Show release date for unreleased movies */}
+                    {detail.media_type === "movie" && (detail as DetailMovie).release_date && 
+                     new Date((detail as DetailMovie).release_date) > new Date() && (
+                      <div className="md:mt-4 mt-2">
+                        <span className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/20 border border-amber-500/50 rounded-full text-amber-300 text-sm font-semibold">
+                          <span>📅</span>
+                          <span>Releases: {new Date((detail as DetailMovie).release_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                        </span>
+                      </div>
+                    )}
                     <ul className="flex gap-3 flex-wrap md:mt-7 mt-3">
                       {detail.genres.slice(0, 3).map((genre) => (
                         <li key={genre.id} className="mb-3">

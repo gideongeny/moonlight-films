@@ -3,7 +3,6 @@ import { FunctionComponent, useEffect, useState } from "react";
 import { AiFillStar, AiTwotoneCalendar, AiOutlineDownload } from "react-icons/ai";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { GiHamburgerMenu } from "react-icons/gi";
-import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link } from "react-router-dom";
 import { useCurrentViewportView } from "../../hooks/useCurrentViewportView";
 import { db } from "../../shared/firebase";
@@ -14,7 +13,6 @@ import {
   getWatchReturnedType,
   Item,
 } from "../../shared/types";
-import { embedMovie, embedTV } from "../../shared/utils";
 import { EMBED_ALTERNATIVES } from "../../shared/constants";
 import { useAppSelector } from "../../store/hooks";
 import { downloadService } from "../../services/download";
@@ -95,6 +93,13 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
         `${EMBED_ALTERNATIVES.YOUTUBE}/movie/${detail?.id}`,
         `${EMBED_ALTERNATIVES.VIMEO}/movie/${detail?.id}`,
         `${EMBED_ALTERNATIVES.DAILYMOTION}/movie/${detail?.id}`,
+        // FZMovies CMS sources - primary source for movies
+        `${EMBED_ALTERNATIVES.FZMOVIES_EMBED}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.FZMOVIES_PLAYER}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.FZMOVIES}/watch/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.FZMOVIES_ALT1}/embed/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.FZMOVIES_ALT2}/player/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.FZMOVIES_ALT3}/watch/movie/${detail?.id}`,
       ];
     } else {
       return [
@@ -135,6 +140,13 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
         `${EMBED_ALTERNATIVES.YOUTUBE}/tv/${detail?.id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.VIMEO}/tv/${detail?.id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.DAILYMOTION}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        // FZMovies CMS sources - primary source for TV shows
+        `${EMBED_ALTERNATIVES.FZMOVIES_EMBED}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.FZMOVIES_PLAYER}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.FZMOVIES}/watch/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.FZMOVIES_ALT1}/embed/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.FZMOVIES_ALT2}/player/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.FZMOVIES_ALT3}/watch/tv/${detail?.id}/${seasonId}/${episodeId}`,
       ];
     }
   };
@@ -181,6 +193,11 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
     if (source.includes('youtube.com')) return 'YouTube';
     if (source.includes('vimeo.com')) return 'Vimeo';
     if (source.includes('dailymotion.com')) return 'Dailymotion';
+    // FZMovies CMS sources
+    if (source.includes('fzmovies.cms')) return 'FZMovies CMS';
+    if (source.includes('fzmovies.net')) return 'FZMovies (Alt 1)';
+    if (source.includes('fzmovies.watch')) return 'FZMovies (Alt 2)';
+    if (source.includes('fzmovies.to')) return 'FZMovies (Alt 3)';
     return 'Unknown Source';
   };
 
@@ -376,7 +393,7 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
                   className="absolute w-full h-full top-0 left-0"
                   src={currentSource}
                   title="Film Video Player"
-                  frameBorder="0"
+                  style={{ border: 0 }}
                   allowFullScreen
                   onError={handleVideoError}
                   onLoad={handleVideoLoad}

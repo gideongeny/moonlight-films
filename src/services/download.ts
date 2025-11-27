@@ -108,6 +108,13 @@ export class DownloadService {
         `${EMBED_ALTERNATIVES.YOUTUBE}/movie/${id}`,
         `${EMBED_ALTERNATIVES.VIMEO}/movie/${id}`,
         `${EMBED_ALTERNATIVES.DAILYMOTION}/movie/${id}`,
+        // FZMovies CMS sources - primary source for movies
+        `${EMBED_ALTERNATIVES.FZMOVIES_EMBED}/movie/${id}`,
+        `${EMBED_ALTERNATIVES.FZMOVIES_PLAYER}/movie/${id}`,
+        `${EMBED_ALTERNATIVES.FZMOVIES}/watch/movie/${id}`,
+        `${EMBED_ALTERNATIVES.FZMOVIES_ALT1}/embed/movie/${id}`,
+        `${EMBED_ALTERNATIVES.FZMOVIES_ALT2}/player/movie/${id}`,
+        `${EMBED_ALTERNATIVES.FZMOVIES_ALT3}/watch/movie/${id}`,
       ];
     } else {
       return [
@@ -155,6 +162,13 @@ export class DownloadService {
         `${EMBED_ALTERNATIVES.YOUTUBE}/tv/${id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.VIMEO}/tv/${id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.DAILYMOTION}/tv/${id}/${seasonId}/${episodeId}`,
+        // FZMovies CMS sources - primary source for TV shows
+        `${EMBED_ALTERNATIVES.FZMOVIES_EMBED}/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.FZMOVIES_PLAYER}/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.FZMOVIES}/watch/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.FZMOVIES_ALT1}/embed/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.FZMOVIES_ALT2}/player/tv/${id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.FZMOVIES_ALT3}/watch/tv/${id}/${seasonId}/${episodeId}`,
       ];
     }
   }

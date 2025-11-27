@@ -10,6 +10,15 @@ interface FilmItemProps {
 }
 
 const FilmItem: FunctionComponent<FilmItemProps> = ({ item }) => {
+  // Check if movie is unreleased
+  const isUnreleased = item.media_type === "movie" && item.release_date 
+    ? new Date(item.release_date) > new Date()
+    : false;
+  
+  const releaseDate = item.media_type === "movie" && item.release_date
+    ? new Date(item.release_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    : null;
+
   return (
     <Link
       to={
@@ -34,10 +43,20 @@ const FilmItem: FunctionComponent<FilmItemProps> = ({ item }) => {
         <p className="whitespace-nowrap overflow-hidden text-ellipsis text-base text-gray-300 mt-1 text-center px-2 group-hover:text-white transition duration-300">
           {item.title || item.name}
         </p>
+        {isUnreleased && releaseDate && (
+          <p className="text-xs text-amber-400 text-center px-2 mt-1">
+            Releases: {releaseDate}
+          </p>
+        )}
         <div className="bg-primary px-2 py-1 rounded-full absolute top-[5%] left-[8%] z-20 flex items-center gap-1 text-white text-xs">
           {item.vote_average?.toFixed(1)}
           <AiFillStar size={15} />
         </div>
+        {isUnreleased && (
+          <div className="bg-amber-500 px-2 py-1 rounded-full absolute top-[5%] right-[8%] z-20 text-black text-xs font-semibold">
+            Coming Soon
+          </div>
+        )}
       </div>
     </Link>
   );
