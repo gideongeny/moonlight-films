@@ -6,7 +6,7 @@ import { Item } from "../shared/types";
 import { API_URL } from "../shared/constants";
 
 const TMDB_API_KEY = process.env.REACT_APP_API_KEY || "8c247ea0b4b56ed2ff7d41c9a833aa77";
-const OMDB_API_KEY = process.env.REACT_APP_OMDB_API_KEY || ""; // Get free key from http://www.omdbapi.com/apikey.aspx
+const OMDB_API_KEY = process.env.REACT_APP_OMDB_API_KEY || "eb87a867"; // OMDB API key (uses IMDB data)
 
 // Helper to convert API response to Item format
 const convertToItem = (item: any, mediaType: "movie" | "tv"): Item => {
@@ -79,8 +79,8 @@ export const getTMDBContent = async (
     });
     
     // Remove duplicates
-    const unique = allItems.filter((item, index, self) =>
-      index === self.findIndex((i) => i.id === item.id)
+    const unique = allItems.filter((item: Item, index: number, self: Item[]) =>
+      index === self.findIndex((i: Item) => i.id === item.id)
     );
     
     return unique;
@@ -113,7 +113,7 @@ export const getOMDBContent = async (
     
     if (response.data.Response === "True" && response.data.Search) {
       const items = response.data.Search.map((item: any) => convertToItem(item, type));
-      return items.filter((item) => item.poster_path);
+      return items.filter((item: Item) => item.poster_path);
     }
     
     return [];
@@ -139,17 +139,68 @@ export const getOMDBPopular = async (type: "movie" | "tv" = "movie"): Promise<It
       try {
         const items = await getOMDBContent(term, type);
         allItems.push(...items);
+        // Small delay to avoid rate limits
+        await new Promise(resolve => setTimeout(resolve, 200));
       } catch (e) {
         continue;
       }
     }
     
     // Remove duplicates
-    return allItems.filter((item, index, self) =>
-      index === self.findIndex((i) => i.id === item.id || i.title === item.title)
+    return allItems.filter((item: Item, index: number, self: Item[]) =>
+      index === self.findIndex((i: Item) => i.id === item.id || i.title === item.title)
     );
   } catch (error) {
     console.warn("OMDB Popular error:", error);
+    return [];
+  }
+};
+
+// IMDB Integration - Uses OMDB API which sources from IMDB
+// OMDB provides IMDB ratings, IDs, and metadata
+export const getIMDBContent = async (
+  searchQuery?: string,
+  type: "movie" | "tv" = "movie"
+): Promise<Item[]> => {
+  try {
+    if (!OMDB_API_KEY) {
+      return [];
+    }
+    
+    // If search query provided, search for it
+    if (searchQuery) {
+      return await getOMDBContent(searchQuery, type);
+    }
+    
+    // Otherwise, get popular content by searching common terms
+    const searchTerms = type === "movie" 
+      ? ["action", "comedy", "drama", "thriller", "horror", "sci-fi", "romance", "adventure", "fantasy"]
+      : ["drama", "comedy", "action", "thriller", "mystery", "crime"];
+    
+    const allItems: Item[] = [];
+    
+    // Search multiple terms to get diverse content
+    for (const term of searchTerms.slice(0, 5)) {
+      try {
+        const items = await getOMDBContent(term, type);
+        allItems.push(...items);
+        // Small delay to avoid rate limits
+        await new Promise(resolve => setTimeout(resolve, 200));
+      } catch (e) {
+        continue;
+      }
+    }
+    
+    // Remove duplicates by title and year
+    return allItems.filter((item: Item, index: number, self: Item[]) =>
+      index === self.findIndex((i: Item) => 
+        i.id === item.id || 
+        (i.title?.toLowerCase() === item.title?.toLowerCase() && 
+         i.release_date === item.release_date)
+      )
+    );
+  } catch (error) {
+    console.warn("IMDB/OMDB API error:", error);
     return [];
   }
 };
@@ -200,8 +251,8 @@ export const getTMDBByGenre = async (
     });
     
     // Remove duplicates
-    return allItems.filter((item, index, self) =>
-      index === self.findIndex((i) => i.id === item.id)
+    return allItems.filter((item: Item, index: number, self: Item[]) =>
+      index === self.findIndex((i: Item) => i.id === item.id)
     );
   } catch (error) {
     console.error(`Error fetching TMDB by genre ${genreId}:`, error);
@@ -209,21 +260,22 @@ export const getTMDBByGenre = async (
   }
 };
 
-// Get all content from all APIs
+// Get all content from all APIs (TMDB, OMDB/IMDB)
 export const getAllAPIContent = async (
   type: "movie" | "tv",
   category: "popular" | "top_rated" | "trending" = "popular"
 ): Promise<Item[]> => {
   try {
-    const [tmdbContent, omdbContent] = await Promise.all([
+    const [tmdbContent, omdbContent, imdbContent] = await Promise.all([
       getTMDBContent(type, category, 5), // Fetch 5 pages for more content
       getOMDBPopular(type),
+      getIMDBContent(undefined, type), // Get IMDB content (via OMDB)
     ]);
     
     // Merge and deduplicate
-    const allContent = [...tmdbContent, ...omdbContent];
-    return allContent.filter((item, index, self) =>
-      index === self.findIndex((i) => 
+    const allContent = [...tmdbContent, ...omdbContent, ...imdbContent];
+    return allContent.filter((item: Item, index: number, self: Item[]) =>
+      index === self.findIndex((i: Item) => 
         i.id === item.id || 
         (i.title?.toLowerCase() === item.title?.toLowerCase() && 
          i.release_date === item.release_date)
@@ -235,21 +287,22 @@ export const getAllAPIContent = async (
   }
 };
 
-// Get content by genre from all APIs
+// Get content by genre from all APIs (TMDB, OMDB/IMDB)
 export const getAllAPIContentByGenre = async (
   genreId: number,
   type: "movie" | "tv"
 ): Promise<Item[]> => {
   try {
-    const [tmdbContent, omdbContent] = await Promise.all([
+    const [tmdbContent, omdbContent, imdbContent] = await Promise.all([
       getTMDBByGenre(genreId, type, 3), // Fetch 3 pages
       getOMDBPopular(type), // OMDB doesn't support genre filtering directly
+      getIMDBContent(undefined, type), // Get IMDB content (via OMDB)
     ]);
     
     // Merge and deduplicate
-    const allContent = [...tmdbContent, ...omdbContent];
-    return allContent.filter((item, index, self) =>
-      index === self.findIndex((i) => 
+    const allContent = [...tmdbContent, ...omdbContent, ...imdbContent];
+    return allContent.filter((item: Item, index: number, self: Item[]) =>
+      index === self.findIndex((i: Item) => 
         i.id === item.id || 
         (i.title?.toLowerCase() === item.title?.toLowerCase())
       )
