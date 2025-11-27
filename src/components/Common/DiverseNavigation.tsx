@@ -82,70 +82,108 @@ const DiverseNavigation: React.FC = () => {
         baseItems.map(async (item) => {
           if (!item.fetchQuery) return item;
           
-          // Try multiple sources with fallbacks
+          // Try multiple sources with fallbacks - fetch popular content from the region/genre
           const sources = [
-            // Source 1: Primary TMDB discover
+            // Source 1: Primary TMDB discover - get most popular from region
             async () => {
-              const response = await axios.get('/discover/movie', {
-                params: {
-                  ...item.fetchQuery,
-                  sort_by: 'popularity.desc',
-                  page: 1,
-                  'vote_count.gte': 10
+              try {
+                const response = await axios.get('/discover/movie', {
+                  params: {
+                    ...item.fetchQuery,
+                    sort_by: 'popularity.desc',
+                    page: 1,
+                    'vote_count.gte': 10,
+                    'vote_average.gte': 6.0
+                  }
+                });
+                const movies: Item[] = response.data.results || [];
+                // Try first 5 movies to find one with backdrop
+                for (const movie of movies.slice(0, 5)) {
+                  if (movie.backdrop_path) {
+                    return `${IMAGE_URL}/w1280${movie.backdrop_path}`;
+                  }
                 }
-              });
-              const movies: Item[] = response.data.results || [];
-              if (movies.length > 0 && movies[0].backdrop_path) {
-                return `${IMAGE_URL}/w1280${movies[0].backdrop_path}`;
+              } catch (e) {
+                return null;
               }
               return null;
             },
-            // Source 2: Try page 2
+            // Source 2: Try TV shows from same region
             async () => {
-              const response = await axios.get('/discover/movie', {
-                params: {
-                  ...item.fetchQuery,
-                  sort_by: 'popularity.desc',
-                  page: 2,
-                  'vote_count.gte': 5
+              try {
+                const response = await axios.get('/discover/tv', {
+                  params: {
+                    ...item.fetchQuery,
+                    sort_by: 'popularity.desc',
+                    page: 1,
+                    'vote_count.gte': 10,
+                    'vote_average.gte': 6.0
+                  }
+                });
+                const shows: Item[] = response.data.results || [];
+                for (const show of shows.slice(0, 5)) {
+                  if (show.backdrop_path) {
+                    return `${IMAGE_URL}/w1280${show.backdrop_path}`;
+                  }
                 }
-              });
-              const movies: Item[] = response.data.results || [];
-              if (movies.length > 0 && movies[0].backdrop_path) {
-                return `${IMAGE_URL}/w1280${movies[0].backdrop_path}`;
+              } catch (e) {
+                return null;
               }
               return null;
             },
-            // Source 3: Try trending
+            // Source 3: Try page 2 of movies
             async () => {
-              const response = await axios.get('/trending/movie/day', {
-                params: { page: 1 }
-              });
-              const movies: Item[] = response.data.results || [];
-              if (movies.length > 0 && movies[0].backdrop_path) {
-                return `${IMAGE_URL}/w1280${movies[0].backdrop_path}`;
+              try {
+                const response = await axios.get('/discover/movie', {
+                  params: {
+                    ...item.fetchQuery,
+                    sort_by: 'popularity.desc',
+                    page: 2,
+                    'vote_count.gte': 5
+                  }
+                });
+                const movies: Item[] = response.data.results || [];
+                for (const movie of movies.slice(0, 5)) {
+                  if (movie.backdrop_path) {
+                    return `${IMAGE_URL}/w1280${movie.backdrop_path}`;
+                  }
+                }
+              } catch (e) {
+                return null;
               }
               return null;
             },
-            // Source 4: Try popular movies
+            // Source 4: Try trending from region
             async () => {
-              const response = await axios.get('/movie/popular', {
-                params: { page: 1 }
-              });
-              const movies: Item[] = response.data.results || [];
-              if (movies.length > 0 && movies[0].backdrop_path) {
-                return `${IMAGE_URL}/w1280${movies[0].backdrop_path}`;
+              try {
+                const response = await axios.get('/trending/movie/day', {
+                  params: { page: 1 }
+                });
+                const movies: Item[] = response.data.results || [];
+                for (const movie of movies.slice(0, 5)) {
+                  if (movie.backdrop_path) {
+                    return `${IMAGE_URL}/w1280${movie.backdrop_path}`;
+                  }
+                }
+              } catch (e) {
+                return null;
               }
               return null;
             },
-            // Source 5: Try top rated
+            // Source 5: Try popular movies
             async () => {
-              const response = await axios.get('/movie/top_rated', {
-                params: { page: 1 }
-              });
-              const movies: Item[] = response.data.results || [];
-              if (movies.length > 0 && movies[0].backdrop_path) {
-                return `${IMAGE_URL}/w1280${movies[0].backdrop_path}`;
+              try {
+                const response = await axios.get('/movie/popular', {
+                  params: { page: 1 }
+                });
+                const movies: Item[] = response.data.results || [];
+                for (const movie of movies.slice(0, 5)) {
+                  if (movie.backdrop_path) {
+                    return `${IMAGE_URL}/w1280${movie.backdrop_path}`;
+                  }
+                }
+              } catch (e) {
+                return null;
               }
               return null;
             },

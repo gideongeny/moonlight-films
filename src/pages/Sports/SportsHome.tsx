@@ -53,19 +53,37 @@ const SportsHome: FC = () => {
     };
   }, []);
 
-  // Prioritize real API data over static data
+  // Combine real API data with static data (always show something)
   const allFixtures = useMemo(() => {
-    // If we have real data, use it. Otherwise fall back to static data
+    // Always include static data as base
+    const combined = [...SPORTS_FIXTURES];
+    
+    // Add real API data if available
     if (liveFixtures.length > 0 || upcomingFixtures.length > 0) {
-      const combined = [...liveFixtures, ...upcomingFixtures];
-      // Remove duplicates by id
-      const unique = combined.filter((fixture, index, self) =>
-        index === self.findIndex((f) => f.id === fixture.id)
-      );
-      return unique;
+      combined.push(...liveFixtures, ...upcomingFixtures);
     }
-    // Fallback to static data only if no real data available
-    return SPORTS_FIXTURES;
+    
+    // Remove duplicates by id (prioritize API data over static)
+    const seen = new Set<string>();
+    const unique: SportsFixtureConfig[] = [];
+    
+    // First add API data
+    [...liveFixtures, ...upcomingFixtures].forEach((fixture) => {
+      if (!seen.has(fixture.id)) {
+        seen.add(fixture.id);
+        unique.push(fixture);
+      }
+    });
+    
+    // Then add static data that's not already included
+    SPORTS_FIXTURES.forEach((fixture) => {
+      if (!seen.has(fixture.id)) {
+        seen.add(fixture.id);
+        unique.push(fixture);
+      }
+    });
+    
+    return unique;
   }, [liveFixtures, upcomingFixtures]);
 
   const filteredFixtures = useMemo(

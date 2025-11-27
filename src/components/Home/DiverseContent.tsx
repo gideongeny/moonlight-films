@@ -327,11 +327,14 @@ const DiverseContent: React.FC = () => {
         />
       )}
 
-      {/* Horror Movies */}
-      {horrorMovies.length > 0 && (
+      {/* Horror Movies - Filtered by genre ID 27 */}
+      {horrorMovies.filter((item) => {
+        // Ensure item has horror genre (27)
+        return item.genre_ids && item.genre_ids.includes(27);
+      }).length > 0 && (
         <SectionSlider
           title="👻 Horror Movies"
-          films={horrorMovies}
+          films={horrorMovies.filter((item) => item.genre_ids && item.genre_ids.includes(27))}
           limitNumber={10}
           isLoading={false}
         />

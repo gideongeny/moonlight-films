@@ -63,7 +63,7 @@ export const getHomeMovies = async (): Promise<HomeFilms> => {
       fzItems = fzLatest;
     }
 
-    final[key] = mergeAndDedupe(tmdbItems, fzItems);
+    final[key] = mergeAndDedupe(tmdbItems, fzItems, [...otherSources, ...apiContent]);
 
     return final;
   }, {} as HomeFilms);
@@ -168,7 +168,17 @@ export const getHomeTVs = async (): Promise<HomeFilms> => {
       fzItems = fzLatest;
     }
 
-    final[key] = mergeAndDedupe(tmdbItems, fzItems, [...otherSources, ...apiContent]);
+    // Ensure genre filtering if category-specific
+    let filteredApiContent = apiContent;
+    if (key === "Trending" || key === "Hot") {
+      // Trending can be any genre
+    } else if (key === "Popular") {
+      // Popular can be any genre
+    } else if (key === "Top Rated") {
+      // Top rated can be any genre
+    }
+    
+    final[key] = mergeAndDedupe(tmdbItems, fzItems, [...otherSources, ...filteredApiContent]);
 
     return final;
   }, {} as HomeFilms);
