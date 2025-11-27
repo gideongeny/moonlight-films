@@ -265,5 +265,4 @@ export const getAllSourceContent = async (
   }
 };
 
-// Export individual functions for direct use
-export { getKissKHContent, getUGCAnimeContent, getAilokContent, getGoogotvContent, getFZMoviesContent };
+// Functions are already exported above, no need to re-export
