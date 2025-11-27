@@ -38,7 +38,11 @@ import {
 import SectionSlider from '../Slider/SectionSlider';
 import Skeleton from '../Common/Skeleton';
 
-const DiverseContent: React.FC = () => {
+interface DiverseContentProps {
+  currentTab: "movie" | "tv" | "sports";
+}
+
+const DiverseContent: React.FC<DiverseContentProps> = ({ currentTab }) => {
   const [africanContent, setAfricanContent] = useState<Item[]>([]);
   const [asianContent, setAsianContent] = useState<Item[]>([]);
   const [latinAmericanContent, setLatinAmericanContent] = useState<Item[]>([]);
@@ -317,31 +321,35 @@ const DiverseContent: React.FC = () => {
         </p>
       </div>
 
-      {/* Most Trending (all media types) */}
-      {trendingAll.length > 0 && (
+      {/* Most Trending (all media types) - Filter by currentTab */}
+      {trendingAll.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv").length > 0 && (
         <SectionSlider
-          title="🔥 Most Trending Now"
-          films={trendingAll}
+          title={`🔥 Most Trending ${currentTab === "movie" ? "Movies" : "TV Shows"}`}
+          films={trendingAll.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv")}
           limitNumber={10}
           isLoading={false}
         />
       )}
 
-      {/* Horror Movies - Filtered by genre ID 27 */}
-      {horrorMovies.filter((item) => {
-        // Ensure item has horror genre (27)
-        return item.genre_ids && item.genre_ids.includes(27);
-      }).length > 0 && (
-        <SectionSlider
-          title="👻 Horror Movies"
-          films={horrorMovies.filter((item) => item.genre_ids && item.genre_ids.includes(27))}
-          limitNumber={10}
-          isLoading={false}
-        />
-      )}
+      {/* Horror - Filtered by genre ID 27 and media type */}
+      {(() => {
+        const filtered = horrorMovies.filter((item) => {
+          const hasGenre = item.genre_ids && item.genre_ids.includes(27);
+          const matchesMediaType = currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv";
+          return hasGenre && matchesMediaType;
+        });
+        return filtered.length > 0 ? (
+          <SectionSlider
+            title={`👻 Horror ${currentTab === "movie" ? "Movies" : "TV Shows"}`}
+            films={filtered}
+            limitNumber={10}
+            isLoading={false}
+          />
+        ) : null;
+      })()}
 
-      {/* Must-watch Black Shows (derived from African TV content) */}
-      {mustWatchBlackShows.length > 0 && (
+      {/* Must-watch Black Shows (derived from African TV content) - Only show on TV tab */}
+      {currentTab === "tv" && mustWatchBlackShows.length > 0 && (
         <SectionSlider
           title="✊🏿 Must-watch Black Shows"
           films={mustWatchBlackShows}
@@ -350,8 +358,8 @@ const DiverseContent: React.FC = () => {
         />
       )}
 
-      {/* Must-watch Black Movies (African cinema) */}
-      {mustWatchBlackMovies.length > 0 && (
+      {/* Must-watch Black Movies (African cinema) - Only show on Movie tab */}
+      {currentTab === "movie" && mustWatchBlackMovies.length > 0 && (
         <SectionSlider
           title="✊🏿 Must-watch Black Movies"
           films={mustWatchBlackMovies}
@@ -359,18 +367,18 @@ const DiverseContent: React.FC = () => {
           isLoading={false}
         />
       )}
-      {/* Enhanced African Content */}
-      {enhancedAfricanCinema.length > 0 && (
+      {/* Enhanced African Content - Filter by media type */}
+      {enhancedAfricanCinema.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv").length > 0 && (
         <SectionSlider
-          title="🌍 African Cinema & TV Shows"
-          films={enhancedAfricanCinema}
+          title={`🌍 African ${currentTab === "movie" ? "Cinema" : "TV Shows"}`}
+          films={enhancedAfricanCinema.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv")}
           limitNumber={10}
           isLoading={false}
         />
       )}
 
-      {/* African TV Shows & Series - Enhanced with more sources */}
-      {(() => {
+      {/* African TV Shows & Series - Enhanced with more sources - Only show on TV tab */}
+      {currentTab === "tv" && (() => {
         // Combine all African TV sources for maximum diversity
         const allAfricanTV = [
           ...africanTVContent.filter((item) => item.media_type === "tv"),
@@ -395,28 +403,28 @@ const DiverseContent: React.FC = () => {
         ) : null;
       })()}
 
-      {/* Enhanced Nollywood Content */}
-      {enhancedNollywood.length > 0 && (
+      {/* Enhanced Nollywood Content - Filter by media type */}
+      {enhancedNollywood.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv").length > 0 && (
         <SectionSlider
-          title="🎬 Enhanced: Movies from the Nollywood industry (Nigeria)"
-          films={enhancedNollywood}
+          title={`🎬 Enhanced: ${currentTab === "movie" ? "Movies" : "TV Shows"} from the Nollywood industry (Nigeria)`}
+          films={enhancedNollywood.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv")}
           limitNumber={8}
           isLoading={false}
         />
       )}
 
-      {/* Enhanced Kenyan Content */}
-      {enhancedKenyan.length > 0 && (
+      {/* Enhanced Kenyan Content - Filter by media type */}
+      {enhancedKenyan.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv").length > 0 && (
         <SectionSlider
-          title="🇰🇪 Enhanced Kenyan Content (Movies & TV Shows)"
-          films={enhancedKenyan}
+          title={`🇰🇪 Enhanced Kenyan ${currentTab === "movie" ? "Movies" : "TV Shows"}`}
+          films={enhancedKenyan.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv")}
           limitNumber={8}
           isLoading={false}
         />
       )}
 
-      {/* African TV Content */}
-      {africanTVContent.length > 0 && (
+      {/* African TV Content - Only show on TV tab */}
+      {currentTab === "tv" && africanTVContent.length > 0 && (
         <SectionSlider
           title="📺 African TV Shows & Series"
           films={africanTVContent}
@@ -425,18 +433,18 @@ const DiverseContent: React.FC = () => {
         />
       )}
 
-      {/* East African Content */}
-      {eastAfricanContent.length > 0 && (
+      {/* East African Content - Filter by media type */}
+      {eastAfricanContent.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv").length > 0 && (
         <SectionSlider
-          title="🌍 East African Cinema (Kenya, Tanzania, Uganda, Ethiopia)"
-          films={eastAfricanContent}
+          title={`🌍 East African ${currentTab === "movie" ? "Cinema" : "TV Shows"} (Kenya, Tanzania, Uganda, Ethiopia)`}
+          films={eastAfricanContent.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv")}
           limitNumber={8}
           isLoading={false}
         />
       )}
 
-      {/* Kenyan TV Shows */}
-      {kenyanTVShows.length > 0 && (
+      {/* Kenyan TV Shows - Only show on TV tab */}
+      {currentTab === "tv" && kenyanTVShows.length > 0 && (
         <SectionSlider
           title="🇰🇪 Kenyan TV Shows (Citizen TV, NTV Kenya, KTN Kenya)"
           films={kenyanTVShows}
@@ -445,37 +453,37 @@ const DiverseContent: React.FC = () => {
         />
       )}
 
-      {/* South African Content */}
-      {southAfricanContent.length > 0 && (
+      {/* South African Content - Filter by media type */}
+      {southAfricanContent.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv").length > 0 && (
         <SectionSlider
-          title="🇿🇦 South African Cinema & TV Shows"
-          films={southAfricanContent}
+          title={`🇿🇦 South African ${currentTab === "movie" ? "Cinema" : "TV Shows"}`}
+          films={southAfricanContent.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv")}
           limitNumber={8}
           isLoading={false}
         />
       )}
 
-      {/* South African Drama */}
-      {southAfricanDrama.length > 0 && (
+      {/* South African Drama - Filter by media type */}
+      {southAfricanDrama.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv").length > 0 && (
         <SectionSlider
-          title="🇿🇦 SA Drama"
-          films={southAfricanDrama}
+          title={`🇿🇦 SA Drama ${currentTab === "movie" ? "Movies" : "TV Shows"}`}
+          films={southAfricanDrama.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv")}
           limitNumber={10}
           isLoading={false}
         />
       )}
-      {/* Nollywood Content */}
-      {nollywoodContent.length > 0 && (
+      {/* Nollywood Content - Filter by media type */}
+      {nollywoodContent.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv").length > 0 && (
         <SectionSlider
-          title="🎬 Movies from the Nollywood industry (Nigeria)"
-          films={nollywoodContent}
+          title={`🎬 ${currentTab === "movie" ? "Movies" : "TV Shows"} from the Nollywood industry (Nigeria)`}
+          films={nollywoodContent.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv")}
           limitNumber={8}
           isLoading={false}
         />
       )}
 
-      {/* Latest Nollywood Movies */}
-      {latestNollywoodMovies.length > 0 && (
+      {/* Latest Nollywood Movies - Only show on Movie tab */}
+      {currentTab === "movie" && latestNollywoodMovies.length > 0 && (
         <SectionSlider
           title="🆕 Latest Nollywood Movies"
           films={latestNollywoodMovies}
@@ -483,8 +491,8 @@ const DiverseContent: React.FC = () => {
           isLoading={false}
         />
       )}
-      {/* Nigerian TV Shows */}
-      {nigerianTVShows.length > 0 && (
+      {/* Nigerian TV Shows - Only show on TV tab */}
+      {currentTab === "tv" && nigerianTVShows.length > 0 && (
         <SectionSlider
           title="🇳🇬 Nigerian TV Shows & Series"
           films={nigerianTVShows}
@@ -493,80 +501,80 @@ const DiverseContent: React.FC = () => {
         />
       )}
 
-      {/* Asian Content */}
-      {asianContent.length > 0 && (
+      {/* Asian Content - Filter by media type */}
+      {asianContent.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv").length > 0 && (
         <SectionSlider
-          title="🌏 Asian Cinema & TV Shows"
-          films={asianContent}
+          title={`🌏 Asian ${currentTab === "movie" ? "Cinema" : "TV Shows"}`}
+          films={asianContent.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv")}
           limitNumber={8}
           isLoading={false}
         />
       )}
 
-      {/* Southeast Asian Content */}
-      {southeastAsianContent.length > 0 && (
+      {/* Southeast Asian Content - Filter by media type */}
+      {southeastAsianContent.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv").length > 0 && (
         <SectionSlider
-          title="🌏 Southeast Asian Cinema (Thailand, Vietnam, Malaysia, Singapore, Indonesia)"
-          films={southeastAsianContent}
+          title={`🌏 Southeast Asian ${currentTab === "movie" ? "Cinema" : "TV Shows"} (Thailand, Vietnam, Malaysia, Singapore, Indonesia)`}
+          films={southeastAsianContent.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv")}
           limitNumber={8}
           isLoading={false}
         />
       )}
 
-      {/* Thai Drama */}
-      {thaiDrama.length > 0 && (
+      {/* Thai Drama - Filter by media type */}
+      {thaiDrama.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv").length > 0 && (
         <SectionSlider
-          title="🇹🇭 Thai Drama"
-          films={thaiDrama}
+          title={`🇹🇭 Thai Drama ${currentTab === "movie" ? "Movies" : "TV Shows"}`}
+          films={thaiDrama.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv")}
           limitNumber={10}
           isLoading={false}
         />
       )}
-      {/* Filipino Content */}
-      {filipinoContent.length > 0 && (
+      {/* Filipino Content - Filter by media type */}
+      {filipinoContent.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv").length > 0 && (
         <SectionSlider
-          title="🇵🇭 Filipino Cinema & TV Shows"
-          films={filipinoContent}
+          title={`🇵🇭 Filipino ${currentTab === "movie" ? "Cinema" : "TV Shows"}`}
+          films={filipinoContent.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv")}
           limitNumber={8}
           isLoading={false}
         />
       )}
 
-      {/* Bollywood Content */}
-      {bollywoodContent.length > 0 && (
+      {/* Bollywood Content - Filter by media type */}
+      {bollywoodContent.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv").length > 0 && (
         <SectionSlider
-          title="🎭 Bollywood (Indian Movies & TV Shows)"
-          films={bollywoodContent}
+          title={`🎭 Bollywood (Indian ${currentTab === "movie" ? "Movies" : "TV Shows"})`}
+          films={bollywoodContent.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv")}
           limitNumber={8}
           isLoading={false}
         />
       )}
 
-      {/* Korean Content */}
-      {koreanContent.length > 0 && (
+      {/* Korean Content - Filter by media type */}
+      {koreanContent.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv").length > 0 && (
         <SectionSlider
-          title="🇰🇷 Korean Drama & Movies"
-          films={koreanContent}
+          title={`🇰🇷 Korean ${currentTab === "movie" ? "Movies" : "Drama"}`}
+          films={koreanContent.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv")}
           limitNumber={8}
           isLoading={false}
         />
       )}
 
-      {/* Japanese Content */}
-      {japaneseContent.length > 0 && (
+      {/* Japanese Content - Filter by media type */}
+      {japaneseContent.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv").length > 0 && (
         <SectionSlider
-          title="🇯🇵 Japanese Anime & Movies"
-          films={japaneseContent}
+          title={`🇯🇵 Japanese ${currentTab === "movie" ? "Movies" : "Anime"}`}
+          films={japaneseContent.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv")}
           limitNumber={8}
           isLoading={false}
         />
       )}
 
-      {/* Chinese Content */}
-      {chineseContent.length > 0 && (
+      {/* Chinese Content - Filter by media type */}
+      {chineseContent.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv").length > 0 && (
         <SectionSlider
-          title="🇨🇳 C-Drama & Chinese Cinema"
-          films={chineseContent}
+          title={`🇨🇳 ${currentTab === "movie" ? "Chinese Cinema" : "C-Drama"}`}
+          films={chineseContent.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv")}
           limitNumber={8}
           isLoading={false}
         />
@@ -586,10 +594,14 @@ const DiverseContent: React.FC = () => {
       })()}
 
       {(() => {
-        const filtered = comedyMovies.filter((item) => item.genre_ids && item.genre_ids.includes(35));
+        const filtered = comedyMovies.filter((item) => {
+          const hasGenre = item.genre_ids && item.genre_ids.includes(35);
+          const matchesMediaType = currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv";
+          return hasGenre && matchesMediaType;
+        });
         return filtered.length > 0 ? (
           <SectionSlider
-            title="😂 Comedy Movies"
+            title={`😂 Comedy ${currentTab === "movie" ? "Movies" : "TV Shows"}`}
             films={filtered}
             limitNumber={10}
             isLoading={false}
@@ -598,10 +610,14 @@ const DiverseContent: React.FC = () => {
       })()}
 
       {(() => {
-        const filtered = dramaMovies.filter((item) => item.genre_ids && item.genre_ids.includes(18));
+        const filtered = dramaMovies.filter((item) => {
+          const hasGenre = item.genre_ids && item.genre_ids.includes(18);
+          const matchesMediaType = currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv";
+          return hasGenre && matchesMediaType;
+        });
         return filtered.length > 0 ? (
           <SectionSlider
-            title="🎭 Drama Movies"
+            title={`🎭 Drama ${currentTab === "movie" ? "Movies" : "TV Shows"}`}
             films={filtered}
             limitNumber={10}
             isLoading={false}
@@ -610,10 +626,14 @@ const DiverseContent: React.FC = () => {
       })()}
 
       {(() => {
-        const filtered = thrillerMovies.filter((item) => item.genre_ids && item.genre_ids.includes(53));
+        const filtered = thrillerMovies.filter((item) => {
+          const hasGenre = item.genre_ids && item.genre_ids.includes(53);
+          const matchesMediaType = currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv";
+          return hasGenre && matchesMediaType;
+        });
         return filtered.length > 0 ? (
           <SectionSlider
-            title="🔪 Thriller Movies"
+            title={`🔪 Thriller ${currentTab === "movie" ? "Movies" : "TV Shows"}`}
             films={filtered}
             limitNumber={10}
             isLoading={false}
@@ -622,10 +642,14 @@ const DiverseContent: React.FC = () => {
       })()}
 
       {(() => {
-        const filtered = romanceMovies.filter((item) => item.genre_ids && item.genre_ids.includes(10749));
+        const filtered = romanceMovies.filter((item) => {
+          const hasGenre = item.genre_ids && item.genre_ids.includes(10749);
+          const matchesMediaType = currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv";
+          return hasGenre && matchesMediaType;
+        });
         return filtered.length > 0 ? (
           <SectionSlider
-            title="💕 Romance Movies"
+            title={`💕 Romance ${currentTab === "movie" ? "Movies" : "TV Shows"}`}
             films={filtered}
             limitNumber={10}
             isLoading={false}
@@ -634,10 +658,14 @@ const DiverseContent: React.FC = () => {
       })()}
 
       {(() => {
-        const filtered = sciFiMovies.filter((item) => item.genre_ids && item.genre_ids.includes(878));
+        const filtered = sciFiMovies.filter((item) => {
+          const hasGenre = item.genre_ids && item.genre_ids.includes(878);
+          const matchesMediaType = currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv";
+          return hasGenre && matchesMediaType;
+        });
         return filtered.length > 0 ? (
           <SectionSlider
-            title="🚀 Sci-Fi Movies"
+            title={`🚀 Sci-Fi ${currentTab === "movie" ? "Movies" : "TV Shows"}`}
             films={filtered}
             limitNumber={10}
             isLoading={false}
@@ -646,10 +674,14 @@ const DiverseContent: React.FC = () => {
       })()}
 
       {(() => {
-        const filtered = animationMovies.filter((item) => item.genre_ids && item.genre_ids.includes(16));
+        const filtered = animationMovies.filter((item) => {
+          const hasGenre = item.genre_ids && item.genre_ids.includes(16);
+          const matchesMediaType = currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv";
+          return hasGenre && matchesMediaType;
+        });
         return filtered.length > 0 ? (
           <SectionSlider
-            title="🎨 Animation Movies"
+            title={`🎨 Animation ${currentTab === "movie" ? "Movies" : "TV Shows"}`}
             films={filtered}
             limitNumber={10}
             isLoading={false}
@@ -658,10 +690,14 @@ const DiverseContent: React.FC = () => {
       })()}
 
       {(() => {
-        const filtered = documentaryMovies.filter((item) => item.genre_ids && item.genre_ids.includes(99));
+        const filtered = documentaryMovies.filter((item) => {
+          const hasGenre = item.genre_ids && item.genre_ids.includes(99);
+          const matchesMediaType = currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv";
+          return hasGenre && matchesMediaType;
+        });
         return filtered.length > 0 ? (
           <SectionSlider
-            title="📹 Documentary Movies"
+            title={`📹 Documentary ${currentTab === "movie" ? "Movies" : "TV Shows"}`}
             films={filtered}
             limitNumber={10}
             isLoading={false}
@@ -670,10 +706,14 @@ const DiverseContent: React.FC = () => {
       })()}
 
       {(() => {
-        const filtered = crimeMovies.filter((item) => item.genre_ids && item.genre_ids.includes(80));
+        const filtered = crimeMovies.filter((item) => {
+          const hasGenre = item.genre_ids && item.genre_ids.includes(80);
+          const matchesMediaType = currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv";
+          return hasGenre && matchesMediaType;
+        });
         return filtered.length > 0 ? (
           <SectionSlider
-            title="🔫 Crime Movies"
+            title={`🔫 Crime ${currentTab === "movie" ? "Movies" : "TV Shows"}`}
             films={filtered}
             limitNumber={10}
             isLoading={false}
@@ -682,10 +722,14 @@ const DiverseContent: React.FC = () => {
       })()}
 
       {(() => {
-        const filtered = adventureMovies.filter((item) => item.genre_ids && item.genre_ids.includes(12));
+        const filtered = adventureMovies.filter((item) => {
+          const hasGenre = item.genre_ids && item.genre_ids.includes(12);
+          const matchesMediaType = currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv";
+          return hasGenre && matchesMediaType;
+        });
         return filtered.length > 0 ? (
           <SectionSlider
-            title="🗺️ Adventure Movies"
+            title={`🗺️ Adventure ${currentTab === "movie" ? "Movies" : "TV Shows"}`}
             films={filtered}
             limitNumber={10}
             isLoading={false}
@@ -694,10 +738,14 @@ const DiverseContent: React.FC = () => {
       })()}
 
       {(() => {
-        const filtered = fantasyMovies.filter((item) => item.genre_ids && item.genre_ids.includes(14));
+        const filtered = fantasyMovies.filter((item) => {
+          const hasGenre = item.genre_ids && item.genre_ids.includes(14);
+          const matchesMediaType = currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv";
+          return hasGenre && matchesMediaType;
+        });
         return filtered.length > 0 ? (
           <SectionSlider
-            title="✨ Fantasy Movies"
+            title={`✨ Fantasy ${currentTab === "movie" ? "Movies" : "TV Shows"}`}
             films={filtered}
             limitNumber={10}
             isLoading={false}
