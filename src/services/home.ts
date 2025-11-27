@@ -295,18 +295,19 @@ export const getActionMovies = async (): Promise<Item[]> => {
 
 export const getComedyMovies = async (): Promise<Item[]> => {
   try {
-    const [tmdbResponse, fzComedy, otherSources] = await Promise.all([
+    const [tmdbResponse, fzComedy, otherSources, apiContent] = await Promise.all([
       axios.get(`/discover/movie`, {
         params: { with_genres: 35, sort_by: "popularity.desc", page: 1 },
       }),
       getFZContentByGenre(35, "movie", 1),
       getAllSourceContent("movie", 1),
+      getAllAPIContentByGenre(35, "movie"), // Comedy genre
     ]);
     const tmdbItems = (tmdbResponse.data.results || []).map((item: any) => ({
       ...item,
       media_type: "movie",
     }));
-    const combined = [...tmdbItems, ...fzComedy, ...otherSources];
+    const combined = [...tmdbItems, ...fzComedy, ...otherSources, ...apiContent];
     const seen = new Set<number>();
     return combined.filter((item) => {
       if (seen.has(item.id)) return false;
@@ -333,7 +334,7 @@ export const getDramaMovies = async (): Promise<Item[]> => {
       ...item,
       media_type: "movie",
     }));
-    const combined = [...tmdbItems, ...fzDrama, ...otherSources];
+    const combined = [...tmdbItems, ...fzDrama, ...otherSources, ...apiContent];
     const seen = new Set<number>();
     return combined.filter((item) => {
       if (seen.has(item.id)) return false;
@@ -360,7 +361,7 @@ export const getThrillerMovies = async (): Promise<Item[]> => {
       ...item,
       media_type: "movie",
     }));
-    const combined = [...tmdbItems, ...fzThriller, ...otherSources];
+    const combined = [...tmdbItems, ...fzThriller, ...otherSources, ...apiContent];
     const seen = new Set<number>();
     return combined.filter((item) => {
       if (seen.has(item.id)) return false;
@@ -387,7 +388,7 @@ export const getRomanceMovies = async (): Promise<Item[]> => {
       ...item,
       media_type: "movie",
     }));
-    const combined = [...tmdbItems, ...fzRomance, ...otherSources];
+    const combined = [...tmdbItems, ...fzRomance, ...otherSources, ...apiContent];
     const seen = new Set<number>();
     return combined.filter((item) => {
       if (seen.has(item.id)) return false;
@@ -414,7 +415,7 @@ export const getSciFiMovies = async (): Promise<Item[]> => {
       ...item,
       media_type: "movie",
     }));
-    const combined = [...tmdbItems, ...fzSciFi, ...otherSources];
+    const combined = [...tmdbItems, ...fzSciFi, ...otherSources, ...apiContent];
     const seen = new Set<number>();
     return combined.filter((item) => {
       if (seen.has(item.id)) return false;
@@ -441,7 +442,7 @@ export const getAnimationMovies = async (): Promise<Item[]> => {
       ...item,
       media_type: "movie",
     }));
-    const combined = [...tmdbItems, ...fzAnimation, ...otherSources];
+    const combined = [...tmdbItems, ...fzAnimation, ...otherSources, ...apiContent];
     const seen = new Set<number>();
     return combined.filter((item) => {
       if (seen.has(item.id)) return false;
@@ -468,7 +469,7 @@ export const getDocumentaryMovies = async (): Promise<Item[]> => {
       ...item,
       media_type: "movie",
     }));
-    const combined = [...tmdbItems, ...fzDoc, ...otherSources];
+    const combined = [...tmdbItems, ...fzDoc, ...otherSources, ...apiContent];
     const seen = new Set<number>();
     return combined.filter((item) => {
       if (seen.has(item.id)) return false;
@@ -495,7 +496,7 @@ export const getCrimeMovies = async (): Promise<Item[]> => {
       ...item,
       media_type: "movie",
     }));
-    const combined = [...tmdbItems, ...fzCrime, ...otherSources];
+    const combined = [...tmdbItems, ...fzCrime, ...otherSources, ...apiContent];
     const seen = new Set<number>();
     return combined.filter((item) => {
       if (seen.has(item.id)) return false;
@@ -522,7 +523,7 @@ export const getAdventureMovies = async (): Promise<Item[]> => {
       ...item,
       media_type: "movie",
     }));
-    const combined = [...tmdbItems, ...fzAdventure, ...otherSources];
+    const combined = [...tmdbItems, ...fzAdventure, ...otherSources, ...apiContent];
     const seen = new Set<number>();
     return combined.filter((item) => {
       if (seen.has(item.id)) return false;
@@ -549,7 +550,7 @@ export const getFantasyMovies = async (): Promise<Item[]> => {
       ...item,
       media_type: "movie",
     }));
-    const combined = [...tmdbItems, ...fzFantasy, ...otherSources];
+    const combined = [...tmdbItems, ...fzFantasy, ...otherSources, ...apiContent];
     const seen = new Set<number>();
     return combined.filter((item) => {
       if (seen.has(item.id)) return false;
