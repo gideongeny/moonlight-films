@@ -36,16 +36,18 @@ function App() {
 
   useEffect(() => {
     let unSubDoc: () => void;
+    
+    // This listener automatically restores the user session when the app loads
+    // Firebase Auth persistence ensures the user stays logged in across app restarts
     const unSubAuth: () => void = onAuthStateChanged(auth, (user) => {
       if (!user) {
         dispatch(setCurrentUser(null));
         setIsSignedIn(false);
-        // localStorage.setItem("isSignedIn", "0");
         return;
       }
 
+      // User is authenticated - restore their session
       setIsSignedIn(true);
-      // localStorage.setItem("isSignedIn", "1");
 
       if (user.providerData[0].providerId === "google.com") {
         unSubDoc = onSnapshot(doc(db, "users", user.uid), (doc) => {

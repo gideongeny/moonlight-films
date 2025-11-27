@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getAuth } from "firebase/auth";
+import { getAuth, setPersistence, browserLocalPersistence } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 // StreamLux Firebase Configuration
@@ -20,6 +20,12 @@ const app = initializeApp(firebaseConfig);
 // Initialize Firebase services
 export const db = getFirestore(app);
 export const auth = getAuth(app);
+
+// Set persistence to LOCAL (persists across browser sessions and app restarts)
+// This ensures users stay logged in even after closing the app or restarting their phone
+setPersistence(auth, browserLocalPersistence).catch((error) => {
+  console.error("Error setting auth persistence:", error);
+});
 
 // Initialize Analytics (only in browser environment)
 let analytics: ReturnType<typeof getAnalytics> | undefined;
