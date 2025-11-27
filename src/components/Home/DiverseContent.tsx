@@ -102,7 +102,18 @@ const DiverseContent: React.FC = () => {
           enhancedNolly,
           enhancedKenya,
           trending,
-          horror
+          horror,
+          action,
+          comedy,
+          drama,
+          thriller,
+          romance,
+          sciFi,
+          animation,
+          documentary,
+          crime,
+          adventure,
+          fantasy
         ] = await Promise.all([
           getAfricanContent(),
           getAsianContent(),
@@ -161,17 +172,17 @@ const DiverseContent: React.FC = () => {
         setEnhancedKenyan(enhancedKenya);
         setTrendingAll(trending);
         setHorrorMovies(horror);
-        setActionMovies(results[23]); // action
-        setComedyMovies(results[24]); // comedy
-        setDramaMovies(results[25]); // drama
-        setThrillerMovies(results[26]); // thriller
-        setRomanceMovies(results[27]); // romance
-        setSciFiMovies(results[28]); // sciFi
-        setAnimationMovies(results[29]); // animation
-        setDocumentaryMovies(results[30]); // documentary
-        setCrimeMovies(results[31]); // crime
-        setAdventureMovies(results[32]); // adventure
-        setFantasyMovies(results[33]); // fantasy
+        setActionMovies(action);
+        setComedyMovies(comedy);
+        setDramaMovies(drama);
+        setThrillerMovies(thriller);
+        setRomanceMovies(romance);
+        setSciFiMovies(sciFi);
+        setAnimationMovies(animation);
+        setDocumentaryMovies(documentary);
+        setCrimeMovies(crime);
+        setAdventureMovies(adventure);
+        setFantasyMovies(fantasy);
         
       } catch (error) {
         console.error('Error fetching diverse content:', error);

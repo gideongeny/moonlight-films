@@ -13,7 +13,6 @@ import LiveScoreboard from "../../components/Sports/LiveScoreboard";
 import { useCurrentViewportView } from "../../hooks/useCurrentViewportView";
 import { SPORTS_FIXTURES, SPORTS_LEAGUES, SportsFixtureConfig } from "../../shared/constants";
 import { getLiveScores, getUpcomingFixturesAPI, subscribeToLiveScores } from "../../services/sportsAPI";
-import { useEffect, useState } from "react";
 
 const SportsHome: FC = () => {
   const { isMobile } = useCurrentViewportView();
