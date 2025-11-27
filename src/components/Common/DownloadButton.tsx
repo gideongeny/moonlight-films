@@ -95,7 +95,7 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
         onClick={handleDownload}
         disabled={isDownloading}
         className={`
-          flex items-center gap-2 rounded-md font-medium transition-all duration-200
+          flex items-center gap-2 rounded-full font-medium transition-all duration-200
           disabled:opacity-50 disabled:cursor-not-allowed
           ${sizeClasses[size]}
           ${variantClasses[variant]}
@@ -106,7 +106,7 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
           className={`${isDownloading ? 'animate-bounce' : ''}`}
           size={size === 'sm' ? 16 : size === 'md' ? 18 : 20}
         />
-        {isDownloading ? 'Downloading...' : 'Download'}
+        <span className="whitespace-nowrap">{isDownloading ? 'Downloading...' : 'Download'}</span>
       </button>
 
       {/* Progress indicator */}

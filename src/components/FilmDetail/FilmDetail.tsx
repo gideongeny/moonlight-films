@@ -155,7 +155,7 @@ const FilmDetail: FC<FilmInfo> = ({ similar, videos, detail, ...others }) => {
               <div className="bg-gradient-to-br from-transparent to-black/70 h-full rounded-bl-2xl">
                 <div className="flex flex-col md:flex-row bottom-[-40%] md:bottom-[-20%]  items-start tw-absolute-center-horizontal w-full max-w-[1000px]">
                   {/* POSTER */}
-                  <div className="flex gap-5 items-center">
+                  <div className="flex flex-col md:flex-row gap-5 items-start md:items-center">
                     <div className="shrink-0 w-[185px] ml-3 md:ml-0">
                       <LazyLoadImage
                         src={resizeImage(detail.poster_path, "w185")}
@@ -165,13 +165,13 @@ const FilmDetail: FC<FilmInfo> = ({ similar, videos, detail, ...others }) => {
                       />
                     </div>
                     {isMobile && (
-                      <div className="flex gap-3 items-center mt-24">
+                      <div className="flex gap-3 items-center mt-4 ml-3 md:ml-0 w-full">
                         <Link
                           to="watch"
-                          className="flex gap-4 items-center pl-4 pr-8 py-2 rounded-full bg-primary text-white hover:bg-blue-600 transition duration-300"
+                          className="flex gap-2 items-center px-4 py-2.5 rounded-full bg-primary text-white hover:bg-blue-600 transition duration-300 flex-1 justify-center"
                         >
-                          <BsFillPlayFill size={20} />
-                          <span className="text-base font-medium">WATCH</span>
+                          <BsFillPlayFill size={18} />
+                          <span className="text-sm font-medium">WATCH</span>
                         </Link>
                         
                         {detail && (
@@ -182,6 +182,7 @@ const FilmDetail: FC<FilmInfo> = ({ similar, videos, detail, ...others }) => {
                             )}
                             variant="outline"
                             size="sm"
+                            className="flex-1 justify-center"
                           />
                         )}
                       </div>
