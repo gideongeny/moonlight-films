@@ -6,7 +6,7 @@ Free Movies, TV Shows & Live Sports Streaming Platform
 
 Official website: [https://streamlux.vercel.app/](https://streamlux.vercel.app/)
 
-**Note:** The website has been rebranded from Moonlight Films to StreamLux.
+**Note:** The website has been rebranded from Moonlight Films to StreamLux. The project uses Firebase for authentication and data storage, and integrates with multiple APIs for content discovery.
 
 ## Content Sources
 
@@ -37,19 +37,23 @@ Official website: [https://streamlux.vercel.app/](https://streamlux.vercel.app/)
 - **Comment system**: Allowing to give reactions, see who reacts to a comment (sorted and filter out the 3 most popular reactions), reply to a comment, edit, delete, hide, sort by latest/popular and load more comment
 
 ### New Features (StreamLux)
-- **Live Sports Streaming**: Real-time fixtures and scores from multiple leagues (EPL, La Liga, Bundesliga, Serie A, Ligue 1, Champions League, AFCON, etc.)
-- **World Cinema Discovery**: Explore movies and TV shows from Africa, Asia, Latin America, Middle East, and more
+- **Live Sports Streaming**: Real-time fixtures and scores from multiple leagues (EPL, La Liga, Bundesliga, Serie A, Ligue 1, Champions League, AFCON, Rugby, UFC, WWE, Athletics, etc.)
+- **World Cinema Discovery**: Explore movies and TV shows from Africa, Asia, Latin America, Middle East, and more with beautiful category images
 - **Enhanced Content Categories**:
-  - Most Trending Now
-  - Horror Movies
-  - Must-watch Black Shows & Movies
-  - Latest Nollywood Movies
-  - SA Drama, Thai Drama, C-Drama
-  - African Cinema & TV Shows
+  - 🔥 Most Trending Now
+  - 👻 Horror Movies
+  - ✊🏿 Must-watch Black Shows & Movies
+  - 🆕 Latest Nollywood Movies
+  - 🇿🇦 SA Drama, 🇹🇭 Thai Drama, 🇨🇳 C-Drama
+  - 🌍 African Cinema & TV Shows (comprehensive collection)
+  - 📺 African TV Shows & Series (diverse content from multiple African countries)
+  - 🇰🇪 Kenyan TV Shows, 🇳🇬 Nigerian TV Shows
   - And many more curated sections
-- **Multiple Streaming Sources**: Access to various embed sources for movies, TV shows, and sports
-- **Real-time Sports Updates**: Live scores and upcoming fixtures with auto-refresh
+- **Multiple Streaming Sources**: Access to various embed sources for movies, TV shows, and sports (including SportsLive.run and Streamed.pk)
+- **Real-time Sports Updates**: Live scores and upcoming fixtures with auto-refresh from TheSportsDB API
+- **Enhanced African Content**: Expanded fetching strategies with multiple pages and search terms for maximum content diversity
 - **Responsive Design**: Optimized for mobile, tablet, and desktop
+- **Copyright Page**: Comprehensive legal information and terms of use
 
 ## Screenshots, Preview
 

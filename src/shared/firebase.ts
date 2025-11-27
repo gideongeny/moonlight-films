@@ -1,38 +1,34 @@
 import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
-// const app = initializeApp({
-//   apiKey: process.env.REACT_APP_apiKey,
-//   authDomain: process.env.REACT_APP_authDomain,
-//   projectId: process.env.REACT_APP_projectId,
-//   storageBucket: process.env.REACT_APP_storageBucket,
-//   messagingSenderId: process.env.REACT_APP_messagingSenderId,
-//   appId: process.env.REACT_APP_appId,
-// });
-
+// StreamLux Firebase Configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBiO4NTttc68zMHFkRFXyK5qLsU9zXsJmg",
-  authDomain: "moonlight-40ecf.firebaseapp.com",
-  projectId: "moonlight-40ecf",
-  storageBucket: "moonlight-40ecf.appspot.com",
-  messagingSenderId: "1043878072437",
-  appId: "1:1043878072437:web:0fd78f6e64f3cfbe2d283c",
+  apiKey: "AIzaSyB6scsYbbA4ZfFhujp_eHg83QnsGxpwEAY",
+  authDomain: "streamlux-67a84.firebaseapp.com",
+  projectId: "streamlux-67a84",
+  storageBucket: "streamlux-67a84.firebasestorage.app",
+  messagingSenderId: "242283846154",
+  appId: "1:242283846154:web:c25b7416322f092cc49df3",
+  measurementId: "G-3C0V66LLLR"
 };
 
-// const firebaseConfig = {
-//   apiKey: "AIzaSyC5V0Pm-YJV9h0kyX9aBgrKrs3_J3R2Foo",
-//   authDomain: "pvt-comments.firebaseapp.com",
-//   databaseURL: "https://pvt-comments-default-rtdb.firebaseio.com",
-//   projectId: "pvt-comments",
-//   storageBucket: "pvt-comments.appspot.com",
-//   messagingSenderId: "700353567702",
-//   appId: "1:700353567702:web:f36bbbae9c78ac1e3ea277",
-// };
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
+// Initialize Firebase services
 export const db = getFirestore(app);
-// export const db = initializeFirestore(app, {
-//   experimentalForceLongPolling: true,
-// });
 export const auth = getAuth(app);
+
+// Initialize Analytics (only in browser environment)
+let analytics: ReturnType<typeof getAnalytics> | undefined;
+if (typeof globalThis.window !== "undefined") {
+  try {
+    analytics = getAnalytics(app);
+  } catch (error) {
+    console.warn("Firebase Analytics initialization failed:", error);
+  }
+}
+
+export { analytics };

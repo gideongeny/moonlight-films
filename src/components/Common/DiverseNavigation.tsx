@@ -151,12 +151,16 @@ const DiverseNavigation: React.FC = () => {
             },
           ];
 
+          let foundImage: string | null = null;
           for (const source of sources) {
             try {
               const imageUrl = await source();
               if (imageUrl && imageUrl !== 'undefined' && imageUrl.startsWith('http')) {
-                // Verify the image URL is valid
-                return { ...item, image: imageUrl };
+                // Verify the image URL is valid by checking if it's a valid TMDB image
+                if (imageUrl.includes('image.tmdb.org') || imageUrl.includes('unsplash.com')) {
+                  foundImage = imageUrl;
+                  break;
+                }
               }
             } catch (error) {
               // Continue to next source
@@ -164,21 +168,21 @@ const DiverseNavigation: React.FC = () => {
             }
           }
           
-          // If all sources fail, use a default image based on category
+          // If all sources fail, use category-specific default images
           const defaultImages: { [key: string]: string } = {
-            'African Cinema': 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop',
-            'Asian Cinema': 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop',
-            'Latin American': 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop',
-            'Middle Eastern': 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop',
-            'Nollywood': 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop',
-            'Bollywood': 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop',
-            'Filipino': 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop',
-            'Kenyan': 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop',
+            'African Cinema': 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop&q=80',
+            'Asian Cinema': 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1280&h=720&fit=crop&q=80',
+            'Latin American': 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop&q=80',
+            'Middle Eastern': 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop&q=80',
+            'Nollywood': 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop&q=80',
+            'Bollywood': 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1280&h=720&fit=crop&q=80',
+            'Filipino': 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop&q=80',
+            'Kenyan': 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop&q=80',
           };
           
           return { 
             ...item, 
-            image: defaultImages[item.title] || item.fallbackImage 
+            image: foundImage || defaultImages[item.title] || item.fallbackImage 
           };
         })
       );
@@ -208,22 +212,40 @@ const DiverseNavigation: React.FC = () => {
             className="group block"
           >
             <div className="relative h-48 rounded-xl overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-gray-700/50">
-              {item.image && item.image !== 'undefined' ? (
-                <LazyLoadImage
-                  src={item.image}
-                  alt={item.title}
-                  className="absolute inset-0 w-full h-full object-cover"
-                  effect="blur"
-                  placeholderSrc={item.fallbackImage}
-                  onError={(e: any) => {
-                    if (e.target.src !== item.fallbackImage) {
-                      e.target.src = item.fallbackImage;
-                    }
-                  }}
-                />
+              {item.image && item.image !== 'undefined' && item.image.startsWith('http') ? (
+                <>
+                  <LazyLoadImage
+                    src={item.image}
+                    alt={item.title}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    effect="blur"
+                    placeholderSrc={item.fallbackImage}
+                    onError={(e: any) => {
+                      // If image fails, use fallback background
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      const parent = target.parentElement;
+                      if (parent) {
+                        parent.style.backgroundImage = `url(${item.fallbackImage})`;
+                        parent.style.backgroundSize = 'cover';
+                        parent.style.backgroundPosition = 'center';
+                      }
+                    }}
+                  />
+                  {/* Fallback background in case image fails */}
+                  <div 
+                    className="absolute inset-0 w-full h-full bg-gradient-to-br from-primary/20 to-primary/40"
+                    style={{
+                      backgroundImage: `url(${item.fallbackImage})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      zIndex: -1
+                    }}
+                  />
+                </>
               ) : (
                 <div 
-                  className="absolute inset-0 w-full h-full object-cover bg-gradient-to-br from-primary/20 to-primary/40"
+                  className="absolute inset-0 w-full h-full bg-gradient-to-br from-primary/20 to-primary/40"
                   style={{
                     backgroundImage: item.fallbackImage ? `url(${item.fallbackImage})` : 'none',
                     backgroundSize: 'cover',

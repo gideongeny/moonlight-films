@@ -818,9 +818,9 @@ export const getChineseContent = async (): Promise<Item[]> => {
 export const getAfricanTVContent = async (): Promise<Item[]> => {
   try {
     // Enhanced: Use multiple strategies to get more African TV content
-    // Strategy 1: Discover by country (multiple pages)
+    // Strategy 1: Discover by country (multiple pages - expanded to 5 pages)
     const discoverPages = await Promise.all(
-      [1, 2, 3].map((page) =>
+      [1, 2, 3, 4, 5].map((page) =>
         Promise.all([
           axios.get(`/discover/tv`, {
             params: {
@@ -828,7 +828,7 @@ export const getAfricanTVContent = async (): Promise<Item[]> => {
               sort_by: "popularity.desc",
               page,
             },
-          }),
+          }).catch(() => ({ data: { results: [] } })),
         ])
       )
     );
@@ -934,8 +934,12 @@ export const getAfricanTVContent = async (): Promise<Item[]> => {
       "African documentary"
     ];
     
-    const searchPromises = searchTerms.map(term => 
-      axios.get(`/search/tv?query=${encodeURIComponent(term)}&page=1`)
+    // Search with multiple pages for better results
+    const searchPromises = searchTerms.flatMap(term => 
+      [1, 2].map(page => 
+        axios.get(`/search/tv?query=${encodeURIComponent(term)}&page=${page}`)
+          .catch(() => ({ data: { results: [] } }))
+      )
     );
     
     const searchResults = await Promise.all(searchPromises);
@@ -983,38 +987,45 @@ export const getAfricanTVContent = async (): Promise<Item[]> => {
       ...(platformMovies.data.results || []).map((i: any) => ({ ...i, media_type: "movie" })),
     ].filter((i: any) => i.poster_path);
 
-    // Strategy 3: Also get from discover with genre filters (Drama, Comedy, etc.)
+    // Strategy 3: Also get from discover with genre filters (Drama, Comedy, etc.) - multiple pages
     const genrePages = await Promise.all(
-      [18, 35, 10751].map(genreId => // Drama, Comedy, Family
-        Promise.all([
-          axios.get(`/discover/tv`, {
-            params: {
-              with_genres: genreId,
-              with_origin_country: "NG|KE|ZA|GH|TZ|UG|ET|RW|ZM|EG",
-              sort_by: "popularity.desc",
-              page: 1,
-            },
-          }),
-        ]).catch(() => Promise.resolve({ data: { results: [] } } as any))
+      [18, 35, 10751, 80, 99].map(genreId => // Drama, Comedy, Family, Crime, Documentary
+        Promise.all(
+          [1, 2].map(page =>
+            axios.get(`/discover/tv`, {
+              params: {
+                with_genres: genreId,
+                with_origin_country: "NG|KE|ZA|GH|TZ|UG|ET|RW|ZM|EG",
+                sort_by: "popularity.desc",
+                page,
+              },
+            }).catch(() => ({ data: { results: [] } }))
+          )
+        )
       )
     );
     
     const genreResults = genrePages
       .flatMap((pages: any) => {
         if (Array.isArray(pages)) {
-          return pages.flatMap((res: any) => res.data?.results || []);
+          return pages.flatMap((res: any) => {
+            // Handle both direct responses and wrapped responses
+            const data = res.data || res;
+            return data?.results || [];
+          });
         }
         return [];
       })
-      .filter((i: any) => i.poster_path && i.vote_count > 0)
+      .filter((i: any) => i.poster_path && (i.vote_count || 0) > 0)
       .map((i: any) => ({ ...i, media_type: "tv" }));
 
     const merged = [...uniqueResults, ...platformItems, ...genreResults, ...discoverResults];
     // Final deduplication and sort by popularity
     const final = merged
       .filter((item, idx, self) => idx === self.findIndex((t) => t.id === item.id))
+      .filter((item: any) => item.poster_path) // Ensure all have posters
       .sort((a: any, b: any) => (b.popularity || 0) - (a.popularity || 0))
-      .slice(0, 50); // Limit to top 50 to avoid too many results
+      .slice(0, 100); // Increased limit to get more diverse content
     
     return final;
   } catch (error) {

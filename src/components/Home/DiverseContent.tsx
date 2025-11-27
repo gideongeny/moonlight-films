@@ -311,15 +311,31 @@ const DiverseContent: React.FC = () => {
         />
       )}
 
-      {/* African TV Shows & Series */}
-      {mustWatchBlackShows.length > 0 && (
-        <SectionSlider
-          title="📺 African TV Shows & Series"
-          films={mustWatchBlackShows}
-          limitNumber={10}
-          isLoading={false}
-        />
-      )}
+      {/* African TV Shows & Series - Enhanced with more sources */}
+      {(() => {
+        // Combine all African TV sources for maximum diversity
+        const allAfricanTV = [
+          ...africanTVContent.filter((item) => item.media_type === "tv"),
+          ...nigerianTVShows.filter((item) => item.media_type === "tv"),
+          ...kenyanTVShows.filter((item) => item.media_type === "tv"),
+          ...enhancedKenyan.filter((item) => item.media_type === "tv"),
+          ...eastAfricanContent.filter((item) => item.media_type === "tv"),
+          ...southAfricanContent.filter((item) => item.media_type === "tv"),
+        ]
+          .filter((item, index, self) => 
+            index === self.findIndex((t) => t.id === item.id)
+          )
+          .slice(0, 20);
+        
+        return allAfricanTV.length > 0 ? (
+          <SectionSlider
+            title="📺 African TV Shows & Series"
+            films={allAfricanTV}
+            limitNumber={15}
+            isLoading={false}
+          />
+        ) : null;
+      })()}
 
       {/* Enhanced Nollywood Content */}
       {enhancedNollywood.length > 0 && (
