@@ -572,105 +572,138 @@ const DiverseContent: React.FC = () => {
         />
       )}
 
-      {/* Genre Categories from MovieBox.ph */}
-      {actionMovies.length > 0 && (
-        <SectionSlider
-          title="💥 Action Movies"
-          films={actionMovies}
-          limitNumber={10}
-          isLoading={false}
-        />
-      )}
+      {/* Genre Categories from MovieBox.ph - Properly filtered by genre */}
+      {(() => {
+        const filtered = actionMovies.filter((item) => item.genre_ids && item.genre_ids.includes(28));
+        return filtered.length > 0 ? (
+          <SectionSlider
+            title="💥 Action Movies"
+            films={filtered}
+            limitNumber={10}
+            isLoading={false}
+          />
+        ) : null;
+      })()}
 
-      {comedyMovies.length > 0 && (
-        <SectionSlider
-          title="😂 Comedy Movies"
-          films={comedyMovies}
-          limitNumber={10}
-          isLoading={false}
-        />
-      )}
+      {(() => {
+        const filtered = comedyMovies.filter((item) => item.genre_ids && item.genre_ids.includes(35));
+        return filtered.length > 0 ? (
+          <SectionSlider
+            title="😂 Comedy Movies"
+            films={filtered}
+            limitNumber={10}
+            isLoading={false}
+          />
+        ) : null;
+      })()}
 
-      {dramaMovies.length > 0 && (
-        <SectionSlider
-          title="🎭 Drama Movies"
-          films={dramaMovies}
-          limitNumber={10}
-          isLoading={false}
-        />
-      )}
+      {(() => {
+        const filtered = dramaMovies.filter((item) => item.genre_ids && item.genre_ids.includes(18));
+        return filtered.length > 0 ? (
+          <SectionSlider
+            title="🎭 Drama Movies"
+            films={filtered}
+            limitNumber={10}
+            isLoading={false}
+          />
+        ) : null;
+      })()}
 
-      {thrillerMovies.length > 0 && (
-        <SectionSlider
-          title="🔪 Thriller Movies"
-          films={thrillerMovies}
-          limitNumber={10}
-          isLoading={false}
-        />
-      )}
+      {(() => {
+        const filtered = thrillerMovies.filter((item) => item.genre_ids && item.genre_ids.includes(53));
+        return filtered.length > 0 ? (
+          <SectionSlider
+            title="🔪 Thriller Movies"
+            films={filtered}
+            limitNumber={10}
+            isLoading={false}
+          />
+        ) : null;
+      })()}
 
-      {romanceMovies.length > 0 && (
-        <SectionSlider
-          title="💕 Romance Movies"
-          films={romanceMovies}
-          limitNumber={10}
-          isLoading={false}
-        />
-      )}
+      {(() => {
+        const filtered = romanceMovies.filter((item) => item.genre_ids && item.genre_ids.includes(10749));
+        return filtered.length > 0 ? (
+          <SectionSlider
+            title="💕 Romance Movies"
+            films={filtered}
+            limitNumber={10}
+            isLoading={false}
+          />
+        ) : null;
+      })()}
 
-      {sciFiMovies.length > 0 && (
-        <SectionSlider
-          title="🚀 Sci-Fi Movies"
-          films={sciFiMovies}
-          limitNumber={10}
-          isLoading={false}
-        />
-      )}
+      {(() => {
+        const filtered = sciFiMovies.filter((item) => item.genre_ids && item.genre_ids.includes(878));
+        return filtered.length > 0 ? (
+          <SectionSlider
+            title="🚀 Sci-Fi Movies"
+            films={filtered}
+            limitNumber={10}
+            isLoading={false}
+          />
+        ) : null;
+      })()}
 
-      {animationMovies.length > 0 && (
-        <SectionSlider
-          title="🎨 Animation Movies"
-          films={animationMovies}
-          limitNumber={10}
-          isLoading={false}
-        />
-      )}
+      {(() => {
+        const filtered = animationMovies.filter((item) => item.genre_ids && item.genre_ids.includes(16));
+        return filtered.length > 0 ? (
+          <SectionSlider
+            title="🎨 Animation Movies"
+            films={filtered}
+            limitNumber={10}
+            isLoading={false}
+          />
+        ) : null;
+      })()}
 
-      {documentaryMovies.length > 0 && (
-        <SectionSlider
-          title="📹 Documentary Movies"
-          films={documentaryMovies}
-          limitNumber={10}
-          isLoading={false}
-        />
-      )}
+      {(() => {
+        const filtered = documentaryMovies.filter((item) => item.genre_ids && item.genre_ids.includes(99));
+        return filtered.length > 0 ? (
+          <SectionSlider
+            title="📹 Documentary Movies"
+            films={filtered}
+            limitNumber={10}
+            isLoading={false}
+          />
+        ) : null;
+      })()}
 
-      {crimeMovies.length > 0 && (
-        <SectionSlider
-          title="🔫 Crime Movies"
-          films={crimeMovies}
-          limitNumber={10}
-          isLoading={false}
-        />
-      )}
+      {(() => {
+        const filtered = crimeMovies.filter((item) => item.genre_ids && item.genre_ids.includes(80));
+        return filtered.length > 0 ? (
+          <SectionSlider
+            title="🔫 Crime Movies"
+            films={filtered}
+            limitNumber={10}
+            isLoading={false}
+          />
+        ) : null;
+      })()}
 
-      {adventureMovies.length > 0 && (
-        <SectionSlider
-          title="🗺️ Adventure Movies"
-          films={adventureMovies}
-          limitNumber={10}
-          isLoading={false}
-        />
-      )}
+      {(() => {
+        const filtered = adventureMovies.filter((item) => item.genre_ids && item.genre_ids.includes(12));
+        return filtered.length > 0 ? (
+          <SectionSlider
+            title="🗺️ Adventure Movies"
+            films={filtered}
+            limitNumber={10}
+            isLoading={false}
+          />
+        ) : null;
+      })()}
 
-      {fantasyMovies.length > 0 && (
-        <SectionSlider
-          title="✨ Fantasy Movies"
-          films={fantasyMovies}
-          limitNumber={10}
-          isLoading={false}
-        />
-      )}
+      {(() => {
+        const filtered = fantasyMovies.filter((item) => item.genre_ids && item.genre_ids.includes(14));
+        return filtered.length > 0 ? (
+          <SectionSlider
+            title="✨ Fantasy Movies"
+            films={filtered}
+            limitNumber={10}
+            isLoading={false}
+          />
+        ) : null;
+      })()}
 
       {/* Latin American Content */}
       {latinAmericanContent.length > 0 && (
