@@ -83,42 +83,47 @@ const DiverseContent: React.FC<DiverseContentProps> = ({ currentTab }) => {
       try {
         setIsLoading(true);
         
-        // Fetch all diverse content in parallel
-        const [
-          african,
-          asian,
-          latinAmerican,
-          middleEastern,
-          nollywood,
-          bollywood,
-          korean,
-          japanese,
-          chinese,
-          eastAfrican,
-          southAfrican,
-          southeastAsian,
-          filipino,
-          brazilian,
-          mexican,
-          kenyanTV,
-          nigerianTV,
-          africanTV,
-          enhancedNolly,
-          enhancedKenya,
-          trending,
-          horror,
-          action,
-          comedy,
-          drama,
-          thriller,
-          romance,
-          sciFi,
-          animation,
-          documentary,
-          crime,
-          adventure,
-          fantasy
-        ] = await Promise.all([
+        // Priority 1: Load most important content first (trending, popular genres)
+        const priorityContent = await Promise.allSettled([
+          getTrendingNow(),
+          getHorrorMovies(),
+          getActionMovies(),
+          getComedyMovies(),
+          getDramaMovies(),
+        ]);
+
+        // Set priority content immediately
+        setTrendingAll(priorityContent[0].status === "fulfilled" ? priorityContent[0].value : []);
+        setHorrorMovies(priorityContent[1].status === "fulfilled" ? priorityContent[1].value : []);
+        setActionMovies(priorityContent[2].status === "fulfilled" ? priorityContent[2].value : []);
+        setComedyMovies(priorityContent[3].status === "fulfilled" ? priorityContent[3].value : []);
+        setDramaMovies(priorityContent[4].status === "fulfilled" ? priorityContent[4].value : []);
+        
+        setIsLoading(false); // Show content as soon as priority is loaded
+
+        // Priority 2: Load other genres in background
+        const genreContent = await Promise.allSettled([
+          getThrillerMovies(),
+          getRomanceMovies(),
+          getSciFiMovies(),
+          getAnimationMovies(),
+          getDocumentaryMovies(),
+          getCrimeMovies(),
+          getAdventureMovies(),
+          getFantasyMovies(),
+        ]);
+
+        setThrillerMovies(genreContent[0].status === "fulfilled" ? genreContent[0].value : []);
+        setRomanceMovies(genreContent[1].status === "fulfilled" ? genreContent[1].value : []);
+        setSciFiMovies(genreContent[2].status === "fulfilled" ? genreContent[2].value : []);
+        setAnimationMovies(genreContent[3].status === "fulfilled" ? genreContent[3].value : []);
+        setDocumentaryMovies(genreContent[4].status === "fulfilled" ? genreContent[4].value : []);
+        setCrimeMovies(genreContent[5].status === "fulfilled" ? genreContent[5].value : []);
+        setAdventureMovies(genreContent[6].status === "fulfilled" ? genreContent[6].value : []);
+        setFantasyMovies(genreContent[7].status === "fulfilled" ? genreContent[7].value : []);
+
+        // Priority 3: Load regional content in background (non-blocking)
+        Promise.allSettled([
           getAfricanContent(),
           getAsianContent(),
           getLatinAmericanContent(),
@@ -139,54 +144,28 @@ const DiverseContent: React.FC<DiverseContentProps> = ({ currentTab }) => {
           getAfricanTVContent(),
           getEnhancedNollywoodContent(),
           getEnhancedKenyanContent(),
-          getTrendingNow(),
-          getHorrorMovies(),
-          getActionMovies(),
-          getComedyMovies(),
-          getDramaMovies(),
-          getThrillerMovies(),
-          getRomanceMovies(),
-          getSciFiMovies(),
-          getAnimationMovies(),
-          getDocumentaryMovies(),
-          getCrimeMovies(),
-          getAdventureMovies(),
-          getFantasyMovies()
-        ]);
-
-        setAfricanContent(african);
-        setAsianContent(asian);
-        setLatinAmericanContent(latinAmerican);
-        setMiddleEasternContent(middleEastern);
-        setNollywoodContent(nollywood);
-        setBollywoodContent(bollywood);
-        setKoreanContent(korean);
-        setJapaneseContent(japanese);
-        setChineseContent(chinese);
-        setEastAfricanContent(eastAfrican);
-        setSouthAfricanContent(southAfrican);
-        setSoutheastAsianContent(southeastAsian);
-        setFilipinoContent(filipino);
-        setBrazilianContent(brazilian);
-        setMexicanContent(mexican);
-        setKenyanTVShows(kenyanTV);
-        setNigerianTVShows(nigerianTV);
-        setAfricanTVContent(africanTV);
-        setEnhancedNollywood(enhancedNolly);
-        setEnhancedKenyan(enhancedKenya);
-        setTrendingAll(trending);
-        setHorrorMovies(horror);
-        setActionMovies(action);
-        setComedyMovies(comedy);
-        setDramaMovies(drama);
-        setThrillerMovies(thriller);
-        setRomanceMovies(romance);
-        setSciFiMovies(sciFi);
-        setAnimationMovies(animation);
-        setDocumentaryMovies(documentary);
-        setCrimeMovies(crime);
-        setAdventureMovies(adventure);
-        setFantasyMovies(fantasy);
+        ]).then((results) => {
+          setAfricanContent(results[0].status === "fulfilled" ? results[0].value : []);
+          setAsianContent(results[1].status === "fulfilled" ? results[1].value : []);
+          setLatinAmericanContent(results[2].status === "fulfilled" ? results[2].value : []);
+          setMiddleEasternContent(results[3].status === "fulfilled" ? results[3].value : []);
+          setNollywoodContent(results[4].status === "fulfilled" ? results[4].value : []);
+          setBollywoodContent(results[5].status === "fulfilled" ? results[5].value : []);
+          setKoreanContent(results[6].status === "fulfilled" ? results[6].value : []);
+          setJapaneseContent(results[7].status === "fulfilled" ? results[7].value : []);
+          setChineseContent(results[8].status === "fulfilled" ? results[8].value : []);
+          setEastAfricanContent(results[9].status === "fulfilled" ? results[9].value : []);
+          setSouthAfricanContent(results[10].status === "fulfilled" ? results[10].value : []);
+          setSoutheastAsianContent(results[11].status === "fulfilled" ? results[11].value : []);
+          setFilipinoContent(results[12].status === "fulfilled" ? results[12].value : []);
+          setBrazilianContent(results[13].status === "fulfilled" ? results[13].value : []);
+          setMexicanContent(results[14].status === "fulfilled" ? results[14].value : []);
+          setKenyanTVShows(results[15].status === "fulfilled" ? results[15].value : []);
+          setNigerianTVShows(results[16].status === "fulfilled" ? results[16].value : []);
+          setAfricanTVContent(results[17].status === "fulfilled" ? results[17].value : []);
+          setEnhancedNollywood(results[18].status === "fulfilled" ? results[18].value : []);
+          setEnhancedKenyan(results[19].status === "fulfilled" ? results[19].value : []);
+        }).catch(() => {}); // Silently fail for background loading
         
       } catch (error) {
         console.error('Error fetching diverse content:', error);

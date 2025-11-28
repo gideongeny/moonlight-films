@@ -22,16 +22,40 @@ export const getHomeMovies = async (): Promise<HomeFilms> => {
     Upcoming: "/movie/upcoming",
   };
 
-  // Fetch from TMDB (multiple pages), FZMovies, OMDB, and other sources in parallel
-  const [tmdbResponses, fzTrending, fzPopular, fzTopRated, fzLatest, otherSources, apiContent] = await Promise.all([
-    Promise.all(Object.entries(endpoints).map((endpoint) => axios.get(endpoint[1]))),
+  // Priority 1: Fetch TMDB first (fast and reliable)
+  const tmdbResponses = await Promise.all(
+    Object.entries(endpoints).map((endpoint) => axios.get(endpoint[1]))
+  );
+
+  // Priority 2: Load additional sources in background (with timeout to prevent blocking)
+  const additionalSourcesPromise = Promise.allSettled([
     getFZTrending("movie"),
     getFZPopular("movie", 1),
     getFZTopRated("movie", 1),
     getFZLatest("movie", 1),
+  ]).then((results) => ({
+    fzTrending: results[0].status === "fulfilled" ? results[0].value : [],
+    fzPopular: results[1].status === "fulfilled" ? results[1].value : [],
+    fzTopRated: results[2].status === "fulfilled" ? results[2].value : [],
+    fzLatest: results[3].status === "fulfilled" ? results[3].value : [],
+  }));
+
+  // Start loading additional sources but don't wait for them initially
+  const additionalSources = await Promise.race([
+    additionalSourcesPromise,
+    new Promise((resolve) => setTimeout(() => resolve({
+      fzTrending: [],
+      fzPopular: [],
+      fzTopRated: [],
+      fzLatest: [],
+    }), 3000)), // 3 second timeout
+  ]) as { fzTrending: Item[], fzPopular: Item[], fzTopRated: Item[], fzLatest: Item[] };
+
+  // Load other sources in background (non-blocking) - these will be available later if needed
+  Promise.allSettled([
     getAllSourceContent("movie", 1),
-    getAllAPIContent("movie", "popular"), // Get from TMDB + OMDB
-  ]);
+    getAllAPIContent("movie", "popular"),
+  ]).catch(() => {}); // Silently fail for background loading
 
   // Helper function to merge and deduplicate items from all sources
   const mergeAndDedupe = (tmdbItems: Item[], fzItems: Item[], otherItems: Item[] = []): Item[] => {
@@ -54,16 +78,17 @@ export const getHomeMovies = async (): Promise<HomeFilms> => {
     // Merge with FZMovies content based on category
     let fzItems: Item[] = [];
     if (key === "Trending" || key === "Hot") {
-      fzItems = fzTrending;
+      fzItems = additionalSources.fzTrending;
     } else if (key === "Popular") {
-      fzItems = fzPopular;
+      fzItems = additionalSources.fzPopular;
     } else if (key === "Top Rated") {
-      fzItems = fzTopRated;
+      fzItems = additionalSources.fzTopRated;
     } else if (key === "Upcoming") {
-      fzItems = fzLatest;
+      fzItems = additionalSources.fzLatest;
     }
 
-    final[key] = mergeAndDedupe(tmdbItems, fzItems, [...otherSources, ...apiContent]);
+    // Use only TMDB + FZMovies for initial fast load
+    final[key] = mergeAndDedupe(tmdbItems, fzItems, []);
 
     return final;
   }, {} as HomeFilms);
@@ -127,16 +152,40 @@ export const getHomeTVs = async (): Promise<HomeFilms> => {
     "On the air": "/tv/on_the_air",
   };
 
-  // Fetch from TMDB (multiple pages), FZMovies, OMDB, and other sources in parallel
-  const [tmdbResponses, fzTrending, fzPopular, fzTopRated, fzLatest, otherSources, apiContent] = await Promise.all([
-    Promise.all(Object.entries(endpoints).map((endpoint) => axios.get(endpoint[1]))),
+  // Priority 1: Fetch TMDB first (fast and reliable)
+  const tmdbResponses = await Promise.all(
+    Object.entries(endpoints).map((endpoint) => axios.get(endpoint[1]))
+  );
+
+  // Priority 2: Load additional sources in background (with timeout to prevent blocking)
+  const additionalSourcesPromise = Promise.allSettled([
     getFZTrending("tv"),
     getFZPopular("tv", 1),
     getFZTopRated("tv", 1),
     getFZLatest("tv", 1),
+  ]).then((results) => ({
+    fzTrending: results[0].status === "fulfilled" ? results[0].value : [],
+    fzPopular: results[1].status === "fulfilled" ? results[1].value : [],
+    fzTopRated: results[2].status === "fulfilled" ? results[2].value : [],
+    fzLatest: results[3].status === "fulfilled" ? results[3].value : [],
+  }));
+
+  // Start loading additional sources but don't wait for them initially
+  const additionalSources = await Promise.race([
+    additionalSourcesPromise,
+    new Promise((resolve) => setTimeout(() => resolve({
+      fzTrending: [],
+      fzPopular: [],
+      fzTopRated: [],
+      fzLatest: [],
+    }), 3000)), // 3 second timeout
+  ]) as { fzTrending: Item[], fzPopular: Item[], fzTopRated: Item[], fzLatest: Item[] };
+
+  // Load other sources in background (non-blocking) - these will be available later if needed
+  Promise.allSettled([
     getAllSourceContent("tv", 1),
-    getAllAPIContent("tv", "popular"), // Get from TMDB + OMDB
-  ]);
+    getAllAPIContent("tv", "popular"),
+  ]).catch(() => {}); // Silently fail for background loading
 
   // Helper function to merge and deduplicate items from all sources
   const mergeAndDedupe = (tmdbItems: Item[], fzItems: Item[], otherItems: Item[] = []): Item[] => {
@@ -159,26 +208,17 @@ export const getHomeTVs = async (): Promise<HomeFilms> => {
     // Merge with FZMovies content based on category
     let fzItems: Item[] = [];
     if (key === "Trending" || key === "Hot") {
-      fzItems = fzTrending;
+      fzItems = additionalSources.fzTrending;
     } else if (key === "Popular") {
-      fzItems = fzPopular;
+      fzItems = additionalSources.fzPopular;
     } else if (key === "Top Rated") {
-      fzItems = fzTopRated;
+      fzItems = additionalSources.fzTopRated;
     } else if (key === "On the air") {
-      fzItems = fzLatest;
+      fzItems = additionalSources.fzLatest;
     }
 
-    // Ensure genre filtering if category-specific
-    let filteredApiContent = apiContent;
-    if (key === "Trending" || key === "Hot") {
-      // Trending can be any genre
-    } else if (key === "Popular") {
-      // Popular can be any genre
-    } else if (key === "Top Rated") {
-      // Top rated can be any genre
-    }
-    
-    final[key] = mergeAndDedupe(tmdbItems, fzItems, [...otherSources, ...filteredApiContent]);
+    // Use only TMDB + FZMovies for initial fast load
+    final[key] = mergeAndDedupe(tmdbItems, fzItems, []);
 
     return final;
   }, {} as HomeFilms);

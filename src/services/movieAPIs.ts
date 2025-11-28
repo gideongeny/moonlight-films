@@ -63,7 +63,7 @@ export const getTMDBContent = async (
         fetchPromises.push(
           axios.get(`${API_URL}${endpoint}`, {
             params: { api_key: TMDB_API_KEY },
-            timeout: 10000,
+            timeout: 5000, // Reduced timeout from 10s to 5s
           })
         );
       }
@@ -261,10 +261,17 @@ export const getAllAPIContent = async (
   category: "popular" | "top_rated" | "trending" = "popular"
 ): Promise<Item[]> => {
   try {
+    // Reduce pages for faster loading - fetch 2 pages instead of 5
     const [tmdbContent, omdbContent, imdbContent] = await Promise.all([
-      getTMDBContent(type, category, 5), // Fetch 5 pages for more content
-      getOMDBPopular(type),
-      getIMDBContent(undefined, type), // Get IMDB content (via OMDB)
+      getTMDBContent(type, category, 2), // Reduced from 5 to 2 pages
+      Promise.race([
+        getOMDBPopular(type),
+        new Promise<Item[]>((resolve) => setTimeout(() => resolve([]), 2000)), // 2s timeout
+      ]),
+      Promise.race([
+        getIMDBContent(undefined, type),
+        new Promise<Item[]>((resolve) => setTimeout(() => resolve([]), 2000)), // 2s timeout
+      ]),
     ]);
     
     // Merge and deduplicate
@@ -288,10 +295,17 @@ export const getAllAPIContentByGenre = async (
   type: "movie" | "tv"
 ): Promise<Item[]> => {
   try {
+    // Reduce pages and add timeouts for faster loading
     const [tmdbContent, omdbContent, imdbContent] = await Promise.all([
-      getTMDBByGenre(genreId, type, 3), // Fetch 3 pages
-      getOMDBPopular(type), // OMDB doesn't support genre filtering directly
-      getIMDBContent(undefined, type), // Get IMDB content (via OMDB)
+      getTMDBByGenre(genreId, type, 2), // Reduced from 3 to 2 pages
+      Promise.race([
+        getOMDBPopular(type),
+        new Promise<Item[]>((resolve) => setTimeout(() => resolve([]), 2000)), // 2s timeout
+      ]),
+      Promise.race([
+        getIMDBContent(undefined, type),
+        new Promise<Item[]>((resolve) => setTimeout(() => resolve([]), 2000)), // 2s timeout
+      ]),
     ]);
     
     // Merge and deduplicate
