@@ -46,8 +46,8 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
         setProgress(progressUpdate);
         
         if (progressUpdate.status === 'completed') {
-          if (progressUpdate.message.includes('page')) {
-            toast.info('Download page opened! Use right-click to save video.');
+          if (progressUpdate.message.includes('page') || progressUpdate.message.includes('interface')) {
+            toast.info('Download interface opened! Video will download automatically if possible.');
           } else {
             toast.success('Download started! Check your downloads folder.');
           }

@@ -22,8 +22,7 @@ export class VideoExtractorService {
 
   /**
    * Extract direct video URL from VidSrc embed
-   * VidSrc API: https://vidsrc.me/vidsrc/{tmdb_id} for movies
-   * VidSrc API: https://vidsrc.me/vidsrc/{tmdb_id}/{season}-{episode} for TV
+   * VidSrc uses embed URLs, we need to extract from the embed page
    */
   async extractVidSrcURL(
     tmdbId: number,
@@ -32,32 +31,41 @@ export class VideoExtractorService {
     episodeId?: number
   ): Promise<DirectVideoURL[]> {
     try {
-      let apiUrl = "";
+      // VidSrc embed URL
+      let embedUrl = "";
       if (mediaType === "movie") {
-        apiUrl = `https://vidsrc.me/vidsrc/${tmdbId}`;
+        embedUrl = `https://vidsrc.me/embed/movie/${tmdbId}`;
       } else {
-        apiUrl = `https://vidsrc.me/vidsrc/${tmdbId}/${seasonId}-${episodeId}`;
+        embedUrl = `https://vidsrc.me/embed/tv/${tmdbId}/${seasonId}-${episodeId}`;
       }
 
-      // VidSrc returns JSON with direct video URLs
-      const response = await axios.get(apiUrl, {
-        headers: {
-          Accept: "application/json",
-        },
-        timeout: 10000,
-      });
+      // Try to get direct URL from VidSrc's API endpoint
+      const apiUrl = mediaType === "movie" 
+        ? `https://vidsrc.pro/vidsrc.php?id=${tmdbId}`
+        : `https://vidsrc.pro/vidsrc.php?id=${tmdbId}&s=${seasonId}&e=${episodeId}`;
 
-      if (response.data?.sources && Array.isArray(response.data.sources)) {
-        return response.data.sources.map((source: any) => ({
-          url: source.url,
-          quality: source.quality || "auto",
-          size: source.size,
-          format: source.format || "mp4",
-        }));
+      try {
+        const response = await axios.get(apiUrl, {
+          headers: {
+            Accept: "application/json",
+            Referer: "https://vidsrc.me/",
+          },
+          timeout: 10000,
+        });
+
+        if (response.data?.result && response.data.result.length > 0) {
+          return response.data.result.map((source: any) => ({
+            url: source.url || source.file,
+            quality: source.label || source.quality || "auto",
+            format: source.type || "mp4",
+          }));
+        }
+      } catch (apiError) {
+        console.log("VidSrc API failed, trying HTML extraction");
       }
 
-      // Fallback: try to extract from HTML if JSON fails
-      return await this.extractFromVidSrcHTML(apiUrl);
+      // Fallback: try to extract from HTML
+      return await this.extractFromVidSrcHTML(embedUrl);
     } catch (error) {
       console.warn("VidSrc extraction failed:", error);
       return [];

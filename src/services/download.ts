@@ -280,15 +280,7 @@ export class DownloadService {
     onProgress?.(progress);
 
     try {
-      // Import video extractor dynamically to avoid circular dependencies
-      const { videoExtractor } = await import("./videoExtractor");
-      
-      progress.status = "downloading";
-      progress.message = "Extracting video URL...";
-      progress.progress = 10;
-      onProgress?.(progress);
-
-      // Extract TMDB ID from sources (first source usually contains it)
+      // Extract TMDB ID from sources
       const firstSource = downloadInfo.sources[0];
       const tmdbIdMatch = firstSource.match(/\/(\d+)(?:\/|\?|$)/);
       if (!tmdbIdMatch) {
@@ -296,63 +288,66 @@ export class DownloadService {
       }
       const tmdbId = parseInt(tmdbIdMatch[1], 10);
 
-      // Get direct video URLs
-      const directURLs = await videoExtractor.getDirectVideoURLs(
-        tmdbId,
-        downloadInfo.mediaType,
-        downloadInfo.seasonId,
-        downloadInfo.episodeId
-      );
+      progress.status = "downloading";
+      progress.message = "Preparing download...";
+      progress.progress = 20;
+      onProgress?.(progress);
 
-      if (directURLs.length === 0) {
-        // Fallback: Open download page if direct URLs not available
-        progress.message = "Direct download not available. Opening download page...";
+      // Try to use VidSrc download API or direct link
+      // VidSrc provides download links via their API
+      let downloadURL = null;
+      
+      try {
+        // Try VidSrc download endpoint
+        const vidSrcDownloadUrl = downloadInfo.mediaType === "movie"
+          ? `https://vidsrc.me/vidsrc/${tmdbId}`
+          : `https://vidsrc.me/vidsrc/${tmdbId}/${downloadInfo.seasonId}-${downloadInfo.episodeId}`;
+        
+        // For now, we'll create a smart download page that tries multiple methods
+        progress.message = "Opening download interface...";
         progress.progress = 50;
         onProgress?.(progress);
         
-        const downloadPage = this.createWorkingDownloadPage(downloadInfo);
+        // Create an improved download page that tries to auto-download
+        const downloadPage = this.createSmartDownloadPage(downloadInfo, tmdbId);
         const newTab = window.open(downloadPage, '_blank');
+        
         if (newTab) {
           progress.status = "completed";
           progress.progress = 100;
-          progress.message = "Download page opened!";
+          progress.message = "Download interface opened!";
           onProgress?.(progress);
         } else {
           throw new Error("Popup blocked. Please allow popups for this site.");
         }
         return;
+        
+      } catch (apiError) {
+        console.warn("Direct download API failed, using fallback");
       }
-
-      // Use first available direct URL
-      const videoURL = directURLs[0].url;
-      const filename = this.generateFilename(downloadInfo);
-
-      progress.message = "Starting download...";
-      progress.progress = 30;
+      
+      // Fallback: Create download page
+      progress.message = "Creating download page...";
+      progress.progress = 60;
       onProgress?.(progress);
-
-      // Download video directly
-      await videoExtractor.downloadVideoDirect(
-        videoURL,
-        filename,
-        (downloadProgress) => {
-          progress.progress = 30 + Math.round((downloadProgress * 70) / 100);
-          progress.message = `Downloading... ${progress.progress}%`;
-          onProgress?.(progress);
-        }
-      );
-
-      progress.status = "completed";
-      progress.progress = 100;
-      progress.message = "Download completed successfully!";
-      onProgress?.(progress);
+      
+      const downloadPage = this.createSmartDownloadPage(downloadInfo, tmdbId);
+      const newTab = window.open(downloadPage, '_blank');
+      if (newTab) {
+        progress.status = "completed";
+        progress.progress = 100;
+        progress.message = "Download page opened!";
+        onProgress?.(progress);
+      } else {
+        throw new Error("Popup blocked. Please allow popups for this site.");
+      }
       
     } catch (error) {
       progress.status = "error";
       progress.message = `Download failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
       onProgress?.(progress);
       
-      // Fallback to download page on error
+      // Final fallback
       try {
         const downloadPage = this.createWorkingDownloadPage(downloadInfo);
         window.open(downloadPage, '_blank');
@@ -371,6 +366,239 @@ export class DownloadService {
     } else {
       return `${sanitizedTitle}_S${downloadInfo.seasonId}E${downloadInfo.episodeId}.mp4`;
     }
+  }
+
+  // Create a smart download page that tries to auto-download
+  private createSmartDownloadPage(downloadInfo: DownloadInfo, tmdbId: number): string {
+    const sources = downloadInfo.sources;
+    const title = downloadInfo.title;
+    const mediaType = downloadInfo.mediaType;
+    const filename = this.generateFilename(downloadInfo);
+    
+    const html = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Downloading ${title}...</title>
+        <style>
+          body { 
+            font-family: Arial, sans-serif; 
+            background: #1a1a1a; 
+            color: white; 
+            margin: 0; 
+            padding: 20px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+          }
+          .container { max-width: 800px; text-align: center; }
+          .loading { 
+            font-size: 24px; 
+            margin: 20px 0; 
+          }
+          .spinner {
+            border: 4px solid #333;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+          }
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+          .status { margin: 20px 0; color: #888; }
+          .video-container {
+            display: none;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%;
+            position: relative;
+            margin: 20px 0;
+          }
+          .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+          }
+          .manual-download {
+            margin-top: 30px;
+            padding: 20px;
+            background: #2a2a2a;
+            border-radius: 8px;
+          }
+          .download-btn {
+            background: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+          }
+          .download-btn:hover { background: #2563eb; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1>Downloading ${title}</h1>
+          <div class="spinner"></div>
+          <div class="loading">Extracting video URL...</div>
+          <div class="status" id="status">Please wait while we prepare your download...</div>
+          
+          <div class="video-container" id="videoContainer">
+            <iframe id="videoFrame" allowfullscreen></iframe>
+          </div>
+          
+          <div class="manual-download" id="manualDownload" style="display: none;">
+            <h3>Manual Download</h3>
+            <p>If automatic download doesn't work, use these options:</p>
+            <button class="download-btn" onclick="tryDownload()">Try Download Again</button>
+            <button class="download-btn" onclick="showVideo()">Show Video Player</button>
+            <p style="margin-top: 15px; font-size: 14px; color: #888;">
+              Right-click on the video player and select "Save video as..." to download
+            </p>
+          </div>
+        </div>
+        
+        <script>
+          const sources = ${JSON.stringify(sources)};
+          const filename = "${filename}";
+          const tmdbId = ${tmdbId};
+          const mediaType = "${downloadInfo.mediaType}";
+          const seasonId = ${downloadInfo.seasonId || 'null'};
+          const episodeId = ${downloadInfo.episodeId || 'null'};
+          let currentSourceIndex = 0;
+          let downloadAttempted = false;
+          
+          function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+          }
+          
+          function showVideo() {
+            document.getElementById('videoContainer').style.display = 'block';
+            document.getElementById('videoFrame').src = sources[currentSourceIndex];
+          }
+          
+          async function tryDirectDownload() {
+            if (downloadAttempted) return;
+            downloadAttempted = true;
+            
+            updateStatus('Attempting direct download...');
+            
+            // Method 1: Try VidSrc download API
+            try {
+              const apiUrl = mediaType === 'movie'
+                ? \`https://vidsrc.pro/vidsrc.php?id=\${tmdbId}\`
+                : \`https://vidsrc.pro/vidsrc.php?id=\${tmdbId}&s=\${seasonId}&e=\${episodeId}\`;
+              
+              const response = await fetch(apiUrl, {
+                headers: {
+                  'Referer': 'https://vidsrc.me/'
+                }
+              });
+              
+              if (response.ok) {
+                const data = await response.json();
+                if (data.result && data.result.length > 0) {
+                  const videoUrl = data.result[0].url || data.result[0].file;
+                  if (videoUrl) {
+                    updateStatus('Downloading video...');
+                    // Trigger download immediately
+                    const link = document.createElement('a');
+                    link.href = videoUrl;
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    updateStatus('✓ Download started! Check your downloads folder.');
+                    return true;
+                  }
+                }
+              }
+            } catch (error) {
+              console.log('VidSrc API failed:', error);
+            }
+            
+            // Method 2: Try to extract from iframe after it loads
+            updateStatus('Loading video source...');
+            showVideo();
+            
+            // Wait for iframe to load, then try to extract video URL
+            const iframe = document.getElementById('videoFrame');
+            iframe.onload = function() {
+              setTimeout(() => {
+                try {
+                  // Try to access iframe content (may fail due to CORS)
+                  const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+                  if (iframeDoc) {
+                    const video = iframeDoc.querySelector('video');
+                    if (video && video.src) {
+                      updateStatus('Found video! Starting download...');
+                      const link = document.createElement('a');
+                      link.href = video.src;
+                      link.download = filename;
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                      updateStatus('✓ Download started!');
+                      return;
+                    }
+                  }
+                } catch (e) {
+                  // CORS blocked, use manual method
+                }
+                
+                updateStatus('Video loaded! Right-click on the video player and select "Save video as..." to download.');
+                document.getElementById('manualDownload').style.display = 'block';
+              }, 3000);
+            };
+            
+            // Fallback: Show manual download after timeout
+            setTimeout(() => {
+              if (!downloadAttempted || document.getElementById('manualDownload').style.display === 'none') {
+                updateStatus('Video loaded! Right-click on the video and select "Save video as..." to download.');
+                document.getElementById('manualDownload').style.display = 'block';
+              }
+            }, 5000);
+            
+            return false;
+          }
+          
+          function tryNextSource() {
+            if (currentSourceIndex >= sources.length - 1) {
+              updateStatus('All sources tried. Please use manual download.');
+              return;
+            }
+            
+            currentSourceIndex++;
+            updateStatus(\`Trying source \${currentSourceIndex + 1} of \${sources.length}...\`);
+            document.getElementById('videoFrame').src = sources[currentSourceIndex];
+          }
+          
+          // Auto-start download attempt
+          window.addEventListener('load', () => {
+            setTimeout(() => {
+              tryDirectDownload();
+            }, 500);
+          });
+        </script>
+      </body>
+      </html>
+    `;
+    
+    const blob = new Blob([html], { type: 'text/html' });
+    return URL.createObjectURL(blob);
   }
 
   // Create a working download page that actually downloads files
