@@ -51,7 +51,7 @@ const LiveScoreboard: FC = () => {
       <div className="bg-dark-lighten rounded-lg border border-gray-800 p-6 text-center">
         <p className="text-gray-400">No live matches at the moment</p>
         <a
-          href="https://sportslive.run/"
+          href="https://sportslive.run/live?utm_source=MB_Website&sportType=football"
           target="_blank"
           rel="noopener noreferrer"
           className="text-primary hover:underline mt-2 inline-block"
@@ -75,7 +75,7 @@ const LiveScoreboard: FC = () => {
             <h2 className="text-xl font-bold text-white">Live Scoreboard</h2>
           </div>
           <a
-            href="https://sportslive.run/"
+            href="https://sportslive.run/live?utm_source=MB_Website&sportType=football"
             target="_blank"
             rel="noopener noreferrer"
             className="text-primary text-sm font-semibold hover:underline"
@@ -90,7 +90,7 @@ const LiveScoreboard: FC = () => {
         {fixtures.map((fixture) => (
           <a
             key={fixture.id}
-            href="https://sportslive.run/"
+            href="https://sportslive.run/live?utm_source=MB_Website&sportType=football"
             target="_blank"
             rel="noopener noreferrer"
             className="bg-gray-900/50 rounded-lg border border-gray-700 hover:border-primary/50 hover:bg-gray-900 transition p-4 group"

@@ -97,7 +97,7 @@ const UpcomingCalendar: FC = () => {
             <h2 className="text-xl font-bold text-white">Upcoming Calendar</h2>
           </div>
           <a
-            href="https://sportslive.run/"
+            href="https://sportslive.run/live?utm_source=MB_Website&sportType=football"
             target="_blank"
             rel="noopener noreferrer"
             className="text-primary text-sm font-semibold hover:underline"
@@ -143,7 +143,7 @@ const UpcomingCalendar: FC = () => {
             {selectedFixtures.map((fixture) => (
               <a
                 key={fixture.id}
-                href="https://sportslive.run/"
+                href="https://sportslive.run/live?utm_source=MB_Website&sportType=football"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block bg-gray-900/50 rounded-lg border border-gray-700 hover:border-amber-400/50 hover:bg-gray-900 transition p-4 group"
@@ -217,7 +217,7 @@ const UpcomingCalendar: FC = () => {
           <div className="text-center py-8">
             <p className="text-gray-400 mb-2">No matches scheduled for this date</p>
             <a
-              href="https://sportslive.run/"
+              href="https://sportslive.run/live?utm_source=MB_Website&sportType=football"
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary hover:underline text-sm"

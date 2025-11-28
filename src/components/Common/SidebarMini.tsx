@@ -53,7 +53,7 @@ const SidebarMini: FunctionComponent = () => {
             <AiOutlineHome size={25} />
           </Link>
           <a
-            href="https://sportslive.run/"
+            href="https://sportslive.run/live?utm_source=MB_Website&sportType=football"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-primary transition duration-300"

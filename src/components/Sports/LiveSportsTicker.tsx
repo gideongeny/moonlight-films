@@ -76,7 +76,7 @@ const LiveSportsTicker: FC = () => {
           {allFixtures.map((fixture, index) => (
             <a
               key={`${fixture.id}-${index}`}
-              href="https://sportslive.run/"
+              href="https://sportslive.run/live?utm_source=MB_Website&sportType=football"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-4 shrink-0 hover:bg-gray-800/50 px-4 py-1 rounded transition group"
@@ -171,7 +171,7 @@ const LiveSportsTicker: FC = () => {
 
         {/* View All Link */}
         <a
-          href="https://sportslive.run/"
+          href="https://sportslive.run/live?utm_source=MB_Website&sportType=football"
           target="_blank"
           rel="noopener noreferrer"
           className="shrink-0 px-4 text-primary text-xs font-semibold hover:text-primary/80 transition whitespace-nowrap"

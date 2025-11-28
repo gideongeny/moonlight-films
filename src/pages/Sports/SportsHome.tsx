@@ -24,7 +24,7 @@ const SportsHome: FC = () => {
 
   // Redirect to sportslive.run when component mounts (like MovieBox)
   useEffect(() => {
-    window.location.href = "https://sportslive.run/";
+    window.location.href = "https://sportslive.run/live?utm_source=MB_Website&sportType=football";
   }, []);
 
 
@@ -274,7 +274,7 @@ const SportsHome: FC = () => {
               return (
                 <a
                   key={fixture.id}
-                  href="https://sportslive.run/"
+                  href="https://sportslive.run/live?utm_source=MB_Website&sportType=football"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group rounded-xl bg-dark-lighten border border-gray-800 hover:border-primary/70 hover:shadow-xl hover:shadow-primary/20 transition overflow-hidden"

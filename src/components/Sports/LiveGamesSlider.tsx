@@ -95,7 +95,7 @@ const LiveGamesSlider: FC<LiveGamesSliderProps> = ({ type, title }) => {
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-bold text-white">{title}</h3>
           <a
-            href="https://sportslive.run/"
+            href="https://sportslive.run/live?utm_source=MB_Website&sportType=football"
             target="_blank"
             rel="noopener noreferrer"
             className="text-primary hover:text-primary/80 text-sm font-medium transition"
@@ -109,7 +109,7 @@ const LiveGamesSlider: FC<LiveGamesSliderProps> = ({ type, title }) => {
         {fixtures.map((fixture) => (
           <a
             key={fixture.id}
-            href="https://sportslive.run/"
+            href="https://sportslive.run/live?utm_source=MB_Website&sportType=football"
             target="_blank"
             rel="noopener noreferrer"
             className="flex-shrink-0 w-[280px] rounded-lg overflow-hidden hover:shadow-lg hover:shadow-primary/20 transition-all group cursor-pointer"

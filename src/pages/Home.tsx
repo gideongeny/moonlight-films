@@ -39,7 +39,7 @@ const Home: FC = () => {
   
   const handleTabChange = (tab: "movie" | "tv" | "sports") => {
     if (tab === "sports") {
-      window.open("https://sportslive.run/", "_blank");
+      window.open("https://sportslive.run/live?utm_source=MB_Website&sportType=football", "_blank");
       return;
     }
     setCurrentTab(tab);
