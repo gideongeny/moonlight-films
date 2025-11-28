@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { GiHamburgerMenu } from "react-icons/gi";
-import { LazyLoadImage } from "react-lazy-load-image-component";
 import Sidebar from "../components/Common/Sidebar";
 import ExploreFilter from "../components/Explore/ExploreFilter";
 import ExploreResult from "../components/Explore/ExploreResult";

@@ -339,12 +339,12 @@ const DiverseContent: React.FC<DiverseContentProps> = ({ currentTab }) => {
           return hasGenre && matchesMediaType;
         });
         return filtered.length > 0 ? (
-          <SectionSlider
+        <SectionSlider
             title={`👻 Horror ${currentTab === "movie" ? "Movies" : "TV Shows"}`}
             films={filtered}
-            limitNumber={10}
-            isLoading={false}
-          />
+          limitNumber={10}
+          isLoading={false}
+        />
         ) : null;
       })()}
 

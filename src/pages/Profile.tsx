@@ -7,7 +7,6 @@ import {
 } from "firebase/auth";
 import { FunctionComponent, useRef, useState } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
-import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link } from "react-router-dom";
 import Sidebar from "../components/Common/Sidebar";
 import Title from "../components/Common/Title";

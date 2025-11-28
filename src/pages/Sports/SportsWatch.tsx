@@ -1,6 +1,5 @@
 import { FC, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { LazyLoadImage } from "react-lazy-load-image-component";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { MdSportsSoccer } from "react-icons/md";
 

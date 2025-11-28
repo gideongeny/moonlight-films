@@ -8,8 +8,8 @@ import {
   getFZContentByGenre,
   getFZContentByCountry,
 } from "./fzmovies";
-import { getAllSourceContent, mergeContentSources, getFZMoviesContent, getKissKHContent, getUGCAnimeContent, getAilokContent, getGoogotvContent } from "./contentSources";
-import { getAllAPIContent, getAllAPIContentByGenre, getTMDBContent, getTMDBByGenre } from "./movieAPIs";
+import { getAllSourceContent } from "./contentSources";
+import { getAllAPIContent, getAllAPIContentByGenre } from "./movieAPIs";
 
 // MOVIE TAB
 ///////////////////////////////////////////////////////////////

@@ -2,7 +2,7 @@ import axios from "../shared/axios";
 
 import { ConfigType, Item, ItemsPage } from "../shared/types";
 import { getFZContentByGenre } from "./fzmovies";
-import { getAllAPIContentByGenre, getTMDBByGenre } from "./movieAPIs";
+import { getAllAPIContentByGenre } from "./movieAPIs";
 
 export const getExploreMovie: (
   page: number,

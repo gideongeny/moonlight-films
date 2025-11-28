@@ -1,6 +1,5 @@
 import { FC, useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { LazyLoadImage } from "react-lazy-load-image-component";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { MdSportsSoccer } from "react-icons/md";
 
@@ -21,12 +20,10 @@ const SportsHome: FC = () => {
   const [activeStatus, setActiveStatus] = useState<"live" | "upcoming" | "replay">("live");
   const [liveFixtures, setLiveFixtures] = useState<SportsFixtureConfig[]>([]);
   const [upcomingFixtures, setUpcomingFixtures] = useState<SportsFixtureConfig[]>([]);
-  const [isLoadingRealData, setIsLoadingRealData] = useState(true);
 
   // Fetch real live data
   useEffect(() => {
     const fetchRealData = async () => {
-      setIsLoadingRealData(true);
       try {
         const [live, upcoming] = await Promise.all([
           getLiveScores(),
@@ -36,8 +33,6 @@ const SportsHome: FC = () => {
         setUpcomingFixtures(upcoming);
       } catch (error) {
         console.error("Error fetching real sports data:", error);
-      } finally {
-        setIsLoadingRealData(false);
       }
     };
 

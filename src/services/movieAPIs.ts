@@ -207,14 +207,9 @@ export const getIMDBContent = async (
 
 // MUBI API - Get curated films (if available)
 export const getMUBIContent = async (): Promise<Item[]> => {
-  try {
-    // MUBI doesn't have a public API, but we can try to fetch from their website
-    // For now, return empty - would need scraping or official API
-    return [];
-  } catch (error) {
-    console.warn("MUBI API error:", error);
-    return [];
-  }
+  // MUBI doesn't have a public API, but we can try to fetch from their website
+  // For now, return empty - would need scraping or official API
+  return [];
 };
 
 // Get content by genre from TMDB

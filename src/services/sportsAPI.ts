@@ -11,10 +11,6 @@ const API_FOOTBALL_KEY = process.env.REACT_APP_API_FOOTBALL_KEY || "";
 // TheSportsDB - Free, no key required
 const SPORTSDB_BASE = "https://www.thesportsdb.com/api/v1/json/3";
 
-// SportMonks - Free tier available
-const SPORTMONKS_BASE = "https://api.sportmonks.com/v3";
-const SPORTMONKS_KEY = process.env.REACT_APP_SPORTMONKS_KEY || "";
-
 // Get team logo from TheSportsDB
 export const getTeamLogo = async (teamName: string): Promise<string | null> => {
   try {
