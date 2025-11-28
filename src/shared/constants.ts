@@ -83,6 +83,43 @@ export const EMBED_ALTERNATIVES = {
   AILOK_EMBED: "https://ailok.pe/embed",
   SZ_GOOGOTV: "https://sz.googotv.com",
   SZ_GOOGOTV_EMBED: "https://sz.googotv.com/embed",
+  // Additional working sources for African content (industry-standard)
+  NOLLYWOOD_TV: "https://nollywoodtv.com",
+  AFRICAN_MOVIES_ONLINE: "https://africanmoviesonline.com",
+  NOLLYWOOD_MOVIES: "https://nollywoodmovies.com",
+  AFRIKAN_MOVIES: "https://afrikanmovies.com",
+  // Additional working sources for Asian content (industry-standard)
+  DRAMACOOL: "https://dramacool.com",
+  KISSASIAN: "https://kissasian.com",
+  ASIANSERIES: "https://asianseries.com",
+  MYASIANTV: "https://myasiantv.com",
+  VIKI: "https://viki.com",
+  // Additional working sources for Latin American content
+  CUEVANA: "https://cuevana.com",
+  PELISPLUS: "https://pelisplus.com",
+  REPELIS: "https://repelis.com",
+  LATINOMOVIES: "https://latinomovies.com",
+  // Additional working sources for Middle Eastern content
+  SHAHID: "https://shahid.mbc.net",
+  OSN: "https://osn.com",
+  // Universal working sources (industry-standard)
+  SUPEREMBED: "https://superembed.com",
+  EMBEDMOVIE: "https://embedmovie.com",
+  MOVIEAPI: "https://movieapi.com",
+  STREAMTAPE: "https://streamtape.com",
+  MIXDROP: "https://mixdrop.com",
+  UPCLOUD: "https://upcloud.com",
+  // Additional reliable embed sources
+  EMBEDSB: "https://embedsb.com",
+  STREAMWISH: "https://streamwish.com",
+  FILEMOON: "https://filemoon.com",
+  DOODSTREAM: "https://doodstream.com",
+  // Regional-specific working sources
+  ZEE5: "https://zee5.com", // Indian content
+  HOTSTAR: "https://hotstar.com", // Indian content
+  VIU: "https://viu.com", // Asian content
+  IWANTTFC: "https://iwanttfc.com", // Filipino content
+  ABS_CBN: "https://abs-cbn.com", // Filipino content
 };
 
 export interface SportsLeagueConfig {

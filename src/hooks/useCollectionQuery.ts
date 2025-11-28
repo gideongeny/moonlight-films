@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Item } from "../shared/types";
-import axios from "../shared/axios";
+import { getExploreMovie, getExploreTV } from "../services/explore";
 import {
   CollectionReference,
   DocumentData,
@@ -86,57 +86,24 @@ export const useTMDBCollectionQuery = (
           }
         }
 
-        // MovieBox-style: Fetch from multiple reliable endpoints, then filter client-side
-        // This avoids 404 errors from strict region filtering
-        const fetchPromises = [
-          // Primary: Try discover endpoint (works most of the time)
-          axios.get(`/discover/${mediaType}`, {
-            params: {
-              sort_by: sortBy,
-              page: 1,
-              ...(genres.length > 0 && { with_genres: genres.join(",") }),
-            },
-            timeout: 8000,
-          }).catch(() => null),
-          
-          // Fallback 1: Popular endpoint (always works)
-          axios.get(`/${mediaType}/popular`, {
-            params: { page: 1 },
-            timeout: 8000,
-          }).catch(() => null),
-          
-          // Fallback 2: Trending endpoint (always works)
-          axios.get(`/trending/${mediaType}/day`, {
-            params: { page: 1 },
-            timeout: 8000,
-          }).catch(() => null),
-          
-          // Fallback 3: Top rated endpoint (always works)
-          axios.get(`/${mediaType}/top_rated`, {
-            params: { page: 1 },
-            timeout: 8000,
-          }).catch(() => null),
-        ];
+        // Enhanced: Use explore service which fetches from multiple sources
+        // This provides better content for regions outside NA/Europe/East Asia
+        const exploreConfig: any = {
+          sort_by: sortBy,
+          ...(genres.length > 0 && { with_genres: genres.join(",") }),
+          ...(region && targetCountries.length > 0 && { 
+            with_origin_country: targetCountries.join("|"),
+            region: region 
+          }),
+        };
 
-        // Wait for at least one successful response
-        const responses = await Promise.allSettled(fetchPromises);
-        let allResults: Item[] = [];
+        // Use enhanced explore functions that fetch from all sources
+        const exploreResult = mediaType === "movie" 
+          ? await getExploreMovie(1, exploreConfig).catch(() => ({ results: [] }))
+          : await getExploreTV(1, exploreConfig).catch(() => ({ results: [] }));
 
-        // Collect results from all successful responses
-        for (const response of responses) {
-          if (response.status === "fulfilled" && response.value?.data?.results) {
-            const items = (response.value.data.results || []).map((item: any) => ({
-              ...item,
-              media_type: mediaType,
-            }));
-            allResults.push(...items);
-          }
-        }
-
-        // Remove duplicates by ID
-        const uniqueResults = allResults.filter((item, index, self) =>
-          index === self.findIndex((i) => i.id === item.id)
-        );
+        // Get results from explore (already includes multiple sources)
+        let uniqueResults = exploreResult.results || [];
 
         // Apply client-side filters (like MovieBox does)
         let filteredResults = uniqueResults;
@@ -173,7 +140,7 @@ export const useTMDBCollectionQuery = (
               ? item.release_date 
               : item.first_air_date;
             if (!releaseDate) return false;
-            const itemYear = parseInt(releaseDate.split("-")[0]);
+            const itemYear = Number.parseInt(releaseDate.split("-")[0], 10);
             return itemYear >= startYear && itemYear <= endYear;
           });
         }
@@ -213,7 +180,7 @@ export const useTMDBCollectionQuery = (
 
         // Limit to reasonable number and ensure posters exist
         filteredResults = filteredResults
-          .filter((item) => item.poster_path)
+          .filter((item) => Boolean(item.poster_path))
           .slice(0, 100); // Limit to 100 items
 
         setData(filteredResults);
@@ -242,7 +209,7 @@ export const useCollectionQuery: (
   data: QuerySnapshot<DocumentData> | null;
 } = (id, collection) => {
   const [data, setData] = useState<QuerySnapshot<DocumentData> | null>(null);
-  const [isLoading, setIsLoading] = useState(!Boolean(data));
+  const [isLoading, setIsLoading] = useState(!data);
   const [isError, setIsError] = useState(false);
 
   useEffect(() => {

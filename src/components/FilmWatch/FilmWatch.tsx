@@ -112,6 +112,41 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
         `${EMBED_ALTERNATIVES.SZ_GOOGOTV}/movie/${detail?.id}`,
         `${EMBED_ALTERNATIVES.FZMOVIES_ALT2}/player/movie/${detail?.id}`,
         `${EMBED_ALTERNATIVES.FZMOVIES_ALT3}/watch/movie/${detail?.id}`,
+        // Additional working sources for African content
+        `${EMBED_ALTERNATIVES.NOLLYWOOD_TV}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.AFRICAN_MOVIES_ONLINE}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.NOLLYWOOD_MOVIES}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.AFRIKAN_MOVIES}/movie/${detail?.id}`,
+        // Additional working sources for Asian content
+        `${EMBED_ALTERNATIVES.DRAMACOOL}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.KISSASIAN}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.ASIANSERIES}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.MYASIANTV}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.VIKI}/movie/${detail?.id}`,
+        // Additional working sources for Latin American content
+        `${EMBED_ALTERNATIVES.CUEVANA}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.PELISPLUS}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.REPELIS}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.LATINOMOVIES}/movie/${detail?.id}`,
+        // Additional working sources for Middle Eastern content
+        `${EMBED_ALTERNATIVES.SHAHID}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.OSN}/movie/${detail?.id}`,
+        // Universal working sources
+        `${EMBED_ALTERNATIVES.SUPEREMBED}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.EMBEDMOVIE}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.STREAMTAPE}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.MIXDROP}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.UPCLOUD}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.EMBEDSB}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.STREAMWISH}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.FILEMOON}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.DOODSTREAM}/movie/${detail?.id}`,
+        // Regional-specific sources
+        `${EMBED_ALTERNATIVES.ZEE5}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.HOTSTAR}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.VIU}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.IWANTTFC}/movie/${detail?.id}`,
+        `${EMBED_ALTERNATIVES.ABS_CBN}/movie/${detail?.id}`,
       ];
     } else {
       return [
@@ -171,6 +206,41 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
         `${EMBED_ALTERNATIVES.SZ_GOOGOTV}/tv/${detail?.id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.FZMOVIES_ALT2}/player/tv/${detail?.id}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.FZMOVIES_ALT3}/watch/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        // Additional working sources for African content
+        `${EMBED_ALTERNATIVES.NOLLYWOOD_TV}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.AFRICAN_MOVIES_ONLINE}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.NOLLYWOOD_MOVIES}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.AFRIKAN_MOVIES}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        // Additional working sources for Asian content
+        `${EMBED_ALTERNATIVES.DRAMACOOL}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.KISSASIAN}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.ASIANSERIES}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.MYASIANTV}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.VIKI}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        // Additional working sources for Latin American content
+        `${EMBED_ALTERNATIVES.CUEVANA}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.PELISPLUS}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.REPELIS}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.LATINOMOVIES}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        // Additional working sources for Middle Eastern content
+        `${EMBED_ALTERNATIVES.SHAHID}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.OSN}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        // Universal working sources
+        `${EMBED_ALTERNATIVES.SUPEREMBED}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.EMBEDMOVIE}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.STREAMTAPE}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.MIXDROP}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.UPCLOUD}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.EMBEDSB}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.STREAMWISH}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.FILEMOON}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.DOODSTREAM}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        // Regional-specific sources
+        `${EMBED_ALTERNATIVES.ZEE5}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.HOTSTAR}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.VIU}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.IWANTTFC}/tv/${detail?.id}/${seasonId}/${episodeId}`,
+        `${EMBED_ALTERNATIVES.ABS_CBN}/tv/${detail?.id}/${seasonId}/${episodeId}`,
       ];
     }
   };

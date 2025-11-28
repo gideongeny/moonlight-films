@@ -1,8 +1,9 @@
 import axios from "../shared/axios";
 
 import { ConfigType, Item, ItemsPage } from "../shared/types";
-import { getFZContentByGenre } from "./fzmovies";
+import { getFZContentByGenre, getFZContentByCountry } from "./fzmovies";
 import { getAllAPIContentByGenre } from "./movieAPIs";
+import { getAllSourceContent } from "./contentSources";
 
 export const getExploreMovie: (
   page: number,
@@ -13,7 +14,9 @@ export const getExploreMovie: (
   // Get origin_country filter if specified
   const originCountry = config.with_origin_country || (config as any).region;
   
-  const [tmdbData, fzMovies, apiContent] = await Promise.all([
+  // Enhanced: Fetch from multiple sources in parallel for better regional content
+  const fetchPromises = [
+    // Primary: TMDB discover
     axios.get("/discover/movie", {
       params: {
         ...config,
@@ -23,18 +26,54 @@ export const getExploreMovie: (
         // Ensure origin_country filtering is applied
         ...(originCountry && { with_origin_country: originCountry }),
       },
-    }),
-    // Fetch from FZMovies if genre is specified
+      timeout: 10000,
+    }).catch(() => ({ data: { results: [] } })),
+    
+    // Fallback: TMDB popular (always works)
+    axios.get("/movie/popular", {
+      params: { page },
+      timeout: 8000,
+    }).catch(() => ({ data: { results: [] } })),
+    
+    // Fallback: TMDB trending
+    axios.get("/trending/movie/day", {
+      params: { page },
+      timeout: 8000,
+    }).catch(() => ({ data: { results: [] } })),
+    
+    // FZMovies content
     genreId 
-      ? getFZContentByGenre(genreId, "movie", page)
+      ? getFZContentByGenre(genreId, "movie", page).catch(() => [])
       : Promise.resolve([]),
-    // Fetch from all APIs if genre is specified
+    
+    // Additional API content
     genreId
-      ? getAllAPIContentByGenre(genreId, "movie")
+      ? getAllAPIContentByGenre(genreId, "movie").catch(() => [])
       : Promise.resolve([]),
-  ]);
+    
+    // Content sources (KissKH, Ailok, Googotv, FZMovies)
+    getAllSourceContent("movie", page).catch(() => []),
+    
+    // Regional content sources if origin_country is specified
+    originCountry
+      ? Promise.all(
+          (typeof originCountry === 'string' ? originCountry.split('|') : [originCountry])
+            .slice(0, 3) // Limit to first 3 countries to avoid too many requests
+            .map(country => getFZContentByCountry(country, "movie", page).catch(() => []))
+        ).then(results => results.flat()).catch(() => [])
+      : Promise.resolve([]),
+  ];
+  
+  const [tmdbData, popularData, trendingData, fzMovies, apiContent, sourceContent, regionalContent] = await Promise.all(fetchPromises);
 
-  const tmdbItems = (tmdbData.data.results || [])
+  // Combine all TMDB results (discover, popular, trending)
+  const allTmdbResults = [
+    ...(tmdbData.data?.results || []),
+    ...(popularData.data?.results || []),
+    ...(trendingData.data?.results || []),
+  ];
+  
+  const tmdbItems = allTmdbResults
     .filter((item: Item) => {
       // If genre filter is applied, ensure item has that genre
       if (genreId && item.genre_ids) {
@@ -69,9 +108,19 @@ export const getExploreMovie: (
       return countries.some((c: string) => filterCountries.includes(c));
     });
   }
+  
+  // Filter source content by origin_country if specified
+  let filteredSourceContent = sourceContent;
+  if (originCountry) {
+    const filterCountries = typeof originCountry === 'string' ? originCountry.split('|') : [originCountry];
+    filteredSourceContent = filteredSourceContent.filter((item: Item) => {
+      const countries = item.origin_country || [];
+      return countries.some((c: string) => filterCountries.includes(c));
+    });
+  }
 
-  // Merge with FZMovies and API content
-  const combined = [...tmdbItems, ...fzMovies, ...filteredApiContent];
+  // Merge with FZMovies, API content, source content, and regional content
+  const combined = [...tmdbItems, ...fzMovies, ...filteredApiContent, ...filteredSourceContent, ...regionalContent];
   const seen = new Set<number>();
   const adjustedItems = combined.filter((item) => {
     if (seen.has(item.id)) return false;
@@ -107,7 +156,9 @@ export const getExploreTV: (
   // Get origin_country filter if specified
   const originCountry = config.with_origin_country || (config as any).region;
   
-  const [tmdbData, fzTV, apiContent] = await Promise.all([
+  // Enhanced: Fetch from multiple sources in parallel for better regional content
+  const fetchPromises = [
+    // Primary: TMDB discover
     axios.get("/discover/tv", {
       params: {
         ...config,
@@ -117,18 +168,54 @@ export const getExploreTV: (
         // Ensure origin_country filtering is applied
         ...(originCountry && { with_origin_country: originCountry }),
       },
-    }),
-    // Fetch from FZMovies if genre is specified
+      timeout: 10000,
+    }).catch(() => ({ data: { results: [] } })),
+    
+    // Fallback: TMDB popular (always works)
+    axios.get("/tv/popular", {
+      params: { page },
+      timeout: 8000,
+    }).catch(() => ({ data: { results: [] } })),
+    
+    // Fallback: TMDB trending
+    axios.get("/trending/tv/day", {
+      params: { page },
+      timeout: 8000,
+    }).catch(() => ({ data: { results: [] } })),
+    
+    // FZMovies content
     genreId 
-      ? getFZContentByGenre(genreId, "tv", page)
+      ? getFZContentByGenre(genreId, "tv", page).catch(() => [])
       : Promise.resolve([]),
-    // Fetch from all APIs if genre is specified
+    
+    // Additional API content
     genreId
-      ? getAllAPIContentByGenre(genreId, "tv")
+      ? getAllAPIContentByGenre(genreId, "tv").catch(() => [])
       : Promise.resolve([]),
-  ]);
+    
+    // Content sources (KissKH, Ailok, Googotv, FZMovies) - especially good for Asian content
+    getAllSourceContent("tv", page).catch(() => []),
+    
+    // Regional content sources if origin_country is specified
+    originCountry
+      ? Promise.all(
+          (typeof originCountry === 'string' ? originCountry.split('|') : [originCountry])
+            .slice(0, 3) // Limit to first 3 countries to avoid too many requests
+            .map(country => getFZContentByCountry(country, "tv", page).catch(() => []))
+        ).then(results => results.flat()).catch(() => [])
+      : Promise.resolve([]),
+  ];
+  
+  const [tmdbData, popularData, trendingData, fzTV, apiContent, sourceContent, regionalContent] = await Promise.all(fetchPromises);
 
-  const tmdbItems = (tmdbData.data.results || [])
+  // Combine all TMDB results (discover, popular, trending)
+  const allTmdbResults = [
+    ...(tmdbData.data?.results || []),
+    ...(popularData.data?.results || []),
+    ...(trendingData.data?.results || []),
+  ];
+  
+  const tmdbItems = allTmdbResults
     .filter((item: Item) => {
       // Must have poster
       if (!item.poster_path) return false;
@@ -168,9 +255,19 @@ export const getExploreTV: (
       return countries.some((c: string) => filterCountries.includes(c));
     });
   }
+  
+  // Filter source content by origin_country if specified
+  let filteredSourceContent = sourceContent;
+  if (originCountry) {
+    const filterCountries = typeof originCountry === 'string' ? originCountry.split('|') : [originCountry];
+    filteredSourceContent = filteredSourceContent.filter((item: Item) => {
+      const countries = item.origin_country || [];
+      return countries.some((c: string) => filterCountries.includes(c));
+    });
+  }
 
-  // Merge with FZMovies and API content
-  const combined = [...tmdbItems, ...fzTV, ...filteredApiContent];
+  // Merge with FZMovies, API content, source content, and regional content
+  const combined = [...tmdbItems, ...fzTV, ...filteredApiContent, ...filteredSourceContent, ...regionalContent];
   const seen = new Set<number>();
   const adjustedItems = combined.filter((item) => {
     if (seen.has(item.id)) return false;
