@@ -72,6 +72,12 @@ export const getExploreMovie: (
   const popularDataTyped = popularData as { data?: { results?: Item[] } };
   const trendingDataTyped = trendingData as { data?: { results?: Item[] } };
   
+  // Type assertions for array results from Promise.all
+  const fzMoviesTyped = fzMovies as Item[];
+  const apiContentTyped = apiContent as Item[];
+  const sourceContentTyped = sourceContent as Item[];
+  const regionalContentTyped = regionalContent as Item[];
+  
   const allTmdbResults = [
     ...(tmdbDataTyped.data?.results ?? []),
     ...(popularDataTyped.data?.results ?? []),
@@ -100,7 +106,7 @@ export const getExploreMovie: (
     }));
 
   // Filter API content by genre and origin_country if specified
-  let filteredApiContent = apiContent;
+  let filteredApiContent = apiContentTyped;
   if (genreId) {
     filteredApiContent = filteredApiContent.filter((item: Item) => 
       item.genre_ids && item.genre_ids.includes(genreId)
@@ -115,7 +121,7 @@ export const getExploreMovie: (
   }
   
   // Filter source content by origin_country if specified
-  let filteredSourceContent = sourceContent;
+  let filteredSourceContent = sourceContentTyped;
   if (originCountry) {
     const filterCountries = typeof originCountry === 'string' ? originCountry.split('|') : [originCountry];
     filteredSourceContent = filteredSourceContent.filter((item: Item) => {
@@ -125,7 +131,7 @@ export const getExploreMovie: (
   }
 
   // Merge with FZMovies, API content, source content, and regional content
-  const combined = [...tmdbItems, ...fzMovies, ...filteredApiContent, ...filteredSourceContent, ...regionalContent];
+  const combined = [...tmdbItems, ...fzMoviesTyped, ...filteredApiContent, ...filteredSourceContent, ...regionalContentTyped];
   const seen = new Set<number>();
   const adjustedItems = combined.filter((item) => {
     if (seen.has(item.id)) return false;
@@ -220,6 +226,12 @@ export const getExploreTV: (
   const popularDataTyped = popularData as { data?: { results?: Item[] } };
   const trendingDataTyped = trendingData as { data?: { results?: Item[] } };
   
+  // Type assertions for array results from Promise.all
+  const fzTVTyped = fzTV as Item[];
+  const apiContentTyped = apiContent as Item[];
+  const sourceContentTyped = sourceContent as Item[];
+  const regionalContentTyped = regionalContent as Item[];
+  
   const allTmdbResults = [
     ...(tmdbDataTyped.data?.results ?? []),
     ...(popularDataTyped.data?.results ?? []),
@@ -253,7 +265,7 @@ export const getExploreTV: (
     }));
 
   // Filter API content by genre and origin_country if specified
-  let filteredApiContent = apiContent;
+  let filteredApiContent = apiContentTyped;
   if (genreId) {
     filteredApiContent = filteredApiContent.filter((item: Item) => 
       item.genre_ids && item.genre_ids.includes(genreId)
@@ -268,7 +280,7 @@ export const getExploreTV: (
   }
   
   // Filter source content by origin_country if specified
-  let filteredSourceContent = sourceContent;
+  let filteredSourceContent = sourceContentTyped;
   if (originCountry) {
     const filterCountries = typeof originCountry === 'string' ? originCountry.split('|') : [originCountry];
     filteredSourceContent = filteredSourceContent.filter((item: Item) => {
@@ -278,7 +290,7 @@ export const getExploreTV: (
   }
 
   // Merge with FZMovies, API content, source content, and regional content
-  const combined = [...tmdbItems, ...fzTV, ...filteredApiContent, ...filteredSourceContent, ...regionalContent];
+  const combined = [...tmdbItems, ...fzTVTyped, ...filteredApiContent, ...filteredSourceContent, ...regionalContentTyped];
   const seen = new Set<number>();
   const adjustedItems = combined.filter((item) => {
     if (seen.has(item.id)) return false;
