@@ -263,7 +263,7 @@ export class DownloadService {
     }
   }
 
-  // Main download method that creates a working download page
+  // Main download method - Direct download like MovieBox.ph
   async downloadMovie(
     downloadInfo: DownloadInfo,
     onProgress?: (progress: DownloadProgress) => void
@@ -280,29 +280,96 @@ export class DownloadService {
     onProgress?.(progress);
 
     try {
+      // Import video extractor dynamically to avoid circular dependencies
+      const { videoExtractor } = await import("./videoExtractor");
+      
       progress.status = "downloading";
-      progress.message = "Creating download page...";
+      progress.message = "Extracting video URL...";
+      progress.progress = 10;
       onProgress?.(progress);
 
-      // Create a working download page that actually downloads files
-      const downloadPage = this.createWorkingDownloadPage(downloadInfo);
-      
-      // Open download page in new tab
-      const newTab = window.open(downloadPage, '_blank');
-      if (newTab) {
-        progress.status = "completed";
-        progress.progress = 100;
-        progress.message = "Download page opened successfully!";
-        onProgress?.(progress);
-      } else {
-        throw new Error("Popup blocked. Please allow popups for this site.");
+      // Extract TMDB ID from sources (first source usually contains it)
+      const firstSource = downloadInfo.sources[0];
+      const tmdbIdMatch = firstSource.match(/\/(\d+)(?:\/|\?|$)/);
+      if (!tmdbIdMatch) {
+        throw new Error("Could not extract video ID from sources");
       }
+      const tmdbId = parseInt(tmdbIdMatch[1], 10);
+
+      // Get direct video URLs
+      const directURLs = await videoExtractor.getDirectVideoURLs(
+        tmdbId,
+        downloadInfo.mediaType,
+        downloadInfo.seasonId,
+        downloadInfo.episodeId
+      );
+
+      if (directURLs.length === 0) {
+        // Fallback: Open download page if direct URLs not available
+        progress.message = "Direct download not available. Opening download page...";
+        progress.progress = 50;
+        onProgress?.(progress);
+        
+        const downloadPage = this.createWorkingDownloadPage(downloadInfo);
+        const newTab = window.open(downloadPage, '_blank');
+        if (newTab) {
+          progress.status = "completed";
+          progress.progress = 100;
+          progress.message = "Download page opened!";
+          onProgress?.(progress);
+        } else {
+          throw new Error("Popup blocked. Please allow popups for this site.");
+        }
+        return;
+      }
+
+      // Use first available direct URL
+      const videoURL = directURLs[0].url;
+      const filename = this.generateFilename(downloadInfo);
+
+      progress.message = "Starting download...";
+      progress.progress = 30;
+      onProgress?.(progress);
+
+      // Download video directly
+      await videoExtractor.downloadVideoDirect(
+        videoURL,
+        filename,
+        (downloadProgress) => {
+          progress.progress = 30 + Math.round((downloadProgress * 70) / 100);
+          progress.message = `Downloading... ${progress.progress}%`;
+          onProgress?.(progress);
+        }
+      );
+
+      progress.status = "completed";
+      progress.progress = 100;
+      progress.message = "Download completed successfully!";
+      onProgress?.(progress);
       
     } catch (error) {
       progress.status = "error";
       progress.message = `Download failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
       onProgress?.(progress);
-      throw error;
+      
+      // Fallback to download page on error
+      try {
+        const downloadPage = this.createWorkingDownloadPage(downloadInfo);
+        window.open(downloadPage, '_blank');
+        progress.message = "Opened download page as fallback";
+        onProgress?.(progress);
+      } catch (fallbackError) {
+        throw error;
+      }
+    }
+  }
+
+  private generateFilename(downloadInfo: DownloadInfo): string {
+    const sanitizedTitle = downloadInfo.title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    if (downloadInfo.mediaType === "movie") {
+      return `${sanitizedTitle}.mp4`;
+    } else {
+      return `${sanitizedTitle}_S${downloadInfo.seasonId}E${downloadInfo.episodeId}.mp4`;
     }
   }
 

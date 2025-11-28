@@ -46,17 +46,24 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
         setProgress(progressUpdate);
         
         if (progressUpdate.status === 'completed') {
-          toast.success('Download completed successfully!');
+          if (progressUpdate.message.includes('page')) {
+            toast.info('Download page opened! Use right-click to save video.');
+          } else {
+            toast.success('Download started! Check your downloads folder.');
+          }
         } else if (progressUpdate.status === 'error') {
           toast.error(progressUpdate.message);
         }
       });
     } catch (error) {
       console.error('Download failed:', error);
-      toast.error('Download failed. Please try again.');
+      toast.error('Download failed. Please try again or use the download page.');
     } finally {
-      setIsDownloading(false);
-      setProgress(null);
+      // Keep downloading state for a bit to show completion
+      setTimeout(() => {
+        setIsDownloading(false);
+        setProgress(null);
+      }, 2000);
     }
   };
 

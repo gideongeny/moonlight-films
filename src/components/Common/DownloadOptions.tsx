@@ -23,7 +23,7 @@ const DownloadOptions: React.FC<DownloadOptionsProps> = ({
     setProgress({
       progress: 0,
       status: 'idle',
-      message: 'Preparing download...'
+      message: 'Preparing direct download...'
     });
 
     try {
@@ -31,17 +31,23 @@ const DownloadOptions: React.FC<DownloadOptionsProps> = ({
         setProgress(progressUpdate);
         
         if (progressUpdate.status === 'completed') {
-          toast.success('Download page opened successfully!');
+          if (progressUpdate.message.includes('page')) {
+            toast.info('Direct download not available. Download page opened!');
+          } else {
+            toast.success('Download started! File is being saved to your device.');
+          }
         } else if (progressUpdate.status === 'error') {
           toast.error(progressUpdate.message);
         }
       });
     } catch (error) {
       console.error('Download failed:', error);
-      toast.error('Download failed. Please try again or check if popups are blocked.');
+      toast.error('Download failed. Please try again or use alternative method.');
     } finally {
-      setIsDownloading(false);
-      setProgress(null);
+      setTimeout(() => {
+        setIsDownloading(false);
+        setProgress(null);
+      }, 2000);
     }
   };
 
@@ -115,14 +121,16 @@ const DownloadOptions: React.FC<DownloadOptionsProps> = ({
       </div>
 
       <div className="space-y-3">
-        {/* Primary Download Button */}
+        {/* Primary Download Button - Direct Download like MovieBox */}
         <button
           onClick={handleDirectDownload}
           disabled={isDownloading || !isDownloadSupported}
           className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-3 rounded-md font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <AiOutlineDownload size={18} />
-          {isDownloading ? 'Downloading...' : `Download ${downloadInfo.mediaType === 'tv' ? 'Episode' : 'Movie'} (Direct to PC)`}
+          {isDownloading 
+            ? (progress?.message || 'Downloading...') 
+            : `Download ${downloadInfo.mediaType === 'tv' ? 'Episode' : 'Movie'} (Direct to Device)`}
         </button>
 
         {/* Alternative Download Button */}
