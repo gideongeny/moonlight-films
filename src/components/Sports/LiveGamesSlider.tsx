@@ -112,10 +112,18 @@ const LiveGamesSlider: FC<LiveGamesSliderProps> = ({ type, title }) => {
             href="https://sportslive.run/"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-shrink-0 w-[280px] bg-gradient-to-br from-red-500/20 to-blue-500/20 border-2 border-red-500/30 rounded-lg overflow-hidden hover:border-primary/70 hover:shadow-lg hover:shadow-primary/20 transition-all group cursor-pointer"
+            className="flex-shrink-0 w-[280px] rounded-lg overflow-hidden hover:shadow-lg hover:shadow-primary/20 transition-all group cursor-pointer"
+            style={{
+              background: 'linear-gradient(to bottom right, rgba(239, 68, 68, 0.3) 0%, rgba(239, 68, 68, 0.3) 50%, rgba(59, 130, 246, 0.3) 50%, rgba(59, 130, 246, 0.3) 100%)',
+              border: '2px solid rgba(239, 68, 68, 0.4)'
+            }}
           >
-            {/* Status/Time Header */}
-            <div className="bg-gradient-to-r from-red-600/40 to-blue-600/40 px-4 py-2 border-b border-red-500/30">
+            {/* Status/Time Header - MovieBox style */}
+            <div className="px-4 py-2 border-b border-red-500/30"
+              style={{
+                background: 'linear-gradient(to right, rgba(220, 38, 38, 0.5) 0%, rgba(220, 38, 38, 0.5) 50%, rgba(37, 99, 235, 0.5) 50%, rgba(37, 99, 235, 0.5) 100%)'
+              }}
+            >
               <div className="flex items-center justify-between">
                 <span className="text-white text-xs font-semibold">
                   {fixture.status === "live" ? (
