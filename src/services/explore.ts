@@ -102,7 +102,7 @@ export const getExploreMovie: (
     })
     .map((item: Item) => ({
       ...item,
-      media_type: "movie",
+      media_type: "movie" as const,
     }));
 
   // Filter API content by genre and origin_country if specified
@@ -261,7 +261,7 @@ export const getExploreTV: (
     })
     .map((item: any) => ({
       ...item,
-      media_type: "tv",
+      media_type: "tv" as const,
     }));
 
   // Filter API content by genre and origin_country if specified
