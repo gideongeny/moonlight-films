@@ -2,7 +2,7 @@ import { FunctionComponent } from "react";
 import { AiOutlineHistory, AiOutlineHome } from "react-icons/ai";
 import { BiSearch, BiUserCircle } from "react-icons/bi";
 import { BsBookmarkHeart } from "react-icons/bs";
-import { MdOutlineExplore } from "react-icons/md";
+import { MdOutlineExplore, MdSportsSoccer } from "react-icons/md";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
@@ -52,6 +52,15 @@ const SidebarMini: FunctionComponent = () => {
           >
             <AiOutlineHome size={25} />
           </Link>
+          <a
+            href="https://sportslive.run/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-primary transition duration-300"
+            title="Sports"
+          >
+            <MdSportsSoccer size={25} />
+          </a>
           <Link
             to="/explore"
             className={`hover:text-primary transition duration-300 ${

@@ -38,15 +38,32 @@ const MainHomeFilms: FC<MainHomeFilmsProps> = ({
         ) : (
           Object.entries(data as HomeFilms)
             .filter((section) => section[0] !== "Trending")
-            .map((section, index) => (
-              <li key={index}>
-                <h2 className="text-xl text-white font-medium tracking-wider mb-3">
-                  {section[0]}
-                </h2>
-
-                <SectionSlider films={section[1]} />
-              </li>
-            ))
+            .map((section, index) => {
+              // Generate seeMore link based on section name
+              const sectionName = section[0].toLowerCase();
+              let seeMoreParams: Record<string, string> | undefined;
+              
+              // Map common section names to explore filters
+              if (sectionName.includes("popular")) {
+                seeMoreParams = { sort_by: "popularity.desc" };
+              } else if (sectionName.includes("top rated") || sectionName.includes("top-rated")) {
+                seeMoreParams = { sort_by: "vote_average.desc" };
+              } else if (sectionName.includes("upcoming")) {
+                seeMoreParams = { sort_by: "release_date.desc" };
+              } else if (sectionName.includes("now playing") || sectionName.includes("on the air")) {
+                seeMoreParams = { sort_by: "release_date.desc" };
+              }
+              
+              return (
+                <li key={index}>
+                  <SectionSlider 
+                    films={section[1]} 
+                    title={section[0]}
+                    seeMoreParams={seeMoreParams}
+                  />
+                </li>
+              );
+            })
         )}
       </ul>
     </>

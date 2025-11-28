@@ -321,6 +321,7 @@ const DiverseContent: React.FC<DiverseContentProps> = ({ currentTab }) => {
           films={trendingAll.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv")}
           limitNumber={10}
           isLoading={false}
+          seeMoreParams={{ sort_by: "popularity.desc" }}
         />
       )}
 
@@ -337,6 +338,7 @@ const DiverseContent: React.FC<DiverseContentProps> = ({ currentTab }) => {
             films={filtered}
           limitNumber={10}
           isLoading={false}
+          seeMoreParams={{ genre: "27", sort_by: "popularity.desc" }}
         />
         ) : null;
       })()}
@@ -367,6 +369,7 @@ const DiverseContent: React.FC<DiverseContentProps> = ({ currentTab }) => {
           films={enhancedAfricanCinema.filter((item) => currentTab === "movie" ? item.media_type === "movie" : item.media_type === "tv")}
           limitNumber={10}
           isLoading={false}
+          seeMoreParams={{ region: "NG|ZA|KE|GH|EG", sort_by: "popularity.desc" }}
         />
       )}
 
@@ -586,6 +589,7 @@ const DiverseContent: React.FC<DiverseContentProps> = ({ currentTab }) => {
             films={filtered}
             limitNumber={10}
             isLoading={false}
+            seeMoreParams={{ genre: "28", sort_by: "popularity.desc" }}
           />
         ) : null;
       })()}
@@ -602,6 +606,7 @@ const DiverseContent: React.FC<DiverseContentProps> = ({ currentTab }) => {
             films={filtered}
             limitNumber={10}
             isLoading={false}
+            seeMoreParams={{ genre: "35", sort_by: "popularity.desc" }}
           />
         ) : null;
       })()}
@@ -618,6 +623,7 @@ const DiverseContent: React.FC<DiverseContentProps> = ({ currentTab }) => {
             films={filtered}
             limitNumber={10}
             isLoading={false}
+            seeMoreParams={{ genre: "18", sort_by: "popularity.desc" }}
           />
         ) : null;
       })()}

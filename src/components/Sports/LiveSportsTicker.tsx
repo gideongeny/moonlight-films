@@ -74,9 +74,11 @@ const LiveSportsTicker: FC = () => {
         {/* Scrolling fixtures */}
         <div className="flex items-center gap-8 overflow-hidden">
           {allFixtures.map((fixture, index) => (
-            <Link
+            <a
               key={`${fixture.id}-${index}`}
-              to={`/sports/${fixture.leagueId}/${fixture.id}/watch`}
+              href="https://sportslive.run/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-4 shrink-0 hover:bg-gray-800/50 px-4 py-1 rounded transition group"
             >
               {/* League/Competition */}
@@ -163,17 +165,19 @@ const LiveSportsTicker: FC = () => {
               {index < allFixtures.length - 1 && (
                 <span className="text-gray-600">•</span>
               )}
-            </Link>
+            </a>
           ))}
         </div>
 
         {/* View All Link */}
-        <Link
-          to="/sports"
+        <a
+          href="https://sportslive.run/"
+          target="_blank"
+          rel="noopener noreferrer"
           className="shrink-0 px-4 text-primary text-xs font-semibold hover:text-primary/80 transition whitespace-nowrap"
         >
           View All →
-        </Link>
+        </a>
       </div>
 
       <style>{`

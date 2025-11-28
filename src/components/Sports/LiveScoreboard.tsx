@@ -50,12 +50,14 @@ const LiveScoreboard: FC = () => {
     return (
       <div className="bg-dark-lighten rounded-lg border border-gray-800 p-6 text-center">
         <p className="text-gray-400">No live matches at the moment</p>
-        <Link
-          to="/sports"
+        <a
+          href="https://sportslive.run/"
+          target="_blank"
+          rel="noopener noreferrer"
           className="text-primary hover:underline mt-2 inline-block"
         >
           View all sports →
-        </Link>
+        </a>
       </div>
     );
   }
@@ -72,21 +74,25 @@ const LiveScoreboard: FC = () => {
             </span>
             <h2 className="text-xl font-bold text-white">Live Scoreboard</h2>
           </div>
-          <Link
-            to="/sports"
+          <a
+            href="https://sportslive.run/"
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-primary text-sm font-semibold hover:underline"
           >
             View All →
-          </Link>
+          </a>
         </div>
       </div>
 
       {/* Scoreboard Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
         {fixtures.map((fixture) => (
-          <Link
+          <a
             key={fixture.id}
-            to={`/sports/${fixture.leagueId}/${fixture.id}/watch`}
+            href="https://sportslive.run/"
+            target="_blank"
+            rel="noopener noreferrer"
             className="bg-gray-900/50 rounded-lg border border-gray-700 hover:border-primary/50 hover:bg-gray-900 transition p-4 group"
           >
             {/* League and Status */}
@@ -178,7 +184,7 @@ const LiveScoreboard: FC = () => {
                 Watch →
               </span>
             </div>
-          </Link>
+          </a>
         ))}
       </div>
     </div>

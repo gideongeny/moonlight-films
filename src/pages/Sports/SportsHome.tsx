@@ -1,5 +1,5 @@
 import { FC, useMemo, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { MdSportsSoccer } from "react-icons/md";
 
@@ -9,17 +9,28 @@ import SearchBox from "../../components/Common/SearchBox";
 import Title from "../../components/Common/Title";
 import Footer from "../../components/Footer/Footer";
 import LiveScoreboard from "../../components/Sports/LiveScoreboard";
+import UpcomingCalendar from "../../components/Sports/UpcomingCalendar";
 import { useCurrentViewportView } from "../../hooks/useCurrentViewportView";
 import { SPORTS_FIXTURES, SPORTS_LEAGUES, SportsFixtureConfig } from "../../shared/constants";
 import { getLiveScores, getUpcomingFixturesAPI, subscribeToLiveScores } from "../../services/sportsAPI";
 
 const SportsHome: FC = () => {
+  const navigate = useNavigate();
   const { isMobile } = useCurrentViewportView();
   const [isSidebarActive, setIsSidebarActive] = useState(false);
   const [activeLeague, setActiveLeague] = useState<string>("all");
   const [activeStatus, setActiveStatus] = useState<"live" | "upcoming" | "replay">("live");
   const [liveFixtures, setLiveFixtures] = useState<SportsFixtureConfig[]>([]);
   const [upcomingFixtures, setUpcomingFixtures] = useState<SportsFixtureConfig[]>([]);
+
+  // Redirect to sportslive.run when component mounts
+  useEffect(() => {
+    window.open("https://sportslive.run/", "_blank");
+    // Navigate back to home after opening the new tab
+    setTimeout(() => {
+      navigate("/");
+    }, 100);
+  }, [navigate]);
 
   // Fetch real live data
   useEffect(() => {
@@ -156,6 +167,11 @@ const SportsHome: FC = () => {
           {/* Live Scoreboard */}
           <div className="mb-8">
             <LiveScoreboard />
+          </div>
+
+          {/* Upcoming Calendar */}
+          <div className="mb-8">
+            <UpcomingCalendar />
           </div>
 
           <div className="flex flex-wrap gap-3 mb-6">
