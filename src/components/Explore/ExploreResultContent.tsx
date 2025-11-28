@@ -9,19 +9,28 @@ interface ExploreResultContentProps {
   data: ItemsPage[] | undefined;
   fetchNext: () => void;
   hasMore: boolean | undefined;
+  currentTab?: "movie" | "tv";
 }
 
 const ExploreResultContent: FunctionComponent<ExploreResultContentProps> = ({
   data,
   fetchNext,
   hasMore,
+  currentTab,
 }) => {
+  // Filter by media_type if currentTab is specified
+  const allItems = data?.reduce(
+    (acc: Item[], current: ItemsPage) => [...acc, ...current.results],
+    [] as Item[]
+  ) || [];
+  
+  const filteredItems = currentTab 
+    ? allItems.filter((item) => item.media_type === currentTab)
+    : allItems;
+  
   return (
     <>
-      {data?.reduce(
-        (acc: Item[], current: ItemsPage) => [...acc, ...current.results],
-        [] as Item[]
-      ).length === 0 ? (
+      {filteredItems.length === 0 ? (
         <div className="flex flex-col items-center mb-12">
           <LazyLoadImage
             src="/error.png"
@@ -40,14 +49,11 @@ const ExploreResultContent: FunctionComponent<ExploreResultContentProps> = ({
           endMessage={<></>}
         >
           <ul className="grid grid-cols-sm lg:grid-cols-lg gap-x-8 gap-y-10 pt-2 px-2">
-            {data &&
-              data.map((page) =>
-                page.results.map((item) => (
-                  <li key={item.id}>
-                    <FilmItem item={item} />
-                  </li>
-                ))
-              )}
+            {filteredItems.map((item) => (
+              <li key={item.id}>
+                <FilmItem item={item} />
+              </li>
+            ))}
             {!data &&
               [...new Array(15)].map((_, index) => (
                 <li key={index}>

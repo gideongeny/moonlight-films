@@ -31,6 +31,7 @@ const ExploreResult: FunctionComponent<ExploreResultProps> = ({
     const sortBy = searchParams.get("sort_by");
     const year = searchParams.get("year");
     const runtime = searchParams.get("runtime");
+    const region = searchParams.get("region");
     
     if (genre) config.with_genres = genre;
     if (sortBy) config.sort_by = sortBy;
@@ -50,6 +51,26 @@ const ExploreResult: FunctionComponent<ExploreResultProps> = ({
         config["with_runtime.gte"] = 90;
         config["with_runtime.lte"] = 150;
       } else if (runtime === "long") config["with_runtime.gte"] = 150;
+    }
+    // Add region/origin_country filter
+    if (region) {
+      // Map region to origin_country codes
+      const regionMap: Record<string, string> = {
+        "africa": "NG|ZA|KE|GH|TZ|UG|ET|RW|ZM|EG",
+        "asia": "KR|JP|CN|IN",
+        "latin": "MX|BR|AR|CO",
+        "middleeast": "TR|EG|SA|AE",
+        "nollywood": "NG",
+        "bollywood": "IN",
+        "korea": "KR",
+        "japan": "JP",
+        "china": "CN",
+        "philippines": "PH",
+        "kenya": "KE",
+      };
+      if (regionMap[region]) {
+        config.with_origin_country = regionMap[region];
+      }
     }
     return config;
   };
@@ -110,6 +131,7 @@ const ExploreResult: FunctionComponent<ExploreResultProps> = ({
         data={pages}
         fetchNext={fetchNext}
         hasMore={hasMore}
+        currentTab={currentTab}
       />
     </div>
   );

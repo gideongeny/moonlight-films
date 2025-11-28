@@ -19,60 +19,63 @@ const DiverseNavigation: React.FC = () => {
 
   useEffect(() => {
     const fetchImages = async () => {
+      // Get current tab from localStorage to determine default type
+      const currentTab = (localStorage.getItem("currentTab") || "movie") as "movie" | "tv";
+      
       const baseItems: NavigationItem[] = [
         {
           title: "African Cinema",
           description: "Nollywood, South African, Kenyan & more",
-          path: "/explore?region=africa",
+          path: `/explore?region=africa&type=${currentTab}`,
           fallbackImage: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop",
-          fetchQuery: { with_origin_country: "NG|ZA|KE|GH" }
+          fetchQuery: { with_origin_country: "NG|ZA|KE|GH|TZ|UG|ET|RW|ZM|EG" }
         },
         {
           title: "Asian Cinema",
           description: "Bollywood, Korean, Japanese, Chinese",
-          path: "/explore?region=asia",
+          path: `/explore?region=asia&type=${currentTab}`,
           fallbackImage: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop",
           fetchQuery: { with_origin_country: "IN|KR|JP|CN" }
         },
         {
           title: "Latin American",
           description: "Mexican, Brazilian, Argentine cinema",
-          path: "/explore?region=latin",
+          path: `/explore?region=latin&type=${currentTab}`,
           fallbackImage: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop",
           fetchQuery: { with_origin_country: "MX|BR|AR" }
         },
         {
           title: "Middle Eastern",
           description: "Turkish, Egyptian, Saudi cinema",
-          path: "/explore?region=middleeast",
+          path: `/explore?region=middleeast&type=${currentTab}`,
           fallbackImage: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop",
           fetchQuery: { with_origin_country: "TR|EG|SA" }
         },
         {
           title: "Nollywood",
           description: "Movies from the Nollywood industry (Nigeria)",
-          path: "/explore?region=nollywood",
+          path: `/explore?region=nollywood&type=${currentTab}`,
           fallbackImage: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop",
           fetchQuery: { with_origin_country: "NG" }
         },
         {
           title: "Bollywood",
           description: "Indian movies & TV shows",
-          path: "/explore?region=bollywood",
+          path: `/explore?region=bollywood&type=${currentTab}`,
           fallbackImage: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop",
           fetchQuery: { with_origin_country: "IN" }
         },
         {
           title: "Filipino",
           description: "ABS-CBN, iWantTFC shows & films",
-          path: "/explore?region=philippines",
+          path: `/explore?region=philippines&type=${currentTab}`,
           fallbackImage: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop",
           fetchQuery: { with_origin_country: "PH" }
         },
         {
           title: "Kenyan",
           description: "Citizen, NTV, KTN, Showmax",
-          path: "/explore?region=kenya",
+          path: `/explore?region=kenya&type=${currentTab}`,
           fallbackImage: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280&h=720&fit=crop",
           fetchQuery: { with_origin_country: "KE" }
         }
@@ -84,7 +87,7 @@ const DiverseNavigation: React.FC = () => {
           
           // Try multiple sources with fallbacks - fetch popular content from the region/genre
           const sources = [
-            // Source 1: Primary TMDB discover - get most popular from region
+            // Source 1: Primary TMDB discover - get most popular from region (movies)
             async () => {
               try {
                 const response = await axios.get('/discover/movie', {
@@ -93,12 +96,19 @@ const DiverseNavigation: React.FC = () => {
                     sort_by: 'popularity.desc',
                     page: 1,
                     'vote_count.gte': 10,
-                    'vote_average.gte': 6.0
-                  }
+                    'vote_average.gte': 5.0
+                  },
+                  timeout: 5000
                 });
                 const movies: Item[] = response.data.results || [];
-                // Try first 5 movies to find one with backdrop
-                for (const movie of movies.slice(0, 5)) {
+                // Filter to ensure origin_country matches
+                const filteredMovies = movies.filter((movie: any) => {
+                  const countries = movie.origin_country || [];
+                  const queryCountries = item.fetchQuery?.with_origin_country?.split('|') || [];
+                  return countries.some((c: string) => queryCountries.includes(c));
+                });
+                // Try first 10 movies to find one with backdrop
+                for (const movie of (filteredMovies.length > 0 ? filteredMovies : movies).slice(0, 10)) {
                   if (movie.backdrop_path) {
                     return `${IMAGE_URL}/w1280${movie.backdrop_path}`;
                   }
@@ -117,11 +127,18 @@ const DiverseNavigation: React.FC = () => {
                     sort_by: 'popularity.desc',
                     page: 1,
                     'vote_count.gte': 10,
-                    'vote_average.gte': 6.0
-                  }
+                    'vote_average.gte': 5.0
+                  },
+                  timeout: 5000
                 });
                 const shows: Item[] = response.data.results || [];
-                for (const show of shows.slice(0, 5)) {
+                // Filter to ensure origin_country matches
+                const filteredShows = shows.filter((show: any) => {
+                  const countries = show.origin_country || [];
+                  const queryCountries = item.fetchQuery?.with_origin_country?.split('|') || [];
+                  return countries.some((c: string) => queryCountries.includes(c));
+                });
+                for (const show of (filteredShows.length > 0 ? filteredShows : shows).slice(0, 10)) {
                   if (show.backdrop_path) {
                     return `${IMAGE_URL}/w1280${show.backdrop_path}`;
                   }
@@ -131,7 +148,7 @@ const DiverseNavigation: React.FC = () => {
               }
               return null;
             },
-            // Source 3: Try page 2 of movies
+            // Source 3: Try page 2 of movies from region
             async () => {
               try {
                 const response = await axios.get('/discover/movie', {
@@ -140,44 +157,11 @@ const DiverseNavigation: React.FC = () => {
                     sort_by: 'popularity.desc',
                     page: 2,
                     'vote_count.gte': 5
-                  }
+                  },
+                  timeout: 5000
                 });
                 const movies: Item[] = response.data.results || [];
-                for (const movie of movies.slice(0, 5)) {
-                  if (movie.backdrop_path) {
-                    return `${IMAGE_URL}/w1280${movie.backdrop_path}`;
-                  }
-                }
-              } catch (e) {
-                return null;
-              }
-              return null;
-            },
-            // Source 4: Try trending from region
-            async () => {
-              try {
-                const response = await axios.get('/trending/movie/day', {
-                  params: { page: 1 }
-                });
-                const movies: Item[] = response.data.results || [];
-                for (const movie of movies.slice(0, 5)) {
-                  if (movie.backdrop_path) {
-                    return `${IMAGE_URL}/w1280${movie.backdrop_path}`;
-                  }
-                }
-              } catch (e) {
-                return null;
-              }
-              return null;
-            },
-            // Source 5: Try popular movies
-            async () => {
-              try {
-                const response = await axios.get('/movie/popular', {
-                  params: { page: 1 }
-                });
-                const movies: Item[] = response.data.results || [];
-                for (const movie of movies.slice(0, 5)) {
+                for (const movie of movies.slice(0, 10)) {
                   if (movie.backdrop_path) {
                     return `${IMAGE_URL}/w1280${movie.backdrop_path}`;
                   }

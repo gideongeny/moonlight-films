@@ -10,6 +10,8 @@ export const getExploreMovie: (
 ) => Promise<ItemsPage> = async (page, config = {}) => {
   // If genre is specified, ensure proper filtering
   const genreId = config.with_genres ? Number(config.with_genres) : undefined;
+  // Get origin_country filter if specified
+  const originCountry = config.with_origin_country || (config as any).region;
   
   const [tmdbData, fzMovies, apiContent] = await Promise.all([
     axios.get("/discover/movie", {
@@ -18,6 +20,8 @@ export const getExploreMovie: (
         page,
         // Ensure genre filtering is applied
         ...(genreId && { with_genres: genreId }),
+        // Ensure origin_country filtering is applied
+        ...(originCountry && { with_origin_country: originCountry }),
       },
     }),
     // Fetch from FZMovies if genre is specified
@@ -34,7 +38,15 @@ export const getExploreMovie: (
     .filter((item: Item) => {
       // If genre filter is applied, ensure item has that genre
       if (genreId && item.genre_ids) {
-        return item.poster_path && item.genre_ids.includes(genreId);
+        if (!item.genre_ids.includes(genreId)) return false;
+      }
+      // If origin_country filter is applied, ensure item matches
+      if (originCountry) {
+        const countries = item.origin_country || [];
+        const filterCountries = typeof originCountry === 'string' ? originCountry.split('|') : [originCountry];
+        if (!countries.some((c: string) => filterCountries.includes(c))) {
+          return false;
+        }
       }
       return item.poster_path;
     })
@@ -43,12 +55,20 @@ export const getExploreMovie: (
       media_type: "movie",
     }));
 
-  // Filter API content by genre if specified
-  const filteredApiContent = genreId
-    ? apiContent.filter((item: Item) => 
-        item.genre_ids && item.genre_ids.includes(genreId)
-      )
-    : apiContent;
+  // Filter API content by genre and origin_country if specified
+  let filteredApiContent = apiContent;
+  if (genreId) {
+    filteredApiContent = filteredApiContent.filter((item: Item) => 
+      item.genre_ids && item.genre_ids.includes(genreId)
+    );
+  }
+  if (originCountry) {
+    const filterCountries = typeof originCountry === 'string' ? originCountry.split('|') : [originCountry];
+    filteredApiContent = filteredApiContent.filter((item: Item) => {
+      const countries = item.origin_country || [];
+      return countries.some((c: string) => filterCountries.includes(c));
+    });
+  }
 
   // Merge with FZMovies and API content
   const combined = [...tmdbItems, ...fzMovies, ...filteredApiContent];
@@ -59,6 +79,14 @@ export const getExploreMovie: (
     // Final genre check
     if (genreId && item.genre_ids && !item.genre_ids.includes(genreId)) {
       return false;
+    }
+    // Final origin_country check
+    if (originCountry) {
+      const countries = item.origin_country || [];
+      const filterCountries = typeof originCountry === 'string' ? originCountry.split('|') : [originCountry];
+      if (!countries.some((c: string) => filterCountries.includes(c))) {
+        return false;
+      }
     }
     return item.poster_path;
   });
@@ -76,6 +104,8 @@ export const getExploreTV: (
 ) => Promise<ItemsPage> = async (page, config = {}) => {
   // If genre is specified, ensure proper filtering
   const genreId = config.with_genres ? Number(config.with_genres) : undefined;
+  // Get origin_country filter if specified
+  const originCountry = config.with_origin_country || (config as any).region;
   
   const [tmdbData, fzTV, apiContent] = await Promise.all([
     axios.get("/discover/tv", {
@@ -84,6 +114,8 @@ export const getExploreTV: (
         page,
         // Ensure genre filtering is applied
         ...(genreId && { with_genres: genreId }),
+        // Ensure origin_country filtering is applied
+        ...(originCountry && { with_origin_country: originCountry }),
       },
     }),
     // Fetch from FZMovies if genre is specified
@@ -100,7 +132,15 @@ export const getExploreTV: (
     .filter((item: Item) => {
       // If genre filter is applied, ensure item has that genre
       if (genreId && item.genre_ids) {
-        return item.poster_path && item.genre_ids.includes(genreId);
+        if (!item.genre_ids.includes(genreId)) return false;
+      }
+      // If origin_country filter is applied, ensure item matches
+      if (originCountry) {
+        const countries = item.origin_country || [];
+        const filterCountries = typeof originCountry === 'string' ? originCountry.split('|') : [originCountry];
+        if (!countries.some((c: string) => filterCountries.includes(c))) {
+          return false;
+        }
       }
       return item.poster_path;
     })
@@ -109,12 +149,20 @@ export const getExploreTV: (
       media_type: "tv",
     }));
 
-  // Filter API content by genre if specified
-  const filteredApiContent = genreId
-    ? apiContent.filter((item: Item) => 
-        item.genre_ids && item.genre_ids.includes(genreId)
-      )
-    : apiContent;
+  // Filter API content by genre and origin_country if specified
+  let filteredApiContent = apiContent;
+  if (genreId) {
+    filteredApiContent = filteredApiContent.filter((item: Item) => 
+      item.genre_ids && item.genre_ids.includes(genreId)
+    );
+  }
+  if (originCountry) {
+    const filterCountries = typeof originCountry === 'string' ? originCountry.split('|') : [originCountry];
+    filteredApiContent = filteredApiContent.filter((item: Item) => {
+      const countries = item.origin_country || [];
+      return countries.some((c: string) => filterCountries.includes(c));
+    });
+  }
 
   // Merge with FZMovies and API content
   const combined = [...tmdbItems, ...fzTV, ...filteredApiContent];
@@ -125,6 +173,14 @@ export const getExploreTV: (
     // Final genre check
     if (genreId && item.genre_ids && !item.genre_ids.includes(genreId)) {
       return false;
+    }
+    // Final origin_country check
+    if (originCountry) {
+      const countries = item.origin_country || [];
+      const filterCountries = typeof originCountry === 'string' ? originCountry.split('|') : [originCountry];
+      if (!countries.some((c: string) => filterCountries.includes(c))) {
+        return false;
+      }
     }
     return item.poster_path;
   });
