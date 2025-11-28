@@ -48,7 +48,7 @@ export const getHomeMovies = async (): Promise<HomeFilms> => {
       fzPopular: [],
       fzTopRated: [],
       fzLatest: [],
-    }), 3000)), // 3 second timeout
+    }), 1500)), // 1.5 second timeout for faster loading
   ]) as { fzTrending: Item[], fzPopular: Item[], fzTopRated: Item[], fzLatest: Item[] };
 
   // Load other sources in background (non-blocking) - these will be available later if needed
@@ -178,7 +178,7 @@ export const getHomeTVs = async (): Promise<HomeFilms> => {
       fzPopular: [],
       fzTopRated: [],
       fzLatest: [],
-    }), 3000)), // 3 second timeout
+    }), 1500)), // 1.5 second timeout for faster loading
   ]) as { fzTrending: Item[], fzPopular: Item[], fzTopRated: Item[], fzLatest: Item[] };
 
   // Load other sources in background (non-blocking) - these will be available later if needed

@@ -250,6 +250,7 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
 
   // Helper function to get readable source names
   const getSourceDisplayName = (source: string): string => {
+    // Primary sources
     if (source.includes('vidsrc.me')) return 'VidSrc';
     if (source.includes('2embed.to')) return '2Embed.to';
     if (source.includes('2embed.org')) return '2Embed.org';
@@ -258,41 +259,107 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
     if (source.includes('watchmovieshd.ru')) return 'WatchMovies';
     if (source.includes('streamsb.net')) return 'StreamSB';
     if (source.includes('vidstream.pro')) return 'VidStream';
+    
     // African and non-Western content
-    if (source.includes('afrikan.tv')) return 'Afrikan TV (African Content)';
-    if (source.includes('nollywood.tv')) return 'Nollywood (Nigerian Movies)';
-    if (source.includes('bollywood.tv')) return 'Bollywood (Indian Movies)';
-    if (source.includes('asian.tv')) return 'Asian TV (Asian Content)';
-    if (source.includes('latino.tv')) return 'Latino TV (Latin American)';
-    if (source.includes('arabic.tv')) return 'Arabic TV (Middle Eastern)';
+    if (source.includes('afrikan.tv')) return 'Afrikan TV';
+    if (source.includes('nollywood.tv')) return 'Nollywood TV';
+    if (source.includes('bollywood.tv')) return 'Bollywood TV';
+    if (source.includes('asian.tv')) return 'Asian TV';
+    if (source.includes('latino.tv')) return 'Latino TV';
+    if (source.includes('arabic.tv')) return 'Arabic TV';
+    
     // New African content sources
     if (source.includes('afrikanflix.com')) return 'AfrikanFlix';
     if (source.includes('nollywoodplus.com')) return 'NollywoodPlus';
     if (source.includes('africanmovies.net')) return 'AfricanMovies';
+    if (source.includes('africanmoviesonline.com')) return 'African Movies Online';
+    if (source.includes('nollywoodmovies.com')) return 'Nollywood Movies';
+    if (source.includes('afrikanmovies.com')) return 'Afrikan Movies';
+    if (source.includes('nollywoodtv.com')) return 'Nollywood TV';
     if (source.includes('kenyanflix.com')) return 'KenyanFlix';
     if (source.includes('nigerianflix.com')) return 'NigerianFlix';
+    
     // Regional African streaming services
     if (source.includes('showmax.com')) return 'ShowMax';
-    if (source.includes('irokotv.com')) return 'Iroko';
-    if (source.includes('bongotv.com')) return 'Bongo';
-    if (source.includes('kwese.iflix.com')) return 'Kwe.se';
+    if (source.includes('irokotv.com')) return 'Iroko TV';
+    if (source.includes('bongotv.com')) return 'Bongo TV';
+    if (source.includes('kwese.iflix.com')) return 'Kwese iFlix';
+    
+    // Asian content sources
+    if (source.includes('dramacool.com')) return 'DramaCool';
+    if (source.includes('kissasian.com')) return 'KissAsian';
+    if (source.includes('asianseries.com')) return 'AsianSeries';
+    if (source.includes('myasiantv.com')) return 'MyAsianTV';
+    if (source.includes('viki.com')) return 'Viki';
+    if (source.includes('kisskh.com')) return 'KissKH';
+    if (source.includes('ugc-anime.com')) return 'UGC Anime';
+    
+    // Latin American content
+    if (source.includes('cuevana.com')) return 'Cuevana';
+    if (source.includes('pelisplus.com')) return 'PelisPlus';
+    if (source.includes('repelis.com')) return 'Repelis';
+    if (source.includes('latinomovies.com')) return 'Latino Movies';
+    
+    // Middle Eastern content
+    if (source.includes('shahid.mbc.net')) return 'Shahid MBC';
+    if (source.includes('osn.com')) return 'OSN';
+    
+    // Universal working sources
+    if (source.includes('superembed.com')) return 'SuperEmbed';
+    if (source.includes('embedmovie.com')) return 'EmbedMovie';
+    if (source.includes('streamtape.com')) return 'StreamTape';
+    if (source.includes('mixdrop.com')) return 'MixDrop';
+    if (source.includes('upcloud.com')) return 'UpCloud';
+    if (source.includes('embedsb.com')) return 'EmbedSB';
+    if (source.includes('streamwish.com')) return 'StreamWish';
+    if (source.includes('filemoon.com')) return 'FileMoon';
+    if (source.includes('doodstream.com')) return 'DoodStream';
+    
+    // Regional-specific sources
+    if (source.includes('zee5.com')) return 'ZEE5';
+    if (source.includes('hotstar.com')) return 'Disney+ Hotstar';
+    if (source.includes('viu.com')) return 'Viu';
+    if (source.includes('iwanttfc.com')) return 'iWantTFC';
+    if (source.includes('abs-cbn.com')) return 'ABS-CBN';
+    
+    // Additional sources
+    if (source.includes('ailok.pe')) return 'Ailok';
+    if (source.includes('sz.googotv.com')) return 'GoogoTV';
+    if (source.includes('cinemaholic.com')) return 'Cinemaholic';
+    if (source.includes('moviefreak.com')) return 'MovieFreak';
+    if (source.includes('watchseries.to')) return 'WatchSeries';
+    if (source.includes('putlocker.to')) return 'Putlocker';
+    if (source.includes('solarmovie.to')) return 'SolarMovie';
+    if (source.includes('fmovies.to')) return 'FMovies';
+    if (source.includes('drive.google.com')) return 'Google Drive';
+    
     // Major streaming platforms
     if (source.includes('netflix.com')) return 'Netflix';
-    if (source.includes('amazon.com')) return 'Amazon Prime';
+    if (source.includes('amazon.com')) return 'Amazon Prime Video';
     if (source.includes('disneyplus.com')) return 'Disney+';
     if (source.includes('hbomax.com')) return 'HBO Max';
     if (source.includes('hulu.com')) return 'Hulu';
     if (source.includes('tv.apple.com')) return 'Apple TV+';
+    
     // Video platforms
     if (source.includes('youtube.com')) return 'YouTube';
     if (source.includes('vimeo.com')) return 'Vimeo';
     if (source.includes('dailymotion.com')) return 'Dailymotion';
+    
     // FZMovies CMS sources
-    if (source.includes('fzmovies.cms')) return 'FZMovies CMS';
-    if (source.includes('fzmovies.net')) return 'FZMovies (Alt 1)';
-    if (source.includes('fzmovies.watch')) return 'FZMovies (Alt 2)';
-    if (source.includes('fzmovies.to')) return 'FZMovies (Alt 3)';
-    return 'Unknown Source';
+    if (source.includes('fzmovies.cms')) return 'FZMovies';
+    if (source.includes('fzmovies.net')) return 'FZMovies (Alt)';
+    if (source.includes('fzmovies.watch')) return 'FZMovies Watch';
+    if (source.includes('fzmovies.to')) return 'FZMovies To';
+    
+    // Extract domain name as fallback
+    try {
+      const url = new URL(source);
+      const domain = url.hostname.replace('www.', '').split('.')[0];
+      return domain.charAt(0).toUpperCase() + domain.slice(1);
+    } catch {
+      return 'Video Source';
+    }
   };
 
   const handleVideoError = () => {

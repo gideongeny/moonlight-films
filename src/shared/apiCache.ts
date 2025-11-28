@@ -124,7 +124,8 @@ class APICache {
   // Clear expired entries
   clearExpired(): void {
     const now = Date.now();
-    for (const [key, entry] of this.cache.entries()) {
+    const entries = Array.from(this.cache.entries());
+    for (const [key, entry] of entries) {
       if (now > entry.expiresAt) {
         this.cache.delete(key);
       }
@@ -136,7 +137,7 @@ class APICache {
 export const apiCache = new APICache();
 
 // Clean up expired entries every 5 minutes
-if (typeof window !== 'undefined') {
+if (globalThis.window !== undefined) {
   setInterval(() => {
     apiCache.clearExpired();
   }, 5 * 60 * 1000);

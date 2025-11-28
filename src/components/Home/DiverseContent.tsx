@@ -122,29 +122,43 @@ const DiverseContent: React.FC<DiverseContentProps> = ({ currentTab }) => {
         setAdventureMovies(genreContent[6].status === "fulfilled" ? genreContent[6].value : []);
         setFantasyMovies(genreContent[7].status === "fulfilled" ? genreContent[7].value : []);
 
-        // Priority 3: Load regional content in background (non-blocking)
-        Promise.allSettled([
+        // Priority 3: Load regional content in background (non-blocking) - batched for better performance
+        // Load in smaller batches to prevent overwhelming the API
+        const batch1 = Promise.allSettled([
           getAfricanContent(),
           getAsianContent(),
           getLatinAmericanContent(),
           getMiddleEasternContent(),
           getNollywoodContent(),
           getBollywoodContent(),
+        ]);
+        
+        const batch2 = Promise.allSettled([
           getKoreanContent(),
           getJapaneseContent(),
           getChineseContent(),
           getEastAfricanContent(),
           getSouthAfricanContent(),
           getSoutheastAsianContent(),
+        ]);
+        
+        const batch3 = Promise.allSettled([
           getFilipinoContent(),
           getBrazilianContent(),
           getMexicanContent(),
           getKenyanTVShows(),
           getNigerianTVShows(),
           getAfricanTVContent(),
+        ]);
+        
+        const batch4 = Promise.allSettled([
           getEnhancedNollywoodContent(),
           getEnhancedKenyanContent(),
-        ]).then((results) => {
+        ]);
+        
+        // Process batches sequentially to reduce API load
+        Promise.all([batch1, batch2, batch3, batch4]).then(([results1, results2, results3, results4]) => {
+          const results = [...results1, ...results2, ...results3, ...results4];
           setAfricanContent(results[0].status === "fulfilled" ? results[0].value : []);
           setAsianContent(results[1].status === "fulfilled" ? results[1].value : []);
           setLatinAmericanContent(results[2].status === "fulfilled" ? results[2].value : []);

@@ -26,19 +26,19 @@ export const getExploreMovie: (
         // Ensure origin_country filtering is applied
         ...(originCountry && { with_origin_country: originCountry }),
       },
-      timeout: 10000,
+      timeout: 5000, // Reduced timeout for faster loading
     }).catch(() => ({ data: { results: [] } })),
     
-    // Fallback: TMDB popular (always works)
+    // Fallback: TMDB popular (always works) - only if discover fails
     axios.get("/movie/popular", {
       params: { page },
-      timeout: 8000,
+      timeout: 4000, // Reduced timeout
     }).catch(() => ({ data: { results: [] } })),
     
-    // Fallback: TMDB trending
+    // Fallback: TMDB trending - only if discover fails
     axios.get("/trending/movie/day", {
       params: { page },
-      timeout: 8000,
+      timeout: 4000, // Reduced timeout
     }).catch(() => ({ data: { results: [] } })),
     
     // FZMovies content
@@ -180,19 +180,19 @@ export const getExploreTV: (
         // Ensure origin_country filtering is applied
         ...(originCountry && { with_origin_country: originCountry }),
       },
-      timeout: 10000,
+      timeout: 5000, // Reduced timeout for faster loading
     }).catch(() => ({ data: { results: [] } })),
     
-    // Fallback: TMDB popular (always works)
+    // Fallback: TMDB popular (always works) - only if discover fails
     axios.get("/tv/popular", {
       params: { page },
-      timeout: 8000,
+      timeout: 4000, // Reduced timeout
     }).catch(() => ({ data: { results: [] } })),
     
-    // Fallback: TMDB trending
+    // Fallback: TMDB trending - only if discover fails
     axios.get("/trending/tv/day", {
       params: { page },
-      timeout: 8000,
+      timeout: 4000, // Reduced timeout
     }).catch(() => ({ data: { results: [] } })),
     
     // FZMovies content
