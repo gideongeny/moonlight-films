@@ -52,15 +52,15 @@ const SidebarMini: FunctionComponent = () => {
           >
             <AiOutlineHome size={25} />
           </Link>
-          <Link
-            to="/sports"
-            className={`hover:text-primary transition duration-300 ${
-              location.pathname === "/sports" && "text-primary"
-            }`}
+          <a
+            href="https://sportslive.run/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-primary transition duration-300"
             title="Sports"
           >
             <MdSportsSoccer size={25} />
-          </Link>
+          </a>
           <Link
             to="/explore"
             className={`hover:text-primary transition duration-300 ${

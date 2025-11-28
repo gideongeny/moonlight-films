@@ -32,12 +32,11 @@ export const getTeamLogo = async (teamName: string): Promise<string | null> => {
 // Get live fixtures from API Sports
 export const getLiveFixturesAPI = async (): Promise<SportsFixtureConfig[]> => {
   try {
-    // Try API Sports first
+    // Try API Sports first - using correct endpoint format
     const response = await axios.get(`${API_SPORTS_BASE}/fixtures`, {
       params: { live: "all" },
       headers: {
-        "x-rapidapi-key": API_SPORTS_KEY,
-        "x-rapidapi-host": "v3.football.api-sports.io",
+        "x-apisports-key": API_SPORTS_KEY,
       },
       timeout: 10000,
     });
@@ -53,14 +52,14 @@ export const getLiveFixturesAPI = async (): Promise<SportsFixtureConfig[]> => {
         status: "live",
         kickoffTimeFormatted: "Live Now",
         venue: fixture.fixture.venue?.name || "TBD",
-        homeScore: fixture.goals.home,
-        awayScore: fixture.goals.away,
+        homeScore: fixture.goals?.home,
+        awayScore: fixture.goals?.away,
         minute: fixture.fixture.status?.elapsed ? `${fixture.fixture.status.elapsed}'` : undefined,
         isLive: true,
       }));
     }
-  } catch (error) {
-    console.warn("API Sports error:", error);
+  } catch (error: any) {
+    console.warn("API Sports error:", error?.response?.data || error?.message);
   }
 
   // Fallback to TheSportsDB
@@ -142,8 +141,7 @@ export const getUpcomingFixturesAPI = async (): Promise<SportsFixtureConfig[]> =
         const response = await axios.get(`${API_SPORTS_BASE}/fixtures`, {
           params: { date: dateStr },
           headers: {
-            "x-rapidapi-key": API_SPORTS_KEY,
-            "x-rapidapi-host": "v3.football.api-sports.io",
+            "x-apisports-key": API_SPORTS_KEY,
           },
           timeout: 10000,
         });

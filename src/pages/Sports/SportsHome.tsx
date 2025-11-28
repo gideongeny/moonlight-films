@@ -1,5 +1,5 @@
 import { FC, useMemo, useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { MdSportsSoccer } from "react-icons/md";
 
@@ -22,6 +22,11 @@ const SportsHome: FC = () => {
   const [activeStatus, setActiveStatus] = useState<"live" | "upcoming" | "replay">("live");
   const [liveFixtures, setLiveFixtures] = useState<SportsFixtureConfig[]>([]);
   const [upcomingFixtures, setUpcomingFixtures] = useState<SportsFixtureConfig[]>([]);
+
+  // Redirect to sportslive.run when component mounts (like MovieBox)
+  useEffect(() => {
+    window.location.href = "https://sportslive.run/";
+  }, []);
 
 
   // Fetch real live data
@@ -268,9 +273,11 @@ const SportsHome: FC = () => {
               );
 
               return (
-                <Link
+                <a
                   key={fixture.id}
-                  to={`/sports/${fixture.leagueId}/${fixture.id}/watch`}
+                  href="https://sportslive.run/"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="group rounded-xl bg-dark-lighten border border-gray-800 hover:border-primary/70 hover:shadow-xl hover:shadow-primary/20 transition overflow-hidden"
                 >
                   <div className="p-4 flex items-start gap-3">
@@ -406,7 +413,7 @@ const SportsHome: FC = () => {
                       Watch now →
                     </span>
                   </div>
-                </Link>
+                </a>
               );
             })}
           </div>
