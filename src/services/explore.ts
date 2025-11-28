@@ -68,9 +68,9 @@ export const getExploreMovie: (
 
   // Combine all TMDB results (discover, popular, trending)
   // Type assertion to handle the union type from Promise.all
-  const tmdbDataTyped = tmdbData as { data?: { results?: Item[] } };
-  const popularDataTyped = popularData as { data?: { results?: Item[] } };
-  const trendingDataTyped = trendingData as { data?: { results?: Item[] } };
+  const tmdbDataTyped = tmdbData as { data?: ItemsPage };
+  const popularDataTyped = popularData as { data?: ItemsPage };
+  const trendingDataTyped = trendingData as { data?: ItemsPage };
   
   // Type assertions for array results from Promise.all
   const fzMoviesTyped = fzMovies as Item[];
@@ -222,9 +222,9 @@ export const getExploreTV: (
 
   // Combine all TMDB results (discover, popular, trending)
   // Type assertion to handle the union type from Promise.all
-  const tmdbDataTyped = tmdbData as { data?: { results?: Item[] } };
-  const popularDataTyped = popularData as { data?: { results?: Item[] } };
-  const trendingDataTyped = trendingData as { data?: { results?: Item[] } };
+  const tmdbDataTyped = tmdbData as { data?: ItemsPage };
+  const popularDataTyped = popularData as { data?: ItemsPage };
+  const trendingDataTyped = trendingData as { data?: ItemsPage };
   
   // Type assertions for array results from Promise.all
   const fzTVTyped = fzTV as Item[];
