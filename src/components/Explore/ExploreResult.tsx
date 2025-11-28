@@ -75,23 +75,34 @@ const ExploreResult: FunctionComponent<ExploreResultProps> = ({
     return config;
   };
 
-  // Initial load
+  // Use the filtered data from useTMDBCollectionQuery instead of calling explore functions
   useEffect(() => {
-    const loadInitial = async () => {
-      setPages([]);
-      setCurrentPage(1);
-      setHasMore(true);
-      const config = buildConfig();
-      const result = currentTab === "movie" 
-        ? await getExploreMovie(1, config)
-        : await getExploreTV(1, config);
+    if (!isLoading && !error && data && data.length > 0) {
+      // Convert the filtered data array to ItemsPage format
+      const result: ItemsPage = {
+        page: 1,
+        results: data.filter((item) => item.media_type === currentTab), // Ensure media type matches
+        total_pages: 1,
+        total_results: data.length,
+      };
       setPages([result]);
-      setHasMore(result.page < result.total_pages);
-    };
-    if (!isLoading && !error) {
+      setHasMore(false); // Since we're using the filtered data, no pagination needed initially
+    } else if (!isLoading && !error && (!data || data.length === 0)) {
+      // If no filtered data, try loading with explore functions as fallback
+      const loadInitial = async () => {
+        setPages([]);
+        setCurrentPage(1);
+        setHasMore(true);
+        const config = buildConfig();
+        const result = currentTab === "movie" 
+          ? await getExploreMovie(1, config)
+          : await getExploreTV(1, config);
+        setPages([result]);
+        setHasMore(result.page < result.total_pages);
+      };
       loadInitial();
     }
-  }, [currentTab, searchParams.toString(), isLoading, error]);
+  }, [currentTab, data, isLoading, error, searchParams.toString()]);
 
   const fetchNext = async () => {
     if (isLoadingMore || !hasMore) return;

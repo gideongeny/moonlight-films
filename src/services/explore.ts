@@ -130,19 +130,24 @@ export const getExploreTV: (
 
   const tmdbItems = (tmdbData.data.results || [])
     .filter((item: Item) => {
+      // Must have poster
+      if (!item.poster_path) return false;
+      
       // If genre filter is applied, ensure item has that genre
       if (genreId && item.genre_ids) {
         if (!item.genre_ids.includes(genreId)) return false;
       }
-      // If origin_country filter is applied, ensure item matches
+      // If origin_country filter is applied, ensure item matches - STRICT FILTERING
       if (originCountry) {
         const countries = item.origin_country || [];
         const filterCountries = typeof originCountry === 'string' ? originCountry.split('|') : [originCountry];
-        if (!countries.some((c: string) => filterCountries.includes(c))) {
-          return false;
+        // Only include if at least one country matches
+        const hasMatchingCountry = countries.some((c: string) => filterCountries.includes(c));
+        if (!hasMatchingCountry) {
+          return false; // Strictly filter out items that don't match
         }
       }
-      return item.poster_path;
+      return true;
     })
     .map((item: any) => ({
       ...item,

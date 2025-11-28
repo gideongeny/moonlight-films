@@ -92,28 +92,34 @@ const DiverseNavigation: React.FC = () => {
               try {
                 const response = await axios.get('/discover/movie', {
                   params: {
-                    ...item.fetchQuery,
+                    with_origin_country: item.fetchQuery?.with_origin_country,
                     sort_by: 'popularity.desc',
                     page: 1,
-                    'vote_count.gte': 10,
-                    'vote_average.gte': 5.0
+                    'vote_count.gte': 5,
+                    'vote_average.gte': 4.0
                   },
-                  timeout: 5000
+                  timeout: 8000
                 });
                 const movies: Item[] = response.data.results || [];
-                // Filter to ensure origin_country matches
+                // Filter to ensure origin_country matches - be strict about this
+                const queryCountries = item.fetchQuery?.with_origin_country?.split('|') || [];
                 const filteredMovies = movies.filter((movie: any) => {
                   const countries = movie.origin_country || [];
-                  const queryCountries = item.fetchQuery?.with_origin_country?.split('|') || [];
                   return countries.some((c: string) => queryCountries.includes(c));
                 });
-                // Try first 10 movies to find one with backdrop
-                for (const movie of (filteredMovies.length > 0 ? filteredMovies : movies).slice(0, 10)) {
-                  if (movie.backdrop_path) {
-                    return `${IMAGE_URL}/w1280${movie.backdrop_path}`;
+                // Try first 20 movies to find one with backdrop
+                const moviesToCheck = filteredMovies.length > 0 ? filteredMovies : movies;
+                for (const movie of moviesToCheck.slice(0, 20)) {
+                  if (movie.backdrop_path && movie.backdrop_path !== 'null') {
+                    const imageUrl = `${IMAGE_URL}/w1280${movie.backdrop_path}`;
+                    // Verify image exists by checking if it's a valid URL
+                    if (imageUrl.includes('image.tmdb.org')) {
+                      return imageUrl;
+                    }
                   }
                 }
               } catch (e) {
+                console.warn(`Error fetching movie image for ${item.title}:`, e);
                 return null;
               }
               return null;
@@ -123,47 +129,55 @@ const DiverseNavigation: React.FC = () => {
               try {
                 const response = await axios.get('/discover/tv', {
                   params: {
-                    ...item.fetchQuery,
+                    with_origin_country: item.fetchQuery?.with_origin_country,
                     sort_by: 'popularity.desc',
                     page: 1,
-                    'vote_count.gte': 10,
-                    'vote_average.gte': 5.0
+                    'vote_count.gte': 5,
+                    'vote_average.gte': 4.0
                   },
-                  timeout: 5000
+                  timeout: 8000
                 });
                 const shows: Item[] = response.data.results || [];
                 // Filter to ensure origin_country matches
+                const queryCountries = item.fetchQuery?.with_origin_country?.split('|') || [];
                 const filteredShows = shows.filter((show: any) => {
                   const countries = show.origin_country || [];
-                  const queryCountries = item.fetchQuery?.with_origin_country?.split('|') || [];
                   return countries.some((c: string) => queryCountries.includes(c));
                 });
-                for (const show of (filteredShows.length > 0 ? filteredShows : shows).slice(0, 10)) {
-                  if (show.backdrop_path) {
-                    return `${IMAGE_URL}/w1280${show.backdrop_path}`;
+                const showsToCheck = filteredShows.length > 0 ? filteredShows : shows;
+                for (const show of showsToCheck.slice(0, 20)) {
+                  if (show.backdrop_path && show.backdrop_path !== 'null') {
+                    const imageUrl = `${IMAGE_URL}/w1280${show.backdrop_path}`;
+                    if (imageUrl.includes('image.tmdb.org')) {
+                      return imageUrl;
+                    }
                   }
                 }
               } catch (e) {
+                console.warn(`Error fetching TV image for ${item.title}:`, e);
                 return null;
               }
               return null;
             },
-            // Source 3: Try page 2 of movies from region
+            // Source 3: Try trending from region
             async () => {
               try {
-                const response = await axios.get('/discover/movie', {
-                  params: {
-                    ...item.fetchQuery,
-                    sort_by: 'popularity.desc',
-                    page: 2,
-                    'vote_count.gte': 5
-                  },
+                const response = await axios.get('/trending/movie/day', {
+                  params: { page: 1 },
                   timeout: 5000
                 });
                 const movies: Item[] = response.data.results || [];
-                for (const movie of movies.slice(0, 10)) {
-                  if (movie.backdrop_path) {
-                    return `${IMAGE_URL}/w1280${movie.backdrop_path}`;
+                const queryCountries = item.fetchQuery?.with_origin_country?.split('|') || [];
+                const filteredMovies = movies.filter((movie: any) => {
+                  const countries = movie.origin_country || [];
+                  return countries.some((c: string) => queryCountries.includes(c));
+                });
+                for (const movie of (filteredMovies.length > 0 ? filteredMovies : movies).slice(0, 10)) {
+                  if (movie.backdrop_path && movie.backdrop_path !== 'null') {
+                    const imageUrl = `${IMAGE_URL}/w1280${movie.backdrop_path}`;
+                    if (imageUrl.includes('image.tmdb.org')) {
+                      return imageUrl;
+                    }
                   }
                 }
               } catch (e) {
