@@ -15,7 +15,6 @@ import { SPORTS_FIXTURES, SPORTS_LEAGUES, SportsFixtureConfig } from "../../shar
 import { getLiveScores, getUpcomingFixturesAPI, subscribeToLiveScores } from "../../services/sportsAPI";
 
 const SportsHome: FC = () => {
-  const navigate = useNavigate();
   const { isMobile } = useCurrentViewportView();
   const [isSidebarActive, setIsSidebarActive] = useState(false);
   const [activeLeague, setActiveLeague] = useState<string>("all");

@@ -13,6 +13,7 @@ interface LiveGamesSliderProps {
 const LiveGamesSlider: FC<LiveGamesSliderProps> = ({ type, title }) => {
   const [fixtures, setFixtures] = useState<SportsFixtureConfig[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
     const fetchFixtures = async () => {
@@ -41,6 +42,14 @@ const LiveGamesSlider: FC<LiveGamesSliderProps> = ({ type, title }) => {
     }
   }, [type]);
 
+  useEffect(() => {
+    // Update time every second for countdown
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   if (isLoading) {
     return (
       <div className="mb-8">
@@ -64,8 +73,7 @@ const LiveGamesSlider: FC<LiveGamesSliderProps> = ({ type, title }) => {
     // Parse and format time - MovieBox style countdown
     try {
       const date = new Date(timeStr);
-      const now = new Date();
-      const diffMs = date.getTime() - now.getTime();
+      const diffMs = date.getTime() - currentTime.getTime();
       
       if (diffMs < 0) return "LIVE";
       
