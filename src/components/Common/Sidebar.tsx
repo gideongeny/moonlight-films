@@ -115,15 +115,16 @@ const Sidebar: FC<SidebarProps> = ({ isSidebarActive, onCloseSidebar }) => {
             <p>Home</p>
           </Link>
 
-          <a
-            href="https://sportslive.run/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex gap-6 items-center hover:text-white transition duration-300"
+          <Link
+            to="/sports"
+            className={`flex gap-6 items-center ${
+              location.pathname === "/sports" &&
+              "!text-primary border-r-4 border-primary font-medium"
+            } hover:text-white transition duration-300`}
           >
             <MdSportsSoccer size={25} />
             <p>Sports</p>
-          </a>
+          </Link>
 
           <Link
             to="/explore"

@@ -23,14 +23,6 @@ const SportsHome: FC = () => {
   const [liveFixtures, setLiveFixtures] = useState<SportsFixtureConfig[]>([]);
   const [upcomingFixtures, setUpcomingFixtures] = useState<SportsFixtureConfig[]>([]);
 
-  // Redirect to sportslive.run when component mounts
-  useEffect(() => {
-    window.open("https://sportslive.run/", "_blank");
-    // Navigate back to home after opening the new tab
-    setTimeout(() => {
-      navigate("/");
-    }, 100);
-  }, [navigate]);
 
   // Fetch real live data
   useEffect(() => {

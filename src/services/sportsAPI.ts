@@ -1,14 +1,14 @@
 // Live Sports API Integration
-// Using multiple free sports APIs for real-time data
+// Using API Sports for real-time data
 
 import axios from "axios";
 import { SportsFixtureConfig } from "../shared/constants";
 
-// API-Football (RapidAPI) - Free tier available
-const API_FOOTBALL_BASE = "https://api-football-v1.p.rapidapi.com/v3";
-const API_FOOTBALL_KEY = process.env.REACT_APP_API_FOOTBALL_KEY || "";
+// API Sports - Primary source
+const API_SPORTS_BASE = "https://v3.football.api-sports.io";
+const API_SPORTS_KEY = "418210481bfff05ff4c1a61d285a0942";
 
-// TheSportsDB - Free, no key required
+// TheSportsDB - Fallback, no key required
 const SPORTSDB_BASE = "https://www.thesportsdb.com/api/v1/json/3";
 
 // Get team logo from TheSportsDB
@@ -29,40 +29,38 @@ export const getTeamLogo = async (teamName: string): Promise<string | null> => {
   }
 };
 
-// Get live fixtures from API-Football
+// Get live fixtures from API Sports
 export const getLiveFixturesAPI = async (): Promise<SportsFixtureConfig[]> => {
   try {
-    // Try API-Football first if key is available
-    if (API_FOOTBALL_KEY) {
-      const response = await axios.get(`${API_FOOTBALL_BASE}/fixtures`, {
-        params: { live: "all" },
-        headers: {
-          "X-RapidAPI-Key": API_FOOTBALL_KEY,
-          "X-RapidAPI-Host": "api-football-v1.p.rapidapi.com",
-        },
-        timeout: 10000,
-      });
+    // Try API Sports first
+    const response = await axios.get(`${API_SPORTS_BASE}/fixtures`, {
+      params: { live: "all" },
+      headers: {
+        "x-rapidapi-key": API_SPORTS_KEY,
+        "x-rapidapi-host": "v3.football.api-sports.io",
+      },
+      timeout: 10000,
+    });
 
-      if (response.data?.response) {
-        return response.data.response.map((fixture: any) => ({
-          id: `live-${fixture.fixture.id}`,
-          leagueId: getLeagueIdFromName(fixture.league.name),
-          homeTeam: fixture.teams.home.name,
-          awayTeam: fixture.teams.away.name,
-          homeTeamLogo: fixture.teams.home.logo,
-          awayTeamLogo: fixture.teams.away.logo,
-          status: "live",
-          kickoffTimeFormatted: "Live Now",
-          venue: fixture.fixture.venue?.name || "TBD",
-          homeScore: fixture.goals.home,
-          awayScore: fixture.goals.away,
-          minute: fixture.fixture.status?.elapsed ? `${fixture.fixture.status.elapsed}'` : undefined,
-          isLive: true,
-        }));
-      }
+    if (response.data?.response && Array.isArray(response.data.response)) {
+      return response.data.response.map((fixture: any) => ({
+        id: `live-${fixture.fixture.id}`,
+        leagueId: getLeagueIdFromName(fixture.league.name),
+        homeTeam: fixture.teams.home.name,
+        awayTeam: fixture.teams.away.name,
+        homeTeamLogo: fixture.teams.home.logo,
+        awayTeamLogo: fixture.teams.away.logo,
+        status: "live",
+        kickoffTimeFormatted: "Live Now",
+        venue: fixture.fixture.venue?.name || "TBD",
+        homeScore: fixture.goals.home,
+        awayScore: fixture.goals.away,
+        minute: fixture.fixture.status?.elapsed ? `${fixture.fixture.status.elapsed}'` : undefined,
+        isLive: true,
+      }));
     }
   } catch (error) {
-    console.warn("API-Football error:", error);
+    console.warn("API Sports error:", error);
   }
 
   // Fallback to TheSportsDB
@@ -125,10 +123,83 @@ export const getLiveFixturesAPI = async (): Promise<SportsFixtureConfig[]> => {
   return [];
 };
 
-// Get upcoming fixtures
+// Get upcoming fixtures from API Sports
 export const getUpcomingFixturesAPI = async (): Promise<SportsFixtureConfig[]> => {
   try {
-    // Get today and next 3 days
+    // Get today and next 7 days
+    const dates: string[] = [];
+    for (let i = 0; i <= 7; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() + i);
+      dates.push(date.toISOString().split('T')[0]);
+    }
+
+    const allFixtures: SportsFixtureConfig[] = [];
+    
+    // Fetch from API Sports for each date
+    for (const dateStr of dates) {
+      try {
+        const response = await axios.get(`${API_SPORTS_BASE}/fixtures`, {
+          params: { date: dateStr },
+          headers: {
+            "x-rapidapi-key": API_SPORTS_KEY,
+            "x-rapidapi-host": "v3.football.api-sports.io",
+          },
+          timeout: 10000,
+        });
+
+        if (response.data?.response && Array.isArray(response.data.response)) {
+          // Filter for upcoming events (not live, not finished)
+          const upcomingEvents = response.data.response.filter((fixture: any) => {
+            const status = fixture.fixture.status?.short;
+            return status !== "LIVE" && status !== "FT" && status !== "AET" && status !== "PEN";
+          });
+
+          for (const fixture of upcomingEvents.slice(0, 15)) {
+            try {
+              const eventDate = new Date(fixture.fixture.date);
+              const formattedTime = eventDate.toLocaleString('en-US', {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+              });
+
+              allFixtures.push({
+                id: `upcoming-${fixture.fixture.id}`,
+                leagueId: getLeagueIdFromName(fixture.league.name),
+                homeTeam: fixture.teams.home.name,
+                awayTeam: fixture.teams.away.name,
+                homeTeamLogo: fixture.teams.home.logo,
+                awayTeamLogo: fixture.teams.away.logo,
+                status: "upcoming",
+                kickoffTimeFormatted: formattedTime,
+                venue: fixture.fixture.venue?.name || "TBD",
+                round: fixture.league.round || undefined,
+              });
+            } catch (e) {
+              continue;
+            }
+          }
+        }
+      } catch (e) {
+        continue;
+      }
+    }
+    
+    // Remove duplicates
+    const unique = allFixtures.filter((fixture, index, self) =>
+      index === self.findIndex((f) => f.id === fixture.id)
+    );
+    
+    return unique.slice(0, 50); // Limit to 50
+  } catch (error) {
+    console.warn("Error fetching upcoming fixtures from API Sports:", error);
+  }
+
+  // Fallback to TheSportsDB
+  try {
     const dates: string[] = [];
     for (let i = 0; i <= 3; i++) {
       const date = new Date();
@@ -138,7 +209,6 @@ export const getUpcomingFixturesAPI = async (): Promise<SportsFixtureConfig[]> =
 
     const allFixtures: SportsFixtureConfig[] = [];
     
-    // Fetch from multiple days
     for (const dateStr of dates) {
       try {
         const response = await axios.get(`${SPORTSDB_BASE}/eventsday.php`, {
@@ -147,7 +217,6 @@ export const getUpcomingFixturesAPI = async (): Promise<SportsFixtureConfig[]> =
         });
 
         if (response.data?.events && Array.isArray(response.data.events)) {
-          // Filter for upcoming events (not live, not finished)
           const upcomingEvents = response.data.events.filter((e: any) => 
             e.strStatus !== "Live" && 
             e.strStatus !== "HT" && 
@@ -193,14 +262,13 @@ export const getUpcomingFixturesAPI = async (): Promise<SportsFixtureConfig[]> =
       }
     }
     
-    // Remove duplicates
     const unique = allFixtures.filter((fixture, index, self) =>
       index === self.findIndex((f) => f.id === fixture.id)
     );
     
-    return unique.slice(0, 30); // Limit to 30
+    return unique.slice(0, 30);
   } catch (error) {
-    console.warn("Error fetching upcoming fixtures:", error);
+    console.warn("Error fetching upcoming fixtures from TheSportsDB:", error);
   }
 
   return [];

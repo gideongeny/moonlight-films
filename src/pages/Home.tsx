@@ -38,10 +38,6 @@ const Home: FC = () => {
   const [currentTab, setCurrentTab] = useLocalStorage("currentTab", "tv");
   
   const handleTabChange = (tab: "movie" | "tv" | "sports") => {
-    if (tab === "sports") {
-      window.open("https://sportslive.run/", "_blank");
-      return;
-    }
     setCurrentTab(tab);
   };
 
