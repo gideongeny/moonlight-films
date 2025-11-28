@@ -85,6 +85,8 @@ const DiverseNavigation: React.FC = () => {
         baseItems.map(async (item) => {
           if (!item.fetchQuery) return item;
           
+          let foundImage: string | null = null;
+          
           // Try multiple sources with fallbacks - fetch popular content from the region/genre
           const sources = [
             // Source 1: Primary TMDB discover - get most popular from region (movies)
@@ -187,20 +189,46 @@ const DiverseNavigation: React.FC = () => {
             },
           ];
 
-          let foundImage: string | null = null;
+          // Try each source sequentially until we find a valid image
           for (const source of sources) {
             try {
               const imageUrl = await source();
               if (imageUrl && imageUrl !== 'undefined' && imageUrl.startsWith('http')) {
-                // Verify the image URL is valid by checking if it's a valid TMDB image
+                // Verify the image URL is valid
                 if (imageUrl.includes('image.tmdb.org') || imageUrl.includes('unsplash.com')) {
                   foundImage = imageUrl;
-                  break;
+                  break; // Found a valid image, stop searching
                 }
               }
             } catch (error) {
-              // Continue to next source
-              console.error(`Error fetching image from source for ${item.title}:`, error);
+              // Continue to next source on error
+              console.warn(`Error fetching image from source for ${item.title}:`, error);
+            }
+          }
+          
+          // If no image found from API, try to use a poster from a popular item
+          if (!foundImage) {
+            try {
+              // Try to get at least one popular item to use its poster/backdrop
+              const response = await axios.get('/discover/movie', {
+                params: {
+                  with_origin_country: item.fetchQuery?.with_origin_country,
+                  sort_by: 'popularity.desc',
+                  page: 1,
+                },
+                timeout: 5000
+              });
+              const movies = response.data.results || [];
+              if (movies.length > 0) {
+                const firstMovie = movies[0];
+                if (firstMovie.backdrop_path) {
+                  foundImage = `${IMAGE_URL}/w1280${firstMovie.backdrop_path}`;
+                } else if (firstMovie.poster_path) {
+                  foundImage = `${IMAGE_URL}/w500${firstMovie.poster_path}`;
+                }
+              }
+            } catch (e) {
+              // Ignore errors, will use fallback
             }
           }
           

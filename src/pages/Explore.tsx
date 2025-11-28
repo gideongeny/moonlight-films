@@ -119,13 +119,13 @@ const Explore = () => {
 
         <div className="mb-8">
           {/* Back button */}
-          <button
-            onClick={() => navigate(-1)}
+          <Link
+            to="/"
             className="flex items-center gap-2 text-gray-400 hover:text-white mb-4 transition-colors"
           >
             <IoArrowBack size={20} />
-            <span>Back</span>
-          </button>
+            <span>Back to Home</span>
+          </Link>
           
           <h1 className="text-4xl font-bold mb-2">
             {filters.region ? getRegionTitle(filters.region) : "Explore Movies & TV Shows"}

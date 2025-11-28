@@ -75,33 +75,54 @@ const ExploreResult: FunctionComponent<ExploreResultProps> = ({
     return config;
   };
 
-  // Use the filtered data from useTMDBCollectionQuery instead of calling explore functions
+  // Use the filtered data from useTMDBCollectionQuery, with fallback to explore functions
   useEffect(() => {
-    if (!isLoading && !error && data && data.length > 0) {
-      // Convert the filtered data array to ItemsPage format
-      const result: ItemsPage = {
-        page: 1,
-        results: data.filter((item) => item.media_type === currentTab), // Ensure media type matches
-        total_pages: 1,
-        total_results: data.length,
-      };
-      setPages([result]);
-      setHasMore(false); // Since we're using the filtered data, no pagination needed initially
-    } else if (!isLoading && !error && (!data || data.length === 0)) {
-      // If no filtered data, try loading with explore functions as fallback
-      const loadInitial = async () => {
-        setPages([]);
-        setCurrentPage(1);
-        setHasMore(true);
-        const config = buildConfig();
-        const result = currentTab === "movie" 
-          ? await getExploreMovie(1, config)
-          : await getExploreTV(1, config);
-        setPages([result]);
-        setHasMore(result.page < result.total_pages);
-      };
-      loadInitial();
-    }
+    const loadData = async () => {
+      // First try to use the filtered data from useTMDBCollectionQuery
+      if (!isLoading && !error && data && data.length > 0) {
+        // Convert the filtered data array to ItemsPage format
+        const filteredByType = data.filter((item) => item.media_type === currentTab);
+        if (filteredByType.length > 0) {
+          const result: ItemsPage = {
+            page: 1,
+            results: filteredByType,
+            total_pages: 1,
+            total_results: filteredByType.length,
+          };
+          setPages([result]);
+          setHasMore(false);
+          return;
+        }
+      }
+      
+      // Fallback: If no data or error, use explore functions
+      if (!isLoading) {
+        try {
+          setPages([]);
+          setCurrentPage(1);
+          setHasMore(true);
+          const config = buildConfig();
+          const result = currentTab === "movie" 
+            ? await getExploreMovie(1, config)
+            : await getExploreTV(1, config);
+          
+          if (result && result.results && result.results.length > 0) {
+            setPages([result]);
+            setHasMore(result.page < result.total_pages);
+          } else {
+            // If still no results, set empty pages
+            setPages([]);
+            setHasMore(false);
+          }
+        } catch (err) {
+          console.error("Error loading explore data:", err);
+          setPages([]);
+          setHasMore(false);
+        }
+      }
+    };
+    
+    loadData();
   }, [currentTab, data, isLoading, error, searchParams.toString()]);
 
   const fetchNext = async () => {

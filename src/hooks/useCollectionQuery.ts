@@ -74,67 +74,61 @@ export const useTMDBCollectionQuery = (
           }
         }
 
-        // Add region filter
+        // Add region filter - TMDB supports pipe-delimited countries
         if (region) {
+          let countries: string[] = [];
           switch (region) {
             case "africa": {
-              // Broaden coverage and use pipe-delimited multi-country filter (TMDB expects a single param)
-              const africanCountries = [
-                "NG", // Nigeria
-                "KE", // Kenya
-                "TZ", // Tanzania
-                "UG", // Uganda
-                "ET", // Ethiopia
-                "RW", // Rwanda
-                "ZM", // Zambia
-                "GH", // Ghana
-                "ZA", // South Africa
-                "EG"  // Egypt
-              ].join("|");
-              url += `&with_origin_country=${africanCountries}`;
+              countries = ["NG", "KE", "TZ", "UG", "ET", "RW", "ZM", "GH", "ZA", "EG"];
               break;
             }
             case "asia": {
-              const asianCountries = ["KR", "JP", "CN", "IN"].join("|");
-              url += `&with_origin_country=${asianCountries}`;
+              countries = ["KR", "JP", "CN", "IN"];
               break;
             }
             case "latin": {
-              const latinCountries = ["MX", "BR", "AR", "CO"].join("|");
-              url += `&with_origin_country=${latinCountries}`;
+              countries = ["MX", "BR", "AR", "CO"];
               break;
             }
             case "middleeast": {
-              const middleEastCountries = ["TR", "EG", "SA", "AE"].join("|");
-              url += `&with_origin_country=${middleEastCountries}`;
+              countries = ["TR", "EG", "SA", "AE"];
               break;
             }
             case "nollywood":
-              // Focus on Nigerian productions (industry-based wording will be handled in UI labels)
-              url += `&with_origin_country=NG`;
+              countries = ["NG"];
               break;
             case "bollywood":
-              url += `&with_origin_country=IN`;
+              countries = ["IN"];
               break;
             case "korea":
-              url += `&with_origin_country=KR`;
+              countries = ["KR"];
               break;
             case "japan":
-              url += `&with_origin_country=JP`;
+              countries = ["JP"];
               break;
             case "china":
-              url += `&with_origin_country=CN`;
+              countries = ["CN"];
               break;
             case "philippines":
-              url += `&with_origin_country=PH`;
+              countries = ["PH"];
               break;
             case "kenya":
-              url += `&with_origin_country=KE`;
+              countries = ["KE"];
               break;
+          }
+          
+          if (countries.length > 0) {
+            // TMDB accepts pipe-delimited countries
+            url += `&with_origin_country=${countries.join("|")}`;
           }
         }
 
-        const response = await axios.get(url);
+        // Add page parameter to avoid 404
+        url += `&page=1`;
+
+        const response = await axios.get(url, {
+          timeout: 10000,
+        });
         const results: Item[] = (response.data.results || []).map((item: any) => ({
           ...item,
           media_type: mediaType,
