@@ -49,11 +49,18 @@ Official website: [https://streamlux.vercel.app/](https://streamlux.vercel.app/)
   - 📺 African TV Shows & Series (diverse content from multiple African countries)
   - 🇰🇪 Kenyan TV Shows, 🇳🇬 Nigerian TV Shows
   - And many more curated sections
-- **Multiple Streaming Sources**: Access to various embed sources for movies, TV shows, and sports (including SportsLive.run and Streamed.pk)
+- **Multiple Streaming Sources**: Access to various embed sources for movies, TV shows, and sports (including SportsLive.run, Streamed.pk, KissKH, Ailok, Googotv, Dramacool, Cuevana, Shahid, and many more regional platforms)
 - **Real-time Sports Updates**: Live scores and upcoming fixtures with auto-refresh from TheSportsDB API
 - **Enhanced African Content**: Expanded fetching strategies with multiple pages and search terms for maximum content diversity
 - **Responsive Design**: Optimized for mobile, tablet, and desktop
 - **Copyright Page**: Comprehensive legal information and terms of use
+- **Vercel Web Analytics**: Integrated analytics for performance monitoring and user insights
+- **Performance Optimizations**: 
+  - API request caching and rate limiting to prevent quota exceeded errors
+  - Optimized Google services usage (Firebase Analytics, Google Fonts)
+  - Background content loading for faster initial page loads
+  - Reduced Firestore query operations
+- **Enhanced Video Sources**: Comprehensive list of international streaming platforms with proper display names for better user experience
 
 ## Screenshots, Preview
 
@@ -104,11 +111,14 @@ REACT_APP_API_KEY = a8a6fa2f944128e971223235bc3cxxxxx
 - **Data Fetching**: React Query (TanStack Query), Axios
 - **Authentication**: Firebase Auth
 - **Database**: Firebase Firestore
+- **Analytics**: Vercel Web Analytics, Firebase Analytics (optimized)
 - **UI Components**: Swiper, React-AutoAnimate, React-Select, React-Toastify
 - **Routing**: React Router DOM v6
 - **Image Optimization**: React-Lazy-Load-Image-Component
 - **Form Handling**: Formik, Yup
 - **Icons**: React-Icons
+- **Caching**: LRU Cache for API responses
+- **Performance**: Rate limiting, request batching, background loading
 
 ## Deployment
 
@@ -116,6 +126,24 @@ This project is deployed on Vercel. The build process uses:
 - Node.js 24.x (auto-upgraded from engines requirement)
 - npm with `--force --legacy-peer-deps --no-optional` flags
 - Create React App build system
+
+## Performance & Optimization
+
+### API Optimization
+- **Caching**: LRU cache implementation for API responses (15-minute default TTL)
+- **Rate Limiting**: Built-in rate limiting (30 requests/minute) to prevent quota exceeded errors
+- **Request Batching**: Content fetched in batches to reduce concurrent API calls
+- **Background Loading**: Non-critical content loads in the background for faster initial page loads
+
+### Google Services Optimization
+- **Firebase Analytics**: Conditionally initialized only in production, with automatic disable on quota errors
+- **Google Fonts**: Optimized with `preconnect`, `dns-prefetch`, and `font-display: swap`
+- **Firestore Queries**: Optimized to use `getDoc` instead of `getDocs` where possible to reduce read operations
+
+### Content Fetching
+- **Multi-Source Integration**: Fetches from TMDB, FZMovies, KissKH, Ailok, Googotv, and other custom sources
+- **Regional Content**: Enhanced filtering for African, Asian, Latin American, and Middle Eastern content
+- **Parallel Fetching**: Uses `Promise.all` for concurrent API requests where appropriate
 
 ## Contributing
 

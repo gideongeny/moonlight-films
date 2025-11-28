@@ -37,22 +37,16 @@ export const auth = getAuth(app);
 // Initialize Analytics (only in browser environment)
 // Optimized to prevent quota exceeded errors
 let analytics: ReturnType<typeof getAnalytics> | undefined;
-if (typeof globalThis.window !== "undefined") {
+if (globalThis.window !== undefined) {
   try {
     // Only initialize analytics if not in development and user hasn't opted out
     const isDevelopment = process.env.NODE_ENV === 'development';
     const analyticsDisabled = localStorage.getItem('analytics_disabled') === 'true';
     
     if (!isDevelopment && !analyticsDisabled) {
-      analytics = getAnalytics(app, {
-        // Optimize analytics settings to reduce quota usage
-        config: {
-          // Reduce automatic event collection
-          send_page_view: true,
-          // Use sampling to reduce events (sample 50% of events)
-          sample_rate: 0.5,
-        }
-      });
+      // getAnalytics only accepts the app instance as argument
+      // Analytics configuration is done via Firebase Console, not in code
+      analytics = getAnalytics(app);
     }
   } catch (error) {
     // Silently fail if quota exceeded or other errors
