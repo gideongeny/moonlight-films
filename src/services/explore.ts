@@ -67,10 +67,15 @@ export const getExploreMovie: (
   const [tmdbData, popularData, trendingData, fzMovies, apiContent, sourceContent, regionalContent] = await Promise.all(fetchPromises);
 
   // Combine all TMDB results (discover, popular, trending)
+  // Type assertion to handle the union type from Promise.all
+  const tmdbDataTyped = tmdbData as { data?: { results?: Item[] } };
+  const popularDataTyped = popularData as { data?: { results?: Item[] } };
+  const trendingDataTyped = trendingData as { data?: { results?: Item[] } };
+  
   const allTmdbResults = [
-    ...(tmdbData.data?.results || []),
-    ...(popularData.data?.results || []),
-    ...(trendingData.data?.results || []),
+    ...(tmdbDataTyped.data?.results ?? []),
+    ...(popularDataTyped.data?.results ?? []),
+    ...(trendingDataTyped.data?.results ?? []),
   ];
   
   const tmdbItems = allTmdbResults
@@ -141,7 +146,8 @@ export const getExploreMovie: (
   });
 
   return {
-    ...tmdbData.data,
+    page: tmdbDataTyped.data?.page ?? page,
+    total_pages: tmdbDataTyped.data?.total_pages ?? 1,
     results: adjustedItems,
     total_results: adjustedItems.length, // Update total to reflect merged results
   };
@@ -209,10 +215,15 @@ export const getExploreTV: (
   const [tmdbData, popularData, trendingData, fzTV, apiContent, sourceContent, regionalContent] = await Promise.all(fetchPromises);
 
   // Combine all TMDB results (discover, popular, trending)
+  // Type assertion to handle the union type from Promise.all
+  const tmdbDataTyped = tmdbData as { data?: { results?: Item[] } };
+  const popularDataTyped = popularData as { data?: { results?: Item[] } };
+  const trendingDataTyped = trendingData as { data?: { results?: Item[] } };
+  
   const allTmdbResults = [
-    ...(tmdbData.data?.results || []),
-    ...(popularData.data?.results || []),
-    ...(trendingData.data?.results || []),
+    ...(tmdbDataTyped.data?.results ?? []),
+    ...(popularDataTyped.data?.results ?? []),
+    ...(trendingDataTyped.data?.results ?? []),
   ];
   
   const tmdbItems = allTmdbResults
@@ -288,7 +299,8 @@ export const getExploreTV: (
   });
 
   return {
-    ...tmdbData.data,
+    page: tmdbDataTyped.data?.page ?? page,
+    total_pages: tmdbDataTyped.data?.total_pages ?? 1,
     results: adjustedItems,
     total_results: adjustedItems.length, // Update total to reflect merged results
   };
