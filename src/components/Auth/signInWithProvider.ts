@@ -1,5 +1,5 @@
 import { FacebookAuthProvider, signInWithPopup } from "firebase/auth";
-import { collection, doc, getDocs, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
 import { auth, db } from "../../shared/firebase";
 import { convertErrorCodeToMessage } from "../../shared/utils";
@@ -9,14 +9,19 @@ export const signInWithProvider = async (provider: any, type: string) => {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
 
-    // Check if user info is already stored in Firestore before
+    // Optimized: Check if user exists by directly accessing the document instead of querying all users
+    // This reduces Firestore quota usage significantly
     let isStored = false;
-    const querySnapshot = await getDocs(collection(db, "users"));
-    querySnapshot.forEach((doc) => {
-      if (doc.id === user.uid) {
-        isStored = true;
-      }
-    });
+    try {
+      const { getDoc } = await import("firebase/firestore");
+      const userDocRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(userDocRef);
+      isStored = userDoc.exists();
+    } catch (error) {
+      // If quota exceeded or other error, assume user doesn't exist and continue
+      console.warn("Error checking user existence:", error);
+      isStored = false;
+    }
 
     if (isStored) {
       toast.success("Signed in successfully!", {

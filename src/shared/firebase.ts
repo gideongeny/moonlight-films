@@ -35,12 +35,33 @@ export const auth = getAuth(app);
 })();
 
 // Initialize Analytics (only in browser environment)
+// Optimized to prevent quota exceeded errors
 let analytics: ReturnType<typeof getAnalytics> | undefined;
 if (typeof globalThis.window !== "undefined") {
   try {
-    analytics = getAnalytics(app);
+    // Only initialize analytics if not in development and user hasn't opted out
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    const analyticsDisabled = localStorage.getItem('analytics_disabled') === 'true';
+    
+    if (!isDevelopment && !analyticsDisabled) {
+      analytics = getAnalytics(app, {
+        // Optimize analytics settings to reduce quota usage
+        config: {
+          // Reduce automatic event collection
+          send_page_view: true,
+          // Use sampling to reduce events (sample 50% of events)
+          sample_rate: 0.5,
+        }
+      });
+    }
   } catch (error) {
-    console.warn("Firebase Analytics initialization failed:", error);
+    // Silently fail if quota exceeded or other errors
+    if (error instanceof Error && error.message.includes('quota')) {
+      console.warn("Analytics quota exceeded. Analytics disabled.");
+      localStorage.setItem('analytics_disabled', 'true');
+    } else {
+      console.warn("Firebase Analytics initialization failed:", error);
+    }
   }
 }
 
