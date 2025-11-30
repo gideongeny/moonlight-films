@@ -64,29 +64,29 @@ Official website: [https://streamlux.vercel.app/](https://streamlux.vercel.app/)
 
 ## Screenshots, Preview
 
-### Home Page
+### Home Page - Breaking Bad Banner
 ![Home Page - TV Shows, Movies & Sports Tabs](https://raw.githubusercontent.com/gideongeny/STREAMLUX/main/Images/Screenshot%202025-12-01%20015602.png)
-*Home page featuring TV Shows, Movies, and Sports tabs with trending content, popular shows, and diverse navigation. Features Breaking Bad banner with watch/download options, popular content slider, and trending sidebar.*
+*Home page featuring TV Shows, Movies, and Sports tabs. Shows Breaking Bad banner with watch/download options, popular content slider with Stranger Things, Welcome to Derry, Supernatural, and trending sidebar with Regretting You and Wildcat.*
 
 ### Account Settings / Profile Page
 ![Account Settings Page](https://raw.githubusercontent.com/gideongeny/STREAMLUX/main/Images/Screenshot%202025-12-01%20015639.png)
-*User profile page with account settings, email verification, name editing, password change, and profile photo upload. Includes user information section, change password, and delete account options.*
+*User profile page with account settings showing email (gideongeng@gmail.com), name editing, password change, profile photo upload, and delete account option. Left sidebar navigation visible.*
 
 ### Sign In Page
 ![Sign In Page](https://raw.githubusercontent.com/gideongeny/STREAMLUX/main/Images/Screenshot%202025-12-01%20015701.png)
-*Authentication page with Google and Facebook login options, plus email/password sign-in. Clean, modern design with StreamLux branding.*
+*Authentication page with "Sign In To StreamLux" title, Google and Facebook login buttons, email/password input fields, and "Not a member? Sign Up" link.*
 
-### Explore Page
+### Explore Page - Movies & TV Shows Grid
 ![Explore Movies & TV Shows](https://raw.githubusercontent.com/gideongeny/STREAMLUX/main/Images/Screenshot%202025-12-01%20015724.png)
-*Explore page with Movies/TV Shows tabs, sort and filter options, and grid layout of content. Features genre filters, sort by popularity, and comprehensive content discovery.*
+*Explore page with Movies/TV Shows tabs, sort dropdown (Most popular), genre filters (Action & Adventure, Animation, Comedy, Crime, Documentary, Drama, Mystery), and grid of content including Stranger Things, IT: Welcome to Derry, Supernatural, Law & Order: SVU, Tulsa King, Grey's Anatomy, The Simpsons.*
 
-### TV Show Detail Page
+### TV Show Detail Page - Stranger Things
 ![TV Show Detail - Stranger Things](https://raw.githubusercontent.com/gideongeny/STREAMLUX/main/Images/Screenshot%202025-12-01%20015811.png)
-*Detailed TV show information page with poster, genres, watch/download buttons, story, cast, reviews, and similar content. Shows comprehensive information including rating, episode length, media trailers, and similar recommendations.*
+*Detailed Stranger Things page with banner showing "WELCOME TO HAWKINS" sign, genres (SCI-FI & FANTASY, MYSTERY, ACTION & ADVENTURE), WATCH and Download buttons, poster, rating (8.6), story section, details (Status: Returning Series), media trailers, and similar content sidebar.*
 
-### Sports Page - Live Games
+### Sports Page - NBA Live Games
 ![Sports Page - NBA Live Games](https://raw.githubusercontent.com/gideongeny/STREAMLUX/main/Images/Screenshot%202025-12-01%20015841.png)
-*Live sports page showing upcoming NBA games with team logos, scores, fan voting predictions, and match details. Features real-time game information, fan voting percentages, and progress bars showing team preferences.*
+*Live sports page showing NBA games with team logos, scores (0-0 for upcoming games), fan voting predictions with percentages and progress bars. Games include LA Lakers vs New Orleans Pelicans, Sacramento Kings vs Memphis Grizzlies, Minnesota Timberwolves vs San Antonio Spurs, New York Knicks vs Toronto Raptors, Cleveland Cavaliers vs Boston Celtics.*
 
 ## Project Timeline
 
