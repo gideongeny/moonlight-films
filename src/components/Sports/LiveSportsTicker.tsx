@@ -58,12 +58,13 @@ const LiveSportsTicker: FC = () => {
     fetchInitial();
 
     // Subscribe to live score updates with error handling
+    // Reduced frequency for older devices
     try {
       unsubscribe = subscribeToLiveScores((fixtures) => {
         if (isMounted && Array.isArray(fixtures)) {
           setLiveFixtures(fixtures.slice(0, 10));
         }
-      }, 30000);
+      }, 60000); // Changed from 30000ms to 60000ms for better performance
     } catch (error) {
       console.error("Error subscribing to live scores:", error);
     }

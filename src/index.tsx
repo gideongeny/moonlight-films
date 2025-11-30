@@ -1,3 +1,6 @@
+// Import polyfills first for older browser support
+import "./utils/polyfills";
+
 import "./index.css";
 import "swiper/css";
 import "swiper/css/navigation";

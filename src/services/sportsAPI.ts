@@ -33,9 +33,15 @@ export const getTeamLogo = async (teamName: string): Promise<string | null> => {
 export const getLiveFixturesAPI = async (): Promise<SportsFixtureConfig[]> => {
   try {
     // Try API Sports first - using correct endpoint and header format
-    // Add AbortController for better timeout handling on iPhone
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+    // Use feature detection for AbortController (older browsers)
+    const hasAbortController = typeof AbortController !== 'undefined';
+    let controller: AbortController | null = null;
+    let timeoutId: NodeJS.Timeout | null = null;
+    
+    if (hasAbortController) {
+      controller = new AbortController();
+      timeoutId = setTimeout(() => controller!.abort(), 8000); // 8 second timeout
+    }
     
     const response = await axios.get(`${API_SPORTS_BASE}/fixtures`, {
       params: { live: "all" },
@@ -43,10 +49,10 @@ export const getLiveFixturesAPI = async (): Promise<SportsFixtureConfig[]> => {
         "x-apisports-key": API_SPORTS_KEY,
       },
       timeout: 8000,
-      signal: controller.signal,
+      ...(controller && { signal: controller.signal }),
     });
     
-    clearTimeout(timeoutId);
+    if (timeoutId) clearTimeout(timeoutId);
 
     console.log("API Sports live fixtures response:", response.data);
 
@@ -156,11 +162,19 @@ export const getUpcomingFixturesAPI = async (): Promise<SportsFixtureConfig[]> =
 
     const allFixtures: SportsFixtureConfig[] = [];
     
-    // Fetch from API Sports for each date (limit to first 3 dates to avoid timeout on iPhone)
-    for (const dateStr of dates.slice(0, 3)) {
+    // Fetch from API Sports for each date (limit to first 2 dates for older devices)
+    // Use feature detection for AbortController
+    const hasAbortController = typeof AbortController !== 'undefined';
+    
+    for (const dateStr of dates.slice(0, 2)) {
       try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        let controller: AbortController | null = null;
+        let timeoutId: NodeJS.Timeout | null = null;
+        
+        if (hasAbortController) {
+          controller = new AbortController();
+          timeoutId = setTimeout(() => controller!.abort(), 8000);
+        }
         
         const response = await axios.get(`${API_SPORTS_BASE}/fixtures`, {
           params: { date: dateStr },
@@ -168,10 +182,10 @@ export const getUpcomingFixturesAPI = async (): Promise<SportsFixtureConfig[]> =
             "x-apisports-key": API_SPORTS_KEY,
           },
           timeout: 8000,
-          signal: controller.signal,
+          ...(controller && { signal: controller.signal }),
         });
         
-        clearTimeout(timeoutId);
+        if (timeoutId) clearTimeout(timeoutId);
 
         if (response.data?.response && Array.isArray(response.data.response)) {
           // Filter for upcoming events (not live, not finished)

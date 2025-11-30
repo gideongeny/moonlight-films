@@ -56,13 +56,14 @@ const LiveGamesSlider: FC<LiveGamesSliderProps> = ({ type, title }) => {
 
     fetchFixtures();
     
-    // Refresh every 30 seconds for live games (only if component is still mounted)
+    // Refresh every 60 seconds for live games (reduced frequency for older devices)
+    // Only refresh if component is still mounted and visible
     if (type === "live") {
       intervalId = setInterval(() => {
-        if (isMounted) {
+        if (isMounted && fixtures.length > 0) {
           fetchFixtures();
         }
-      }, 30000);
+      }, 60000); // Changed from 30000ms to 60000ms for better performance
     }
 
     return () => {
@@ -73,12 +74,15 @@ const LiveGamesSlider: FC<LiveGamesSliderProps> = ({ type, title }) => {
   }, [type]);
 
   useEffect(() => {
-    // Update time every second for countdown
+    // Update time every 5 seconds for countdown (reduced frequency for older devices)
+    // Only update if component is visible and has fixtures
     const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
+      if (fixtures.length > 0) {
+        setCurrentTime(new Date());
+      }
+    }, 5000); // Changed from 1000ms to 5000ms for better performance
     return () => clearInterval(timer);
-  }, []);
+  }, [fixtures.length]);
 
   if (isLoading) {
     return (
@@ -111,7 +115,12 @@ const LiveGamesSlider: FC<LiveGamesSliderProps> = ({ type, title }) => {
       const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
       const diffSecs = Math.floor((diffMs % (1000 * 60)) / 1000);
       
-      return `Upcoming - ${String(diffHours).padStart(2, '0')}:${String(diffMins).padStart(2, '0')}:${String(diffSecs).padStart(2, '0')}`;
+      // Use polyfill-safe padding for older browsers
+      const pad = (num: number): string => {
+        const str = String(num);
+        return str.length < 2 ? '0' + str : str;
+      };
+      return `Upcoming - ${pad(diffHours)}:${pad(diffMins)}:${pad(diffSecs)}`;
     } catch {
       // If it's already formatted, return as is
       if (timeStr.includes("Upcoming")) return timeStr;
