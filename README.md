@@ -64,29 +64,29 @@ Official website: [https://streamlux.vercel.app/](https://streamlux.vercel.app/)
 
 ## Screenshots, Preview
 
-### Home Page - Breaking Bad Banner
-![Home Page - TV Shows, Movies & Sports Tabs](https://raw.githubusercontent.com/gideongeny/STREAMLUX/main/Images/Screenshot%202025-12-01%20015602.png)
-*Home page featuring TV Shows, Movies, and Sports tabs. Shows Breaking Bad banner with watch/download options, popular content slider with Stranger Things, Welcome to Derry, Supernatural, and trending sidebar with Regretting You and Wildcat.*
+### Home Page
+![Home Page - Breaking Bad Banner](https://raw.githubusercontent.com/gideongeny/STREAMLUX/main/Images/Screenshot%202025-12-01%20015602.png)
+*Home page featuring TV Shows, Movies, and Sports tabs. Shows Breaking Bad banner with watch/download options, popular content slider, and trending sidebar.*
 
 ### Account Settings / Profile Page
 ![Account Settings Page](https://raw.githubusercontent.com/gideongeny/STREAMLUX/main/Images/Screenshot%202025-12-01%20015639.png)
-*User profile page with account settings showing email (gideongeng@gmail.com), name editing, password change, profile photo upload, and delete account option. Left sidebar navigation visible.*
+*Account Settings page showing user information section with email and name fields, change password option, profile photo upload, and delete account button. Left sidebar navigation with Profile highlighted.*
 
 ### Sign In Page
 ![Sign In Page](https://raw.githubusercontent.com/gideongeny/STREAMLUX/main/Images/Screenshot%202025-12-01%20015701.png)
-*Authentication page with "Sign In To StreamLux" title, Google and Facebook login buttons, email/password input fields, and "Not a member? Sign Up" link.*
+*Sign In To StreamLux page with Google and Facebook login buttons, email/password input fields, and "Not a member? Sign Up" link.*
 
-### Explore Page - Movies & TV Shows Grid
+### Explore Page
 ![Explore Movies & TV Shows](https://raw.githubusercontent.com/gideongeny/STREAMLUX/main/Images/Screenshot%202025-12-01%20015724.png)
-*Explore page with Movies/TV Shows tabs, sort dropdown (Most popular), genre filters (Action & Adventure, Animation, Comedy, Crime, Documentary, Drama, Mystery), and grid of content including Stranger Things, IT: Welcome to Derry, Supernatural, Law & Order: SVU, Tulsa King, Grey's Anatomy, The Simpsons.*
+*Explore Movies & TV Shows page with Movies/TV Shows tabs, sort dropdown (Most popular), genre filters, and grid layout showing various movies and TV shows including Stranger Things, IT: Welcome to Derry, Supernatural, Law & Order: SVU, Tulsa King, Grey's Anatomy, and The Simpsons.*
 
 ### TV Show Detail Page - Stranger Things
 ![TV Show Detail - Stranger Things](https://raw.githubusercontent.com/gideongeny/STREAMLUX/main/Images/Screenshot%202025-12-01%20015811.png)
-*Detailed Stranger Things page with banner showing "WELCOME TO HAWKINS" sign, genres (SCI-FI & FANTASY, MYSTERY, ACTION & ADVENTURE), WATCH and Download buttons, poster, rating (8.6), story section, details (Status: Returning Series), media trailers, and similar content sidebar.*
+*TV Show Detail Page for Stranger Things showing banner with "WELCOME TO HAWKINS" sign, genres (SCI-FI & FANTASY, MYSTERY, ACTION & ADVENTURE), WATCH and Download buttons, poster image, rating (8.6), story section, details (Status: Returning Series, Last air date, Spoken language), media trailers section, and similar content sidebar.*
 
 ### Sports Page - NBA Live Games
 ![Sports Page - NBA Live Games](https://raw.githubusercontent.com/gideongeny/STREAMLUX/main/Images/Screenshot%202025-12-01%20015841.png)
-*Live sports page showing NBA games with team logos, scores (0-0 for upcoming games), fan voting predictions with percentages and progress bars. Games include LA Lakers vs New Orleans Pelicans, Sacramento Kings vs Memphis Grizzlies, Minnesota Timberwolves vs San Antonio Spurs, New York Knicks vs Toronto Raptors, Cleveland Cavaliers vs Boston Celtics.*
+*Sports page showing NBA live games with team logos, scores, fan voting predictions with percentages and progress bars. Displays upcoming games including LA Lakers vs New Orleans Pelicans, Sacramento Kings vs Memphis Grizzlies, Minnesota Timberwolves vs San Antonio Spurs, New York Knicks vs Toronto Raptors, and Cleveland Cavaliers vs Boston Celtics.*
 
 ## Project Timeline
 
