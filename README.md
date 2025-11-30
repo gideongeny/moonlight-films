@@ -64,29 +64,29 @@ Official website: [https://streamlux.vercel.app/](https://streamlux.vercel.app/)
 
 ## Screenshots, Preview
 
-![Screenshot 1](https://i.ibb.co/4WM6xSp/home.png)
+### Home Page
+![Home Page - TV Shows, Movies & Sports Tabs](https://raw.githubusercontent.com/gideongeny/STREAMLUX/main/Images/Screenshot%202025-12-01%20015602.png)
+*Home page featuring TV Shows, Movies, and Sports tabs with trending content, popular shows, and diverse navigation. Features Breaking Bad banner with watch/download options, popular content slider, and trending sidebar.*
 
-![Screenshot 2](https://i.ibb.co/CB0694y/detail.png)
+### Account Settings / Profile Page
+![Account Settings Page](https://raw.githubusercontent.com/gideongeny/STREAMLUX/main/Images/Screenshot%202025-12-01%20015639.png)
+*User profile page with account settings, email verification, name editing, password change, and profile photo upload. Includes user information section, change password, and delete account options.*
 
-![Screenshot 3](https://i.ibb.co/Vxf85Kh/watch.png)
+### Sign In Page
+![Sign In Page](https://raw.githubusercontent.com/gideongeny/STREAMLUX/main/Images/Screenshot%202025-12-01%20015701.png)
+*Authentication page with Google and Facebook login options, plus email/password sign-in. Clean, modern design with StreamLux branding.*
 
-![Screenshot 4](https://i.ibb.co/B2yQtvZ/explore.png)
+### Explore Page
+![Explore Movies & TV Shows](https://raw.githubusercontent.com/gideongeny/STREAMLUX/main/Images/Screenshot%202025-12-01%20015724.png)
+*Explore page with Movies/TV Shows tabs, sort and filter options, and grid layout of content. Features genre filters, sort by popularity, and comprehensive content discovery.*
 
-![Screenshot 5](https://i.ibb.co/NY0kLHD/bookmark.png)
+### TV Show Detail Page
+![TV Show Detail - Stranger Things](https://raw.githubusercontent.com/gideongeny/STREAMLUX/main/Images/Screenshot%202025-12-01%20015811.png)
+*Detailed TV show information page with poster, genres, watch/download buttons, story, cast, reviews, and similar content. Shows comprehensive information including rating, episode length, media trailers, and similar recommendations.*
 
-![Screenshot 6](https://i.ibb.co/P5pzbzf/search.png)
-
-![Screenshot 7](https://i.ibb.co/kqc377t/profile.png)
-
-![Screenshot 8](https://i.ibb.co/HzWYzVB/comment.png)
-
-![Screenshot 9](https://i.ibb.co/5BhLp4x/auth.png)
-
-![Screenshot 10](https://i.ibb.co/fGgp0P0/moonlight.png)
-
-![Screenshot 11](https://i.ibb.co/z6JSPYj/404.png)
-
-![Screenshot 12](https://i.ibb.co/LrYHgCF/mobile.png)
+### Sports Page - Live Games
+![Sports Page - NBA Live Games](https://raw.githubusercontent.com/gideongeny/STREAMLUX/main/Images/Screenshot%202025-12-01%20015841.png)
+*Live sports page showing upcoming NBA games with team logos, scores, fan voting predictions, and match details. Features real-time game information, fan voting percentages, and progress bars showing team preferences.*
 
 ## Project Timeline
 
