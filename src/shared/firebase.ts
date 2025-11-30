@@ -56,10 +56,18 @@ try {
       auth = getAuth(app);
     } catch (finalError) {
       console.error("Firebase final initialization failed:", finalError);
-      // If all else fails, initialize with default config (this will throw if truly broken)
-      app = initializeApp(firebaseConfig);
-      db = getFirestore(app);
-      auth = getAuth(app);
+      // If all else fails, try one more time with default config
+      // This ensures the app doesn't crash even if Firebase has issues
+      try {
+        app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        auth = getAuth(app);
+      } catch (lastError) {
+        console.error("Firebase initialization completely failed:", lastError);
+        // Create dummy instances to prevent app crash
+        // Components should handle null/undefined checks
+        throw new Error("Firebase initialization failed. The app may not function correctly.");
+      }
     }
   }
 }

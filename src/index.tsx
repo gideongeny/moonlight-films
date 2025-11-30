@@ -31,7 +31,17 @@ const queryClient = new QueryClient({
 const rootElement = document.getElementById("root");
 
 if (!rootElement) {
-  throw new Error("Root element not found. Make sure there's a <div id='root'></div> in your HTML.");
+  // Don't throw - display error in body instead
+  document.body.innerHTML = `
+    <div style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #0f172a; color: #fff; padding: 20px; text-align: center;">
+      <h1 style="font-size: 2rem; margin-bottom: 1rem; color: #ef4444;">Application Error</h1>
+      <p style="margin-bottom: 1rem;">Root element not found. Please refresh the page.</p>
+      <button onclick="window.location.reload()" style="padding: 10px 20px; background-color: #ef4444; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem;">
+        Refresh Page
+      </button>
+    </div>
+  `;
+  throw new Error("Root element not found");
 }
 
 // Add error handler for unhandled errors

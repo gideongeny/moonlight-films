@@ -90,14 +90,14 @@ const Home: FC = () => {
         </button>
       </div>
 
-      <div className="flex items-start">
+      <div className="flex items-start relative">
         <Sidebar
           onCloseSidebar={() => setIsSidebarActive(false)}
           isSidebarActive={isSidebarActive}
         />
 
         <div
-          className="flex-grow md:pt-7 pt-0 pb-7 border-x md:px-[2vw] px-[4vw] border-gray-darken min-h-screen bg-dark"
+          className="flex-grow md:pt-7 pt-0 pb-7 border-x md:px-[2vw] px-[4vw] border-gray-darken min-h-screen bg-dark relative z-0"
         >
           <div className="flex justify-between md:items-end items-center">
             <div className="inline-flex gap-[40px] pb-[14px] border-b border-gray-darken relative">
