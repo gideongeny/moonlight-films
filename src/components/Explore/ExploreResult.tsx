@@ -110,9 +110,24 @@ const ExploreResult: FunctionComponent<ExploreResultProps> = ({
             setPages([result]);
             setHasMore(result.page < result.total_pages);
           } else {
-            // If still no results, set empty pages
-            setPages([]);
-            setHasMore(false);
+            // Fallback: If no results, try to get popular content
+            try {
+              const fallbackResult = currentTab === "movie" 
+                ? await getExploreMovie(1, {}) // Empty config = popular
+                : await getExploreTV(1, {});
+              
+              if (fallbackResult && fallbackResult.results && fallbackResult.results.length > 0) {
+                setPages([fallbackResult]);
+                setHasMore(fallbackResult.page < fallbackResult.total_pages);
+              } else {
+                setPages([]);
+                setHasMore(false);
+              }
+            } catch (err) {
+              console.error("Fallback failed:", err);
+              setPages([]);
+              setHasMore(false);
+            }
           }
         } catch (err) {
           console.error("Error loading explore data:", err);

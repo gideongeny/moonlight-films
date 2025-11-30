@@ -117,7 +117,10 @@ const LiveSportsTicker: FC = () => {
           {allFixtures.map((fixture, index) => (
             <a
               key={`${fixture.id}-${index}`}
-              href="https://sportslive.run/live?utm_source=MB_Website&sportType=football"
+              href={fixture.matchId 
+                ? `https://sportslive.run/matches/${fixture.matchId}?utm_source=MB_Website&sportType=football`
+                : `https://sportslive.run/live?utm_source=MB_Website&sportType=football&home=${encodeURIComponent(fixture.homeTeam)}&away=${encodeURIComponent(fixture.awayTeam)}`
+              }
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-4 shrink-0 hover:bg-gray-800/50 px-4 py-1 rounded transition group"

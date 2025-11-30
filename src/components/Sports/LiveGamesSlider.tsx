@@ -148,7 +148,10 @@ const LiveGamesSlider: FC<LiveGamesSliderProps> = ({ type, title }) => {
         {fixtures.map((fixture) => (
           <a
             key={fixture.id}
-            href="https://sportslive.run/live?utm_source=MB_Website&sportType=football"
+            href={fixture.matchId 
+              ? `https://sportslive.run/matches/${fixture.matchId}?utm_source=MB_Website&sportType=football`
+              : `https://sportslive.run/live?utm_source=MB_Website&sportType=football&home=${encodeURIComponent(fixture.homeTeam)}&away=${encodeURIComponent(fixture.awayTeam)}`
+            }
             target="_blank"
             rel="noopener noreferrer"
             className="flex-shrink-0 w-[280px] rounded-lg overflow-hidden hover:shadow-lg hover:shadow-primary/20 transition-all group cursor-pointer"

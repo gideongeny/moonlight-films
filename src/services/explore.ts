@@ -179,6 +179,34 @@ export const getExploreMovie: (
     return item.poster_path;
   });
 
+  // Fallback: If no results after filtering, show popular content instead of empty page
+  if (adjustedItems.length === 0) {
+    console.log("No results for specific filters, falling back to popular content");
+    try {
+      // Get popular content as fallback
+      const fallbackResponse = await axios.get("/movie/popular", {
+        params: { page: 1 },
+        timeout: 3000,
+      }).catch(() => ({ data: { results: [] } }));
+      
+      const fallbackItems = (fallbackResponse.data?.results || []).slice(0, 20).map((item: any) => ({
+        ...item,
+        media_type: "movie" as const,
+      })).filter((item: Item) => item.poster_path);
+      
+      if (fallbackItems.length > 0) {
+        return {
+          page: 1,
+          total_pages: 1,
+          results: fallbackItems,
+          total_results: fallbackItems.length,
+        };
+      }
+    } catch (err) {
+      console.warn("Fallback to popular content failed:", err);
+    }
+  }
+
   return {
     page: tmdbDataTyped.data?.page ?? page,
     total_pages: tmdbDataTyped.data?.total_pages ?? 1,
@@ -323,6 +351,34 @@ export const getExploreTV: (
     }
     return item.poster_path;
   });
+
+  // Fallback: If no results after filtering, show popular content instead of empty page
+  if (adjustedItems.length === 0) {
+    console.log("No results for specific filters, falling back to popular content");
+    try {
+      // Get popular content as fallback
+      const fallbackResponse = await axios.get("/tv/popular", {
+        params: { page: 1 },
+        timeout: 3000,
+      }).catch(() => ({ data: { results: [] } }));
+      
+      const fallbackItems = (fallbackResponse.data?.results || []).slice(0, 20).map((item: any) => ({
+        ...item,
+        media_type: "tv" as const,
+      })).filter((item: Item) => item.poster_path);
+      
+      if (fallbackItems.length > 0) {
+        return {
+          page: 1,
+          total_pages: 1,
+          results: fallbackItems,
+          total_results: fallbackItems.length,
+        };
+      }
+    } catch (err) {
+      console.warn("Fallback to popular content failed:", err);
+    }
+  }
 
   return {
     page: tmdbDataTyped.data?.page ?? page,

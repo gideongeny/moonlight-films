@@ -1,10 +1,18 @@
 // Live Sports API Integration
-// Using API Sports for real-time data
+// Using public APIs for real-time data
 
 import axios from "axios";
 import { SportsFixtureConfig } from "../shared/constants";
 
-// API Sports - Primary source
+// Import public sports API functions
+import { 
+  getLiveFixturesAPI as getLiveFixturesPublic,
+  getUpcomingFixturesAPI as getUpcomingFixturesPublic,
+  getLiveScores as getLiveScoresPublic,
+  subscribeToLiveScores as subscribeToLiveScoresPublic,
+} from "./publicSportsAPI";
+
+// API Sports - Fallback (if key is valid)
 const API_SPORTS_BASE = "https://v3.football.api-sports.io";
 const API_SPORTS_KEY = "418210481bfff05ff4c1a61d285a0942";
 
@@ -29,8 +37,20 @@ export const getTeamLogo = async (teamName: string): Promise<string | null> => {
   }
 };
 
-// Get live fixtures from API Sports
+// Get live fixtures - use public APIs first
 export const getLiveFixturesAPI = async (): Promise<SportsFixtureConfig[]> => {
+  // Try public APIs first (TheSportsDB, Sofascore)
+  const publicFixtures = await getLiveFixturesPublic();
+  if (publicFixtures.length > 0) {
+    return publicFixtures;
+  }
+
+  // Fallback to API Sports if public APIs fail
+  return await getLiveFixturesAPISports();
+};
+
+// Get live fixtures from API Sports (fallback)
+const getLiveFixturesAPISports = async (): Promise<SportsFixtureConfig[]> => {
   try {
     // Try API Sports first - using correct endpoint and header format
     // Use feature detection for AbortController (older browsers)
@@ -149,8 +169,20 @@ export const getLiveFixturesAPI = async (): Promise<SportsFixtureConfig[]> => {
   return [];
 };
 
-// Get upcoming fixtures from API Sports
+// Get upcoming fixtures - use public APIs first
 export const getUpcomingFixturesAPI = async (): Promise<SportsFixtureConfig[]> => {
+  // Try public APIs first (TheSportsDB, Sofascore)
+  const publicFixtures = await getUpcomingFixturesPublic();
+  if (publicFixtures.length > 0) {
+    return publicFixtures;
+  }
+
+  // Fallback to API Sports if public APIs fail
+  return await getUpcomingFixturesAPISports();
+};
+
+// Get upcoming fixtures from API Sports (fallback)
+const getUpcomingFixturesAPISports = async (): Promise<SportsFixtureConfig[]> => {
   try {
     // Get today and next 7 days
     const dates: string[] = [];
@@ -330,30 +362,16 @@ const getLeagueIdFromName = (leagueName: string): string => {
   return "epl"; // Default
 };
 
-// Get live scores for scoreboard
+// Get live scores for scoreboard - use public APIs
 export const getLiveScores = async (): Promise<SportsFixtureConfig[]> => {
-  return await getLiveFixturesAPI();
+  return await getLiveScoresPublic();
 };
 
-// Auto-refresh live scores every 30 seconds
+// Auto-refresh live scores every 30 seconds (faster updates)
 export const subscribeToLiveScores = (
   callback: (fixtures: SportsFixtureConfig[]) => void,
-  interval: number = 30000
+  interval: number = 30000 // 30 seconds for faster updates
 ): (() => void) => {
-  let isActive = true;
-
-  const fetchAndUpdate = async () => {
-    if (!isActive) return;
-    const fixtures = await getLiveScores();
-    callback(fixtures);
-  };
-
-  fetchAndUpdate(); // Initial fetch
-  const intervalId = setInterval(fetchAndUpdate, interval);
-
-  return () => {
-    isActive = false;
-    clearInterval(intervalId);
-  };
+  return subscribeToLiveScoresPublic(callback, interval);
 };
 

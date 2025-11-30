@@ -150,6 +150,7 @@ export interface SportsFixtureConfig {
   awayScore?: number;
   minute?: string;
   isLive?: boolean;
+  matchId?: string; // For linking to sportslive.run
 }
 
 export const SPORTS_LEAGUES: SportsLeagueConfig[] = [

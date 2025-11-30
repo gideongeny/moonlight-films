@@ -143,7 +143,10 @@ const UpcomingCalendar: FC = () => {
             {selectedFixtures.map((fixture) => (
               <a
                 key={fixture.id}
-                href="https://sportslive.run/live?utm_source=MB_Website&sportType=football"
+                href={fixture.matchId 
+              ? `https://sportslive.run/matches/${fixture.matchId}?utm_source=MB_Website&sportType=football`
+              : `https://sportslive.run/live?utm_source=MB_Website&sportType=football&home=${encodeURIComponent(fixture.homeTeam)}&away=${encodeURIComponent(fixture.awayTeam)}`
+            }
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block bg-gray-900/50 rounded-lg border border-gray-700 hover:border-amber-400/50 hover:bg-gray-900 transition p-4 group"
