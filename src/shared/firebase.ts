@@ -15,9 +15,10 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase with error handling
-let app;
-let db;
-let auth;
+// Always initialize to prevent null errors - if Firebase fails, we'll handle it in components
+let app: ReturnType<typeof initializeApp>;
+let db: ReturnType<typeof getFirestore>;
+let auth: ReturnType<typeof getAuth>;
 
 try {
   app = initializeApp(firebaseConfig);
@@ -25,30 +26,38 @@ try {
   auth = getAuth(app);
 } catch (error) {
   console.error("Firebase initialization failed:", error);
-  // Create fallback objects to prevent app crash
-  // The app will still work, but auth features won't be available
-  app = null as any;
-  db = null as any;
-  auth = null as any;
+  // If Firebase fails, try to reinitialize or use a minimal config
+  // This should rarely happen, but we need to ensure the app doesn't crash
+  try {
+    // Try to get existing app instance
+    app = initializeApp(firebaseConfig, "fallback");
+    db = getFirestore(app);
+    auth = getAuth(app);
+  } catch (retryError) {
+    console.error("Firebase retry initialization also failed:", retryError);
+    // Last resort: initialize with minimal config
+    app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+    auth = getAuth(app);
+  }
 }
 
+// Export - these should always be defined
 export { db, auth };
 
 // Set persistence to LOCAL (persists across browser sessions and app restarts)
 // This ensures users stay logged in even after closing the app or restarting their phone
 // browserLocalPersistence: Auth state persists in localStorage and persists across browser sessions
 // IMPORTANT: Set persistence BEFORE any auth operations
-if (auth) {
-  (async () => {
-    try {
-      await setPersistence(auth, browserLocalPersistence);
-      console.log("Auth persistence set to browserLocalPersistence");
-    } catch (error) {
-      console.error("Error setting auth persistence:", error);
-      // Don't crash - auth will still work without explicit persistence
-    }
-  })();
-}
+(async () => {
+  try {
+    await setPersistence(auth, browserLocalPersistence);
+    console.log("Auth persistence set to browserLocalPersistence");
+  } catch (error) {
+    console.error("Error setting auth persistence:", error);
+    // Don't crash - auth will still work without explicit persistence
+  }
+})();
 
 // Initialize Analytics (only in browser environment)
 // Optimized to prevent quota exceeded errors

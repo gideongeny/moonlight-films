@@ -32,13 +32,7 @@ function App() {
   const [isSignedIn, setIsSignedIn] = useLocalStorage("isSignedIn", false);
 
   useEffect(() => {
-    // Check if Firebase auth is available
-    if (!auth) {
-      console.warn("Firebase auth not available. Auth features disabled.");
-      return;
-    }
-
-    let unSubDoc: () => void | undefined;
+    let unSubDoc: (() => void) | undefined;
     
     // This listener automatically restores the user session when the app loads
     // Firebase Auth persistence ensures the user stays logged in across app restarts
