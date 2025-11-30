@@ -60,6 +60,12 @@ try {
 
   root.render(
     <ErrorBoundary
+      onError={(error, errorInfo) => {
+        // Log detailed error information for debugging
+        console.error("Application Error:", error);
+        console.error("Error Info:", errorInfo);
+        // You can also send this to an error tracking service
+      }}
       fallback={
         <div style={{
           minHeight: "100vh",
@@ -74,6 +80,9 @@ try {
         }}>
           <h1 style={{ fontSize: "2rem", marginBottom: "1rem" }}>Something went wrong</h1>
           <p style={{ marginBottom: "1rem" }}>The application failed to load. Please refresh the page.</p>
+          <p style={{ marginBottom: "1rem", fontSize: "0.875rem", color: "#94a3b8" }}>
+            If this persists, check the browser console (F12) for error details.
+          </p>
           <button
             onClick={() => window.location.reload()}
             style={{
@@ -83,7 +92,8 @@ try {
               border: "none",
               borderRadius: "5px",
               cursor: "pointer",
-              fontSize: "1rem"
+              fontSize: "1rem",
+              marginTop: "1rem"
             }}
           >
             Refresh Page
