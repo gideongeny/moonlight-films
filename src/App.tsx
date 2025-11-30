@@ -1,6 +1,6 @@
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, onSnapshot } from "firebase/firestore";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { Analytics } from '@vercel/analytics/react';
 
@@ -26,13 +26,47 @@ import Disclaimer from "./pages/Disclaimer";
 import { auth, db } from "./shared/firebase";
 import { useAppDispatch } from "./store/hooks";
 import { setCurrentUser } from "./store/slice/authSlice";
-import { useLocalStorage } from "@uidotdev/usehooks";
 
 function App() {
   const location = useLocation();
   const dispatch = useAppDispatch();
 
-  const [isSignedIn, setIsSignedIn] = useLocalStorage("isSignedIn", false);
+  // Custom localStorage hook that handles JSON parsing errors gracefully
+  const getInitialSignedIn = (): boolean => {
+    try {
+      if (typeof window === "undefined") return false;
+      const stored = localStorage.getItem("isSignedIn");
+      if (!stored) return false;
+      
+      // Try to parse as JSON first
+      try {
+        return JSON.parse(stored) === true;
+      } catch {
+        // If JSON parse fails, check if it's a plain string
+        if (stored === "true") return true;
+        if (stored === "false") return false;
+        // If invalid, clear it and return default
+        localStorage.removeItem("isSignedIn");
+      }
+    } catch (error) {
+      console.warn("Error reading isSignedIn from localStorage:", error);
+      try {
+        localStorage.removeItem("isSignedIn");
+      } catch {}
+    }
+    return false;
+  };
+  
+  const [isSignedIn, setIsSignedIn] = useState<boolean>(() => getInitialSignedIn());
+  
+  // Sync to localStorage when isSignedIn changes
+  useEffect(() => {
+    try {
+      localStorage.setItem("isSignedIn", JSON.stringify(isSignedIn));
+    } catch (error) {
+      console.warn("Error saving isSignedIn to localStorage:", error);
+    }
+  }, [isSignedIn]);
 
   useEffect(() => {
     let unSubDoc: (() => void) | undefined;

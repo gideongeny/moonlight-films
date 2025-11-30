@@ -1,5 +1,4 @@
-import { useLocalStorage } from "@uidotdev/usehooks";
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link } from "react-router-dom";
@@ -36,7 +35,40 @@ const Home: FC = () => {
 
   ///////////////////////////////////////////////////////////////////////////////////
   // WAY 2: USE useLocalStorage from @uidotdev/usehooks
-  const [currentTab, setCurrentTab] = useLocalStorage("currentTab", "tv");
+  // Wrap in try-catch to handle invalid JSON in localStorage
+  const getInitialTab = () => {
+    try {
+      const stored = localStorage.getItem("currentTab");
+      if (stored) {
+        // Try to parse as JSON first
+        try {
+          const parsed = JSON.parse(stored);
+          if (parsed === "movie" || parsed === "tv" || parsed === "sports") {
+            return parsed;
+          }
+        } catch {
+          // If not JSON, check if it's a plain string
+          if (stored === "movie" || stored === "tv" || stored === "sports") {
+            return stored;
+          }
+        }
+      }
+    } catch (error) {
+      console.warn("Error reading currentTab from localStorage:", error);
+    }
+    return "tv";
+  };
+  
+  const [currentTab, setCurrentTab] = useState<"movie" | "tv" | "sports">(() => getInitialTab());
+  
+  // Sync to localStorage when currentTab changes
+  useEffect(() => {
+    try {
+      localStorage.setItem("currentTab", JSON.stringify(currentTab));
+    } catch (error) {
+      console.warn("Error saving currentTab to localStorage:", error);
+    }
+  }, [currentTab]);
   
   const handleTabChange = (tab: "movie" | "tv" | "sports") => {
     if (tab === "sports") {
