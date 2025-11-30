@@ -15,10 +15,10 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase with error handling
-// Always initialize to prevent null errors - if Firebase fails, we'll handle it in components
-let app: ReturnType<typeof initializeApp> | null = null;
-let db: ReturnType<typeof getFirestore> | null = null;
-let auth: ReturnType<typeof getAuth> | null = null;
+// Always initialize to prevent null errors - multiple fallbacks ensure success
+let app: ReturnType<typeof initializeApp>;
+let db: ReturnType<typeof getFirestore>;
+let auth: ReturnType<typeof getAuth>;
 
 // Initialize Firebase - ensure it always succeeds
 try {
@@ -64,16 +64,18 @@ try {
         auth = getAuth(app);
       } catch (lastError) {
         console.error("Firebase initialization completely failed:", lastError);
-        // Don't throw - let the app continue without Firebase
-        // Components should handle Firebase errors gracefully
-        // This prevents the app from crashing on initialization
+        // Final attempt - this should always work unless there's a critical configuration issue
+        // If this fails, the app will crash, but this is better than silent failures
+        app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        auth = getAuth(app);
       }
     }
   }
 }
 
-// Export - these may be null if Firebase initialization fails
-// Components should check for null before using
+// Export - these should always be defined after initialization
+// Multiple fallback attempts ensure they're always initialized
 export { db, auth };
 
 // Set persistence to LOCAL (persists across browser sessions and app restarts)
@@ -83,7 +85,7 @@ export { db, auth };
 // Use setTimeout to ensure auth is initialized before setting persistence
 setTimeout(async () => {
   try {
-    if (auth !== null && auth !== undefined) {
+    if (auth) {
       await setPersistence(auth, browserLocalPersistence);
       console.log("Auth persistence set to browserLocalPersistence");
     }
@@ -96,13 +98,13 @@ setTimeout(async () => {
 // Initialize Analytics (only in browser environment)
 // Optimized to prevent quota exceeded errors
 let analytics: ReturnType<typeof getAnalytics> | undefined;
-if (globalThis.window !== undefined && app !== null) {
+if (globalThis.window !== undefined) {
   try {
     // Only initialize analytics if not in development and user hasn't opted out
     const isDevelopment = process.env.NODE_ENV === 'development';
     const analyticsDisabled = localStorage.getItem('analytics_disabled') === 'true';
     
-    if (!isDevelopment && !analyticsDisabled && app !== null) {
+    if (!isDevelopment && !analyticsDisabled && app) {
       // getAnalytics only accepts the app instance as argument
       // Analytics configuration is done via Firebase Console, not in code
       analytics = getAnalytics(app);
