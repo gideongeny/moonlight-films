@@ -354,7 +354,7 @@ export class DownloadService {
         progress.message = "Opened download page as fallback";
         onProgress?.(progress);
       } catch (fallbackError) {
-        throw error;
+      throw error;
       }
     }
   }
@@ -458,15 +458,24 @@ export class DownloadService {
           
           <div class="video-container" id="videoContainer">
             <iframe id="videoFrame" allowfullscreen></iframe>
+            <div class="video-overlay" id="videoOverlay" style="display: none;">
+              <button class="big-download-btn" onclick="triggerDownload()" id="downloadBtn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span>Download Video</span>
+              </button>
+            </div>
           </div>
           
           <div class="manual-download" id="manualDownload" style="display: none;">
-            <h3>Manual Download</h3>
-            <p>If automatic download doesn't work, use these options:</p>
+            <h3>Download Options</h3>
             <button class="download-btn" onclick="tryDownload()">Try Download Again</button>
-            <button class="download-btn" onclick="showVideo()">Show Video Player</button>
+            <button class="download-btn" onclick="showVideoWithButton()">Show Video Player</button>
             <p style="margin-top: 15px; font-size: 14px; color: #888;">
-              Right-click on the video player and select "Save video as..." to download
+              Click the "Download Video" button above the video player to download
             </p>
           </div>
         </div>
@@ -486,8 +495,72 @@ export class DownloadService {
           }
           
           function showVideo() {
-            document.getElementById('videoContainer').style.display = 'block';
+            const container = document.getElementById('videoContainer');
+            const overlay = document.getElementById('videoOverlay');
+            container.style.display = 'block';
             document.getElementById('videoFrame').src = sources[currentSourceIndex];
+            // Show download button after video loads
+            setTimeout(() => {
+              if (overlay) overlay.style.display = 'flex';
+            }, 2000);
+          }
+          
+          function showVideoWithButton() {
+            showVideo();
+            document.getElementById('manualDownload').style.display = 'none';
+          }
+          
+          function triggerDownload() {
+            const iframe = document.getElementById('videoFrame');
+            try {
+              // Try to access iframe content
+              const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+              if (iframeDoc) {
+                const video = iframeDoc.querySelector('video');
+                if (video && video.src) {
+                  // Create download link
+                  const link = document.createElement('a');
+                  link.href = video.src;
+                  link.download = filename;
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                  updateStatus('✓ Download started!');
+                  return;
+                }
+              }
+            } catch (e) {
+              console.log('Direct access blocked, trying alternative method');
+            }
+            
+            // Alternative: Try to get video URL from iframe src
+            const iframeSrc = iframe.src;
+            if (iframeSrc) {
+              // Try to extract video URL from common embed patterns
+              fetch(iframeSrc)
+                .then(response => response.text())
+                .then(html => {
+                  const parser = new DOMParser();
+                  const doc = parser.parseFromString(html, 'text/html');
+                  const video = doc.querySelector('video');
+                  if (video && video.src) {
+                    const link = document.createElement('a');
+                    link.href = video.src;
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    updateStatus('✓ Download started!');
+                  } else {
+                    updateStatus('Could not extract video URL. Please try right-clicking on the video.');
+                  }
+                })
+                .catch(() => {
+                  updateStatus('Please right-click on the video player and select "Save video as..."');
+                });
+            } else {
+              updateStatus('Please right-click on the video player and select "Save video as..."');
+            }
           }
           
           async function tryDirectDownload() {
@@ -659,6 +732,46 @@ export class DownloadService {
             display: inline-block; 
           }
           .watch-btn:hover { background: #059669; }
+          .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            border-radius: 8px;
+          }
+          .big-download-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+            transition: all 0.3s ease;
+          }
+          .big-download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(59, 130, 246, 0.6);
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+          }
+          .big-download-btn:active {
+            transform: translateY(0);
+          }
+          .big-download-btn svg {
+            width: 24px;
+            height: 24px;
+          }
           .instructions { 
             background: #374151; 
             padding: 15px; 

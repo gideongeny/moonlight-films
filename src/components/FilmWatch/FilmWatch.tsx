@@ -514,36 +514,8 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
             )}
             {detail && (
               <>
-                {/* Video Controls Overlay */}
-                <div className="absolute top-4 right-4 z-10 flex flex-col gap-2 items-end">
-                  {/* Download Button - Prominent */}
-                  {downloadInfo && (
-                    <button
-                      onClick={async () => {
-                        try {
-                          const { downloadService } = await import("../../services/download");
-                          await downloadService.downloadMovie(downloadInfo, (progress) => {
-                            if (progress.status === 'completed') {
-                              console.log('Download started!');
-                            }
-                          });
-                        } catch (error) {
-                          console.error('Download failed:', error);
-                          const downloadSection = document.getElementById('download-section');
-                          if (downloadSection) {
-                            downloadSection.scrollIntoView({ behavior: 'smooth' });
-                          }
-                        }
-                      }}
-                      className="bg-primary hover:bg-primary/90 text-white px-4 py-2.5 rounded-lg transition-all flex items-center gap-2 font-medium shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95"
-                      title="Download video directly to your device"
-                    >
-                      <AiOutlineDownload size={18} />
-                      <span className="hidden sm:inline">Download</span>
-                    </button>
-                  )}
-                  
-                  {/* Manual source selector */}
+                {/* Manual source selector */}
+                <div className="absolute top-4 right-4 z-10 flex gap-2">
                   <select
                     value={currentSourceIndex}
                     onChange={(e) => {
@@ -559,6 +531,23 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
                       </option>
                     ))}
                   </select>
+                  
+                  {/* Download Button */}
+                  {downloadInfo && (
+                    <button
+                      onClick={() => {
+                        // Scroll to download section
+                        const downloadSection = document.getElementById('download-section');
+                        if (downloadSection) {
+                          downloadSection.scrollIntoView({ behavior: 'smooth' });
+                        }
+                      }}
+                      className="bg-black/80 border border-primary text-primary hover:bg-primary hover:text-white text-xs px-3 py-2 rounded transition-colors flex items-center gap-1"
+                    >
+                      <AiOutlineDownload size={14} />
+                      Download
+                    </button>
+                  )}
                 </div>
                 
                 <iframe

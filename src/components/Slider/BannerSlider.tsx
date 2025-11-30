@@ -23,7 +23,7 @@ const BannerSlider: FC<BannerSliderProps> = ({
   const { isMobile } = useCurrentViewportView();
 
   return (
-    <div className="mt-6 relative h-0 md:pb-[45%] pb-[55%] tw-banner-slider">
+    <div className="mt-6 relative h-0 md:pb-[45%] pb-[55%] tw-banner-slider bg-dark-lighten rounded-lg overflow-hidden">
       {isLoadingBanner ? (
         <Skeleton className="absolute top-0 left-0 w-full h-full !rounded-lg" />
       ) : (
@@ -48,6 +48,12 @@ const BannerSlider: FC<BannerSliderProps> = ({
                   src={resizeImage(film.backdrop_path, "w1280")}
                   alt="Backdrop image"
                   effect="blur"
+                  className="w-full h-full object-cover"
+                  style={{ display: 'block' }}
+                  onError={(e) => {
+                    // Fallback if image fails to load
+                    (e.target as HTMLImageElement).style.backgroundColor = '#1C1C1E';
+                  }}
                 />
 
                 <div className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none tw-black-backdrop group-hover:bg-[#00000026] transition duration-700"></div>
