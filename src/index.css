@@ -5,8 +5,16 @@
 /* Optimized Google Fonts loading - using font-display: swap to prevent render blocking */
 @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap");
 
+/* Ensure background is set on html and body for all devices, especially mobile */
+html {
+  background-color: #1C1C1E !important;
+  min-height: 100vh;
+}
+
 body {
   @apply bg-dark text-gray-lighten font-roboto;
+  background-color: #1C1C1E !important;
+  min-height: 100vh;
 }
 
 /* to prevent horizontal scrolling in small viewport width, I need to set the property overflow-x-hidden on both the body and html element */
@@ -16,6 +24,13 @@ body {
 body,
 :root {
   @apply overflow-x-hidden md:overflow-x-visible;
+  background-color: #1C1C1E !important;
+}
+
+/* Fix for mobile devices - ensure root element has background */
+#root {
+  background-color: #1C1C1E !important;
+  min-height: 100vh;
 }
 
 /* CUSTOM UTILITIES */
