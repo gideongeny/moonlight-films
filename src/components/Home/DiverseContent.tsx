@@ -79,119 +79,158 @@ const DiverseContent: React.FC<DiverseContentProps> = ({ currentTab }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
+    
     const fetchDiverseContent = async () => {
       try {
         setIsLoading(true);
         
-        // Priority 1: Load most important content first (trending, popular genres)
-        const priorityContent = await Promise.allSettled([
-          getTrendingNow(),
-          getHorrorMovies(),
-          getActionMovies(),
-          getComedyMovies(),
-          getDramaMovies(),
+        // Priority 1: Load ONLY trending first (fastest to show content)
+        const trendingResult = await Promise.race([
+          getTrendingNow().catch(() => []),
+          new Promise<Item[]>((resolve) => setTimeout(() => resolve([]), 3000)), // 3s timeout
         ]);
+        
+        if (isMounted) {
+          setTrendingAll(Array.isArray(trendingResult) ? trendingResult : []);
+          setIsLoading(false); // Show content immediately after trending loads
+        }
 
-        // Set priority content immediately
-        setTrendingAll(priorityContent[0].status === "fulfilled" ? priorityContent[0].value : []);
-        setHorrorMovies(priorityContent[1].status === "fulfilled" ? priorityContent[1].value : []);
-        setActionMovies(priorityContent[2].status === "fulfilled" ? priorityContent[2].value : []);
-        setComedyMovies(priorityContent[3].status === "fulfilled" ? priorityContent[3].value : []);
-        setDramaMovies(priorityContent[4].status === "fulfilled" ? priorityContent[4].value : []);
-        
-        setIsLoading(false); // Show content as soon as priority is loaded
+        // Priority 2: Load top 3 genres in parallel (non-blocking)
+        Promise.allSettled([
+          getHorrorMovies().catch(() => []),
+          getActionMovies().catch(() => []),
+          getComedyMovies().catch(() => []),
+        ]).then((results) => {
+          if (!isMounted) return;
+          setHorrorMovies(results[0].status === "fulfilled" ? results[0].value : []);
+          setActionMovies(results[1].status === "fulfilled" ? results[1].value : []);
+          setComedyMovies(results[2].status === "fulfilled" ? results[2].value : []);
+        });
 
-        // Priority 2: Load other genres in background
-        const genreContent = await Promise.allSettled([
-          getThrillerMovies(),
-          getRomanceMovies(),
-          getSciFiMovies(),
-          getAnimationMovies(),
-          getDocumentaryMovies(),
-          getCrimeMovies(),
-          getAdventureMovies(),
-          getFantasyMovies(),
-        ]);
+        // Priority 3: Load remaining genres in background (delayed by 2 seconds)
+        setTimeout(() => {
+          if (!isMounted) return;
+          Promise.allSettled([
+            getDramaMovies().catch(() => []),
+            getThrillerMovies().catch(() => []),
+            getRomanceMovies().catch(() => []),
+            getSciFiMovies().catch(() => []),
+          ]).then((results) => {
+            if (!isMounted) return;
+            setDramaMovies(results[0].status === "fulfilled" ? results[0].value : []);
+            setThrillerMovies(results[1].status === "fulfilled" ? results[1].value : []);
+            setRomanceMovies(results[2].status === "fulfilled" ? results[2].value : []);
+            setSciFiMovies(results[3].status === "fulfilled" ? results[3].value : []);
+          });
+        }, 2000);
 
-        setThrillerMovies(genreContent[0].status === "fulfilled" ? genreContent[0].value : []);
-        setRomanceMovies(genreContent[1].status === "fulfilled" ? genreContent[1].value : []);
-        setSciFiMovies(genreContent[2].status === "fulfilled" ? genreContent[2].value : []);
-        setAnimationMovies(genreContent[3].status === "fulfilled" ? genreContent[3].value : []);
-        setDocumentaryMovies(genreContent[4].status === "fulfilled" ? genreContent[4].value : []);
-        setCrimeMovies(genreContent[5].status === "fulfilled" ? genreContent[5].value : []);
-        setAdventureMovies(genreContent[6].status === "fulfilled" ? genreContent[6].value : []);
-        setFantasyMovies(genreContent[7].status === "fulfilled" ? genreContent[7].value : []);
+        // Priority 4: Load other genres in background (delayed by 4 seconds)
+        setTimeout(() => {
+          if (!isMounted) return;
+          Promise.allSettled([
+            getAnimationMovies().catch(() => []),
+            getDocumentaryMovies().catch(() => []),
+            getCrimeMovies().catch(() => []),
+            getAdventureMovies().catch(() => []),
+            getFantasyMovies().catch(() => []),
+          ]).then((results) => {
+            if (!isMounted) return;
+            setAnimationMovies(results[0].status === "fulfilled" ? results[0].value : []);
+            setDocumentaryMovies(results[1].status === "fulfilled" ? results[1].value : []);
+            setCrimeMovies(results[2].status === "fulfilled" ? results[2].value : []);
+            setAdventureMovies(results[3].status === "fulfilled" ? results[3].value : []);
+            setFantasyMovies(results[4].status === "fulfilled" ? results[4].value : []);
+          });
+        }, 4000);
 
-        // Priority 3: Load regional content in background (non-blocking) - batched for better performance
-        // Load in smaller batches to prevent overwhelming the API
-        const batch1 = Promise.allSettled([
-          getAfricanContent(),
-          getAsianContent(),
-          getLatinAmericanContent(),
-          getMiddleEasternContent(),
-          getNollywoodContent(),
-          getBollywoodContent(),
-        ]);
-        
-        const batch2 = Promise.allSettled([
-          getKoreanContent(),
-          getJapaneseContent(),
-          getChineseContent(),
-          getEastAfricanContent(),
-          getSouthAfricanContent(),
-          getSoutheastAsianContent(),
-        ]);
-        
-        const batch3 = Promise.allSettled([
-          getFilipinoContent(),
-          getBrazilianContent(),
-          getMexicanContent(),
-          getKenyanTVShows(),
-          getNigerianTVShows(),
-          getAfricanTVContent(),
-        ]);
-        
-        const batch4 = Promise.allSettled([
-          getEnhancedNollywoodContent(),
-          getEnhancedKenyanContent(),
-        ]);
-        
-        // Process batches sequentially to reduce API load
-        Promise.all([batch1, batch2, batch3, batch4]).then(([results1, results2, results3, results4]) => {
-          const results = [...results1, ...results2, ...results3, ...results4];
-          setAfricanContent(results[0].status === "fulfilled" ? results[0].value : []);
-          setAsianContent(results[1].status === "fulfilled" ? results[1].value : []);
-          setLatinAmericanContent(results[2].status === "fulfilled" ? results[2].value : []);
-          setMiddleEasternContent(results[3].status === "fulfilled" ? results[3].value : []);
-          setNollywoodContent(results[4].status === "fulfilled" ? results[4].value : []);
-          setBollywoodContent(results[5].status === "fulfilled" ? results[5].value : []);
-          setKoreanContent(results[6].status === "fulfilled" ? results[6].value : []);
-          setJapaneseContent(results[7].status === "fulfilled" ? results[7].value : []);
-          setChineseContent(results[8].status === "fulfilled" ? results[8].value : []);
-          setEastAfricanContent(results[9].status === "fulfilled" ? results[9].value : []);
-          setSouthAfricanContent(results[10].status === "fulfilled" ? results[10].value : []);
-          setSoutheastAsianContent(results[11].status === "fulfilled" ? results[11].value : []);
-          setFilipinoContent(results[12].status === "fulfilled" ? results[12].value : []);
-          setBrazilianContent(results[13].status === "fulfilled" ? results[13].value : []);
-          setMexicanContent(results[14].status === "fulfilled" ? results[14].value : []);
-          setKenyanTVShows(results[15].status === "fulfilled" ? results[15].value : []);
-          setNigerianTVShows(results[16].status === "fulfilled" ? results[16].value : []);
-          setAfricanTVContent(results[17].status === "fulfilled" ? results[17].value : []);
-          setEnhancedNollywood(results[18].status === "fulfilled" ? results[18].value : []);
-          setEnhancedKenyan(results[19].status === "fulfilled" ? results[19].value : []);
-        }).catch(() => {}); // Silently fail for background loading
+        // Priority 5: Load ONLY top regional content (delayed by 6 seconds) - Reduced from 20 to 6 calls
+        setTimeout(() => {
+          if (!isMounted) return;
+          Promise.allSettled([
+            getAfricanContent().catch(() => []),
+            getAsianContent().catch(() => []),
+            getNollywoodContent().catch(() => []),
+            getBollywoodContent().catch(() => []),
+            getKoreanContent().catch(() => []),
+            getEnhancedNollywoodContent().catch(() => []),
+          ]).then((results) => {
+            if (!isMounted) return;
+            setAfricanContent(results[0].status === "fulfilled" ? results[0].value : []);
+            setAsianContent(results[1].status === "fulfilled" ? results[1].value : []);
+            setNollywoodContent(results[2].status === "fulfilled" ? results[2].value : []);
+            setBollywoodContent(results[3].status === "fulfilled" ? results[3].value : []);
+            setKoreanContent(results[4].status === "fulfilled" ? results[4].value : []);
+            setEnhancedNollywood(results[5].status === "fulfilled" ? results[5].value : []);
+          });
+        }, 6000);
+
+        // Priority 6: Load remaining regional content (delayed by 8 seconds) - Only if user scrolls
+        setTimeout(() => {
+          if (!isMounted) return;
+          Promise.allSettled([
+            getLatinAmericanContent().catch(() => []),
+            getMiddleEasternContent().catch(() => []),
+            getJapaneseContent().catch(() => []),
+            getChineseContent().catch(() => []),
+            getEastAfricanContent().catch(() => []),
+            getSouthAfricanContent().catch(() => []),
+          ]).then((results) => {
+            if (!isMounted) return;
+            setLatinAmericanContent(results[0].status === "fulfilled" ? results[0].value : []);
+            setMiddleEasternContent(results[1].status === "fulfilled" ? results[1].value : []);
+            setJapaneseContent(results[2].status === "fulfilled" ? results[2].value : []);
+            setChineseContent(results[3].status === "fulfilled" ? results[3].value : []);
+            setEastAfricanContent(results[4].status === "fulfilled" ? results[4].value : []);
+            setSouthAfricanContent(results[5].status === "fulfilled" ? results[5].value : []);
+          });
+        }, 8000);
+
+        // Priority 7: Load TV-specific and less common content (delayed by 10 seconds)
+        setTimeout(() => {
+          if (!isMounted) return;
+          Promise.allSettled([
+            getSoutheastAsianContent().catch(() => []),
+            getFilipinoContent().catch(() => []),
+            getBrazilianContent().catch(() => []),
+            getMexicanContent().catch(() => []),
+            getKenyanTVShows().catch(() => []),
+            getNigerianTVShows().catch(() => []),
+            getAfricanTVContent().catch(() => []),
+            getEnhancedKenyanContent().catch(() => []),
+          ]).then((results) => {
+            if (!isMounted) return;
+            setSoutheastAsianContent(results[0].status === "fulfilled" ? results[0].value : []);
+            setFilipinoContent(results[1].status === "fulfilled" ? results[1].value : []);
+            setBrazilianContent(results[2].status === "fulfilled" ? results[2].value : []);
+            setMexicanContent(results[3].status === "fulfilled" ? results[3].value : []);
+            setKenyanTVShows(results[4].status === "fulfilled" ? results[4].value : []);
+            setNigerianTVShows(results[5].status === "fulfilled" ? results[5].value : []);
+            setAfricanTVContent(results[6].status === "fulfilled" ? results[6].value : []);
+            setEnhancedKenyan(results[7].status === "fulfilled" ? results[7].value : []);
+          });
+        }, 10000);
         
       } catch (error) {
         console.error('Error fetching diverse content:', error);
-      } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
     fetchDiverseContent();
+    
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  if (isLoading) {
+  // Show minimal loading state - content loads progressively
+  const hasAnyContent = trendingAll.length > 0 || horrorMovies.length > 0 || 
+    actionMovies.length > 0 || comedyMovies.length > 0;
+  
+  if (isLoading && !hasAnyContent) {
     return (
       <div className="space-y-8 mt-8">
         <div className="text-center mb-8">
@@ -199,10 +238,11 @@ const DiverseContent: React.FC<DiverseContentProps> = ({ currentTab }) => {
             🌍 World Cinema
           </h2>
           <p className="text-gray-400 text-lg">
-            Loading diverse content from around the world...
+            Loading content...
           </p>
         </div>
-        {[...Array(10)].map((_, index) => (
+        {/* Show only 2 skeleton sections instead of 10 */}
+        {[...Array(2)].map((_, index) => (
           <div key={index}>
             <Skeleton className="h-8 w-48 mb-4" />
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">

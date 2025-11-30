@@ -56,9 +56,10 @@ export const getExploreMovie: (
   // Get origin_country filter if specified
   const originCountry = config.with_origin_country || (config as any).region;
   
-  // Enhanced: Fetch from multiple sources in parallel for better regional content
+  // Optimized: Fetch from fewer sources for faster loading
+  // Only use essential sources, skip heavy ones for initial load
   const fetchPromises = [
-    // Primary: TMDB discover
+    // Primary: TMDB discover (most reliable)
     axios.get("/discover/movie", {
       params: {
         ...config,
@@ -68,50 +69,26 @@ export const getExploreMovie: (
         // Ensure origin_country filtering is applied
         ...(originCountry && { with_origin_country: originCountry }),
       },
-      timeout: 5000, // Reduced timeout for faster loading
+      timeout: 4000, // Reduced timeout for faster loading
     }).catch(() => ({ data: { results: [] } })),
     
-    // Fallback: TMDB popular (always works) - only if discover fails
+    // Fallback: TMDB popular (fast fallback)
     axios.get("/movie/popular", {
       params: { page },
-      timeout: 4000, // Reduced timeout
+      timeout: 3000, // Reduced timeout
     }).catch(() => ({ data: { results: [] } })),
     
-    // Fallback: TMDB trending - only if discover fails
-    axios.get("/trending/movie/day", {
-      params: { page },
-      timeout: 4000, // Reduced timeout
-    }).catch(() => ({ data: { results: [] } })),
-    
-    // FZMovies content
-    genreId 
-      ? getFZContentByGenre(genreId, "movie", page).catch(() => [])
-      : Promise.resolve([]),
-    
-    // Additional API content
-    genreId
-      ? getAllAPIContentByGenre(genreId, "movie").catch(() => [])
-      : Promise.resolve([]),
-    
-    // Content sources (KissKH, Ailok, Googotv, FZMovies)
-    getAllSourceContent("movie", page).catch(() => []),
-    
-    // IMDB/OMDB content for better international coverage
-    searchIMDBContentEnhanced(
-      originCountry 
-        ? getSearchQueriesForRegion(originCountry, "movie")
-        : ["popular", "trending", "new", "latest"],
-      "movie"
-    ).catch(() => []),
-    
-    // Regional content sources if origin_country is specified
-    originCountry
-      ? Promise.all(
-          (typeof originCountry === 'string' ? originCountry.split('|') : [originCountry])
-            .slice(0, 3) // Limit to first 3 countries to avoid too many requests
-            .map(country => getFZContentByCountry(country, "movie", page).catch(() => []))
-        ).then(results => results.flat()).catch(() => [])
-      : Promise.resolve([]),
+    // Only load additional sources if region is specified (for World Cinema)
+    ...(originCountry ? [
+      // FZMovies content (only for regional content)
+      getFZContentByGenre(genreId || 0, "movie", page).catch(() => []),
+      // Regional content sources (limited to 2 countries max)
+      Promise.all(
+        (typeof originCountry === 'string' ? originCountry.split('|') : [originCountry])
+          .slice(0, 2) // Reduced from 3 to 2
+          .map(country => getFZContentByCountry(country, "movie", page).catch(() => []))
+      ).then(results => results.flat()).catch(() => []),
+    ] : []),
   ];
   
   const [tmdbData, popularData, trendingData, fzMovies, apiContent, sourceContent, imdbContent, regionalContent] = await Promise.all(fetchPromises);
@@ -219,9 +196,10 @@ export const getExploreTV: (
   // Get origin_country filter if specified
   const originCountry = config.with_origin_country || (config as any).region;
   
-  // Enhanced: Fetch from multiple sources in parallel for better regional content
+  // Optimized: Fetch from fewer sources for faster loading
+  // Only use essential sources, skip heavy ones for initial load
   const fetchPromises = [
-    // Primary: TMDB discover
+    // Primary: TMDB discover (most reliable)
     axios.get("/discover/tv", {
       params: {
         ...config,
@@ -231,50 +209,26 @@ export const getExploreTV: (
         // Ensure origin_country filtering is applied
         ...(originCountry && { with_origin_country: originCountry }),
       },
-      timeout: 5000, // Reduced timeout for faster loading
+      timeout: 4000, // Reduced timeout for faster loading
     }).catch(() => ({ data: { results: [] } })),
     
-    // Fallback: TMDB popular (always works) - only if discover fails
+    // Fallback: TMDB popular (fast fallback)
     axios.get("/tv/popular", {
       params: { page },
-      timeout: 4000, // Reduced timeout
+      timeout: 3000, // Reduced timeout
     }).catch(() => ({ data: { results: [] } })),
     
-    // Fallback: TMDB trending - only if discover fails
-    axios.get("/trending/tv/day", {
-      params: { page },
-      timeout: 4000, // Reduced timeout
-    }).catch(() => ({ data: { results: [] } })),
-    
-    // FZMovies content
-    genreId 
-      ? getFZContentByGenre(genreId, "tv", page).catch(() => [])
-      : Promise.resolve([]),
-    
-    // Additional API content
-    genreId
-      ? getAllAPIContentByGenre(genreId, "tv").catch(() => [])
-      : Promise.resolve([]),
-    
-    // Content sources (KissKH, Ailok, Googotv, FZMovies) - especially good for Asian content
-    getAllSourceContent("tv", page).catch(() => []),
-    
-    // IMDB/OMDB content for better international coverage
-    searchIMDBContentEnhanced(
-      originCountry 
-        ? getSearchQueriesForRegion(originCountry, "tv")
-        : ["popular", "trending", "new", "latest"],
-      "series"
-    ).catch(() => []),
-    
-    // Regional content sources if origin_country is specified
-    originCountry
-      ? Promise.all(
-          (typeof originCountry === 'string' ? originCountry.split('|') : [originCountry])
-            .slice(0, 3) // Limit to first 3 countries to avoid too many requests
-            .map(country => getFZContentByCountry(country, "tv", page).catch(() => []))
-        ).then(results => results.flat()).catch(() => [])
-      : Promise.resolve([]),
+    // Only load additional sources if region is specified (for World Cinema)
+    ...(originCountry ? [
+      // FZMovies content (only for regional content)
+      getFZContentByGenre(genreId || 0, "tv", page).catch(() => []),
+      // Regional content sources (limited to 2 countries max)
+      Promise.all(
+        (typeof originCountry === 'string' ? originCountry.split('|') : [originCountry])
+          .slice(0, 2) // Reduced from 3 to 2
+          .map(country => getFZContentByCountry(country, "tv", page).catch(() => []))
+      ).then(results => results.flat()).catch(() => []),
+    ] : []),
   ];
   
   const [tmdbData, popularData, trendingData, fzTV, apiContent, sourceContent, imdbContent, regionalContent] = await Promise.all(fetchPromises);
