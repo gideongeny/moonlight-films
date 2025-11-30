@@ -544,7 +544,6 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
                   )}
                   
                   {/* Manual source selector */}
-                  <div className="flex gap-2">
                   <select
                     value={currentSourceIndex}
                     onChange={(e) => {
@@ -560,7 +559,6 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
                       </option>
                     ))}
                   </select>
-                  </div>
                 </div>
                 
                 <iframe
