@@ -14,6 +14,7 @@ import DiverseNavigation from "../components/Common/DiverseNavigation";
 import DiverseContent from "../components/Home/DiverseContent";
 import LiveSports from "../components/Home/LiveSports";
 import LiveSportsTicker from "../components/Sports/LiveSportsTicker";
+import ErrorBoundary from "../components/Common/ErrorBoundary";
 import { useHomeData } from "../hooks/useHomeData";
 import { useAppSelector } from "../store/hooks";
 
@@ -149,10 +150,12 @@ const Home: FC = () => {
             />
           )}
 
-          {/* Live Sports Ticker (MovieBox.ph style) */}
-          <LiveSportsTicker />
+          {/* Live Sports Ticker (MovieBox.ph style) - Wrapped in ErrorBoundary */}
+          <ErrorBoundary fallback={null}>
+            <LiveSportsTicker />
+          </ErrorBoundary>
 
-          {/* Live & Upcoming Sports Section (MovieBox-style) */}
+          {/* Live & Upcoming Sports Section (MovieBox-style) - Already has ErrorBoundary */}
           <LiveSports />
 
           {/* Discover World navigation (moved from sidebar) */}

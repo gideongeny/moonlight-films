@@ -10,35 +10,75 @@ const LiveSportsTicker: FC = () => {
   const [liveFixtures, setLiveFixtures] = useState<SportsFixtureConfig[]>([]);
   const [upcomingFixtures, setUpcomingFixtures] = useState<SportsFixtureConfig[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
+    let unsubscribe: (() => void) | null = null;
+    let timeoutId: NodeJS.Timeout | null = null;
+
     const fetchInitial = async () => {
+      if (!isMounted) return;
+      
       setIsLoading(true);
+      setHasError(false);
+      
       try {
-        const [live, upcoming] = await Promise.all([
-          getLiveScores(),
-          getUpcomingFixturesAPI(),
+        // Add timeout to prevent hanging on iPhone
+        const fetchPromise = Promise.all([
+          getLiveScores().catch(() => []),
+          getUpcomingFixturesAPI().catch(() => []),
         ]);
-        setLiveFixtures(live.slice(0, 10));
-        setUpcomingFixtures(upcoming.slice(0, 10));
+        
+        timeoutId = setTimeout(() => {
+          if (isMounted) {
+            setIsLoading(false);
+            setHasError(true);
+          }
+        }, 10000); // 10 second timeout
+        
+        const [live, upcoming] = await fetchPromise;
+        
+        if (timeoutId) clearTimeout(timeoutId);
+        
+        if (isMounted) {
+          setLiveFixtures(Array.isArray(live) ? live.slice(0, 10) : []);
+          setUpcomingFixtures(Array.isArray(upcoming) ? upcoming.slice(0, 10) : []);
+          setIsLoading(false);
+        }
       } catch (error) {
         console.error("Error fetching fixtures:", error);
-      } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setHasError(true);
+          setIsLoading(false);
+        }
       }
     };
 
     fetchInitial();
 
-    // Subscribe to live score updates
-    const unsubscribe = subscribeToLiveScores((fixtures) => {
-      setLiveFixtures(fixtures.slice(0, 10));
-    }, 30000); // Update every 30 seconds
+    // Subscribe to live score updates with error handling
+    try {
+      unsubscribe = subscribeToLiveScores((fixtures) => {
+        if (isMounted && Array.isArray(fixtures)) {
+          setLiveFixtures(fixtures.slice(0, 10));
+        }
+      }, 30000);
+    } catch (error) {
+      console.error("Error subscribing to live scores:", error);
+    }
 
     return () => {
-      unsubscribe();
+      isMounted = false;
+      if (unsubscribe) unsubscribe();
+      if (timeoutId) clearTimeout(timeoutId);
     };
   }, []);
+
+  // Silent fail if error - don't break the page
+  if (hasError) {
+    return null;
+  }
 
   if (isLoading) {
     return (
@@ -51,7 +91,7 @@ const LiveSportsTicker: FC = () => {
     );
   }
 
-  const allFixtures = [...liveFixtures, ...upcomingFixtures];
+  const allFixtures = [...(Array.isArray(liveFixtures) ? liveFixtures : []), ...(Array.isArray(upcomingFixtures) ? upcomingFixtures : [])];
 
   if (allFixtures.length === 0) {
     return null;

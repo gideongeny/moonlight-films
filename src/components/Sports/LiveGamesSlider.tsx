@@ -16,30 +16,60 @@ const LiveGamesSlider: FC<LiveGamesSliderProps> = ({ type, title }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
+    let isMounted = true;
+    let intervalId: NodeJS.Timeout | null = null;
+    let timeoutId: NodeJS.Timeout | null = null;
+
     const fetchFixtures = async () => {
+      if (!isMounted) return;
+      
       setIsLoading(true);
       try {
+        // Add timeout to prevent hanging on iPhone
+        timeoutId = setTimeout(() => {
+          if (isMounted) {
+            setIsLoading(false);
+          }
+        }, 10000); // 10 second timeout
+
+        let result: SportsFixtureConfig[] = [];
         if (type === "live") {
-          const live = await getLiveScores();
-          setFixtures(live.slice(0, 20));
+          result = await getLiveScores().catch(() => []);
         } else {
-          const upcoming = await getUpcomingFixturesAPI();
-          setFixtures(upcoming.slice(0, 20));
+          result = await getUpcomingFixturesAPI().catch(() => []);
+        }
+        
+        if (timeoutId) clearTimeout(timeoutId);
+        
+        if (isMounted && Array.isArray(result)) {
+          setFixtures(result.slice(0, 20));
+          setIsLoading(false);
         }
       } catch (error) {
         console.error("Error fetching fixtures:", error);
-      } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+          setFixtures([]); // Set empty array on error
+        }
       }
     };
 
     fetchFixtures();
     
-    // Refresh every 30 seconds for live games
+    // Refresh every 30 seconds for live games (only if component is still mounted)
     if (type === "live") {
-      const interval = setInterval(fetchFixtures, 30000);
-      return () => clearInterval(interval);
+      intervalId = setInterval(() => {
+        if (isMounted) {
+          fetchFixtures();
+        }
+      }, 30000);
     }
+
+    return () => {
+      isMounted = false;
+      if (intervalId) clearInterval(intervalId);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, [type]);
 
   useEffect(() => {

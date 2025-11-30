@@ -33,13 +33,20 @@ export const getTeamLogo = async (teamName: string): Promise<string | null> => {
 export const getLiveFixturesAPI = async (): Promise<SportsFixtureConfig[]> => {
   try {
     // Try API Sports first - using correct endpoint and header format
+    // Add AbortController for better timeout handling on iPhone
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+    
     const response = await axios.get(`${API_SPORTS_BASE}/fixtures`, {
       params: { live: "all" },
       headers: {
         "x-apisports-key": API_SPORTS_KEY,
       },
-      timeout: 15000,
+      timeout: 8000,
+      signal: controller.signal,
     });
+    
+    clearTimeout(timeoutId);
 
     console.log("API Sports live fixtures response:", response.data);
 
@@ -66,12 +73,14 @@ export const getLiveFixturesAPI = async (): Promise<SportsFixtureConfig[]> => {
       console.warn("API Sports returned empty or invalid response");
     }
   } catch (error: any) {
-    console.error("API Sports error details:", {
-      message: error?.message,
-      status: error?.response?.status,
-      data: error?.response?.data,
-      headers: error?.response?.headers,
-    });
+    // Silent fail - don't log errors that might break iPhone rendering
+    if (error?.name === 'AbortError' || error?.code === 'ECONNABORTED') {
+      console.log("API Sports request timeout");
+    } else {
+      console.log("API Sports error:", error?.message || "Unknown error");
+    }
+    // Return empty array instead of throwing
+    return [];
   }
 
   // Fallback to TheSportsDB
@@ -147,16 +156,22 @@ export const getUpcomingFixturesAPI = async (): Promise<SportsFixtureConfig[]> =
 
     const allFixtures: SportsFixtureConfig[] = [];
     
-    // Fetch from API Sports for each date
-    for (const dateStr of dates) {
+    // Fetch from API Sports for each date (limit to first 3 dates to avoid timeout on iPhone)
+    for (const dateStr of dates.slice(0, 3)) {
       try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        
         const response = await axios.get(`${API_SPORTS_BASE}/fixtures`, {
           params: { date: dateStr },
           headers: {
             "x-apisports-key": API_SPORTS_KEY,
           },
-          timeout: 15000,
+          timeout: 8000,
+          signal: controller.signal,
         });
+        
+        clearTimeout(timeoutId);
 
         if (response.data?.response && Array.isArray(response.data.response)) {
           // Filter for upcoming events (not live, not finished)
@@ -189,7 +204,10 @@ export const getUpcomingFixturesAPI = async (): Promise<SportsFixtureConfig[]> =
           }
         }
       } catch (e: any) {
-        console.warn(`Error fetching fixtures for ${dateStr}:`, e?.message);
+        // Silent fail - don't log errors that might break iPhone
+        if (e?.name !== 'AbortError' && e?.code !== 'ECONNABORTED') {
+          console.log(`Error fetching fixtures for ${dateStr}`);
+        }
         continue;
       }
     }
@@ -199,10 +217,11 @@ export const getUpcomingFixturesAPI = async (): Promise<SportsFixtureConfig[]> =
       index === self.findIndex((f) => f.id === fixture.id)
     );
     
-    console.log(`API Sports returned ${unique.length} upcoming fixtures`);
     return unique.slice(0, 50); // Limit to 50
   } catch (error: any) {
-    console.error("Error fetching upcoming fixtures from API Sports:", error?.message);
+    // Return empty array instead of throwing
+    console.log("Error fetching upcoming fixtures from API Sports");
+    return [];
   }
 
   // Fallback to TheSportsDB
