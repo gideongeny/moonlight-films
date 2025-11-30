@@ -32,67 +32,147 @@ function App() {
   const [isSignedIn, setIsSignedIn] = useLocalStorage("isSignedIn", false);
 
   useEffect(() => {
-    let unSubDoc: () => void;
+    // Check if Firebase auth is available
+    if (!auth) {
+      console.warn("Firebase auth not available. Auth features disabled.");
+      return;
+    }
+
+    let unSubDoc: () => void | undefined;
     
     // This listener automatically restores the user session when the app loads
     // Firebase Auth persistence ensures the user stays logged in across app restarts
-    const unSubAuth: () => void = onAuthStateChanged(auth, (user) => {
-      if (!user) {
+    const unSubAuth: () => void = onAuthStateChanged(
+      auth,
+      (user) => {
+        try {
+          if (!user) {
+            dispatch(setCurrentUser(null));
+            setIsSignedIn(false);
+            return;
+          }
+
+          // User is authenticated - restore their session
+          setIsSignedIn(true);
+
+          if (user.providerData && user.providerData.length > 0) {
+            const providerId = user.providerData[0].providerId;
+            
+            if (providerId === "google.com") {
+              unSubDoc = onSnapshot(
+                doc(db, "users", user.uid),
+                (docSnapshot) => {
+                  try {
+                    dispatch(
+                      setCurrentUser({
+                        displayName:
+                          docSnapshot.data()?.lastName + " " + docSnapshot.data()?.firstName || "",
+                        email: user.email || "",
+                        emailVerified: user.emailVerified,
+                        photoURL: docSnapshot.data()?.photoUrl || "",
+                        uid: user.uid,
+                      })
+                    );
+                  } catch (error) {
+                    console.error("Error setting user data (Google):", error);
+                  }
+                },
+                (error) => {
+                  console.error("Firestore snapshot error (Google):", error);
+                }
+              );
+            } else if (providerId === "facebook.com") {
+              unSubDoc = onSnapshot(
+                doc(db, "users", user.uid),
+                (docSnapshot) => {
+                  try {
+                    dispatch(
+                      setCurrentUser({
+                        displayName:
+                          docSnapshot.data()?.lastName + " " + docSnapshot.data()?.firstName || "",
+                        email: user.email || "",
+                        emailVerified: user.emailVerified,
+                        photoURL: docSnapshot.data()?.photoUrl || "",
+                        uid: user.uid,
+                      })
+                    );
+                  } catch (error) {
+                    console.error("Error setting user data (Facebook):", error);
+                  }
+                },
+                (error) => {
+                  console.error("Firestore snapshot error (Facebook):", error);
+                }
+              );
+            } else {
+              unSubDoc = onSnapshot(
+                doc(db, "users", user.uid),
+                (docSnapshot) => {
+                  try {
+                    dispatch(
+                      setCurrentUser({
+                        displayName:
+                          docSnapshot.data()?.lastName + " " + docSnapshot.data()?.firstName || "",
+                        photoURL: docSnapshot.data()?.photoUrl || "",
+                        email: user.email || "",
+                        emailVerified: user.emailVerified,
+                        uid: user.uid,
+                      })
+                    );
+                  } catch (error) {
+                    console.error("Error setting user data (Other):", error);
+                  }
+                },
+                (error) => {
+                  console.error("Firestore snapshot error (Other):", error);
+                }
+              );
+            }
+          } else {
+            // Fallback for users without provider data
+            unSubDoc = onSnapshot(
+              doc(db, "users", user.uid),
+              (docSnapshot) => {
+                try {
+                  dispatch(
+                    setCurrentUser({
+                      displayName: user.displayName || "",
+                      photoURL: user.photoURL || "",
+                      email: user.email || "",
+                      emailVerified: user.emailVerified,
+                      uid: user.uid,
+                    })
+                  );
+                } catch (error) {
+                  console.error("Error setting user data (Fallback):", error);
+                }
+              },
+              (error) => {
+                console.error("Firestore snapshot error (Fallback):", error);
+              }
+            );
+          }
+        } catch (error) {
+          console.error("Error in auth state change handler:", error);
+        }
+      },
+      (error) => {
+        console.error("Auth state change error:", error);
+        // Don't crash the app on auth errors
         dispatch(setCurrentUser(null));
         setIsSignedIn(false);
-        return;
       }
-
-      // User is authenticated - restore their session
-      setIsSignedIn(true);
-
-      if (user.providerData[0].providerId === "google.com") {
-        unSubDoc = onSnapshot(doc(db, "users", user.uid), (doc) => {
-          dispatch(
-            setCurrentUser({
-              displayName:
-                doc.data()?.lastName + " " + doc.data()?.firstName || "",
-              email: user.email,
-              emailVerified: user.emailVerified,
-              photoURL: doc.data()?.photoUrl || "",
-              uid: user.uid,
-            })
-          );
-        });
-      } else if (user.providerData[0].providerId === "facebook.com") {
-        unSubDoc = onSnapshot(doc(db, "users", user.uid), (doc) => {
-          dispatch(
-            setCurrentUser({
-              displayName:
-                doc.data()?.lastName + " " + doc.data()?.firstName || "",
-              email: user.email,
-              emailVerified: user.emailVerified,
-              photoURL: doc.data()?.photoUrl || "",
-              // user.photoURL + "?access_token=" + doc.data()?.token || "",
-              // doc.data()?.photoUrl.startsWith("https://i.ibb.co") ?
-              uid: user.uid,
-            })
-          );
-        });
-      } else {
-        unSubDoc = onSnapshot(doc(db, "users", user.uid), (doc) => {
-          dispatch(
-            setCurrentUser({
-              displayName:
-                doc.data()?.lastName + " " + doc.data()?.firstName || "",
-              photoURL: doc.data()?.photoUrl || "",
-              email: user.email,
-              emailVerified: user.emailVerified,
-              uid: user.uid,
-            })
-          );
-        });
-      }
-    });
+    );
 
     return () => {
-      unSubAuth();
-      unSubDoc();
+      try {
+        unSubAuth();
+        if (unSubDoc) {
+          unSubDoc();
+        }
+      } catch (error) {
+        console.error("Error cleaning up auth listeners:", error);
+      }
     };
   }, [dispatch]);
 

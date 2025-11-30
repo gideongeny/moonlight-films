@@ -14,25 +14,41 @@ const firebaseConfig = {
   measurementId: "G-3C0V66LLLR"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Initialize Firebase with error handling
+let app;
+let db;
+let auth;
 
-// Initialize Firebase services
-export const db = getFirestore(app);
-export const auth = getAuth(app);
+try {
+  app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+  auth = getAuth(app);
+} catch (error) {
+  console.error("Firebase initialization failed:", error);
+  // Create fallback objects to prevent app crash
+  // The app will still work, but auth features won't be available
+  app = null as any;
+  db = null as any;
+  auth = null as any;
+}
+
+export { db, auth };
 
 // Set persistence to LOCAL (persists across browser sessions and app restarts)
 // This ensures users stay logged in even after closing the app or restarting their phone
 // browserLocalPersistence: Auth state persists in localStorage and persists across browser sessions
 // IMPORTANT: Set persistence BEFORE any auth operations
-(async () => {
-  try {
-    await setPersistence(auth, browserLocalPersistence);
-    console.log("Auth persistence set to browserLocalPersistence");
-  } catch (error) {
-    console.error("Error setting auth persistence:", error);
-  }
-})();
+if (auth) {
+  (async () => {
+    try {
+      await setPersistence(auth, browserLocalPersistence);
+      console.log("Auth persistence set to browserLocalPersistence");
+    } catch (error) {
+      console.error("Error setting auth persistence:", error);
+      // Don't crash - auth will still work without explicit persistence
+    }
+  })();
+}
 
 // Initialize Analytics (only in browser environment)
 // Optimized to prevent quota exceeded errors
