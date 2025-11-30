@@ -32,6 +32,10 @@ const SignUp: FunctionComponent<SignUpProps> = ({ setIsShowSignInBox }) => {
       setIsLoading(true);
       setError("");
       
+      if (!auth || !db) {
+        throw new Error("Authentication service is not available. Please refresh the page.");
+      }
+      
       const user = (
         await createUserWithEmailAndPassword(
           auth,

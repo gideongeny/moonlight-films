@@ -25,6 +25,11 @@ const Sidebar: FC<SidebarProps> = ({ isSidebarActive, onCloseSidebar }) => {
   const { isMobile } = useCurrentViewportView();
 
   const signOutHandler = () => {
+    if (!auth) {
+      toast.error("Authentication service is not available.");
+      return;
+    }
+    
     setIsLoading(true);
     signOut(auth)
       .then(() => {

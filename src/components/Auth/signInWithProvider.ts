@@ -5,6 +5,11 @@ import { auth, db } from "../../shared/firebase";
 import { convertErrorCodeToMessage } from "../../shared/utils";
 
 export const signInWithProvider = async (provider: any, type: string) => {
+  if (!auth || !db) {
+    toast.error("Authentication service is not available. Please refresh the page.");
+    throw new Error("Firebase not initialized");
+  }
+  
   try {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;

@@ -48,6 +48,12 @@ const SignIn: FunctionComponent<SignInProps> = ({ setIsShowSignInBox }) => {
     const password = passwordRef.current.value;
 
     if (!email.trim() || !password.trim()) return;
+    
+    if (!auth) {
+      setError("Authentication service is not available. Please refresh the page.");
+      toast.error("Authentication service is not available. Please refresh the page.");
+      return;
+    }
 
     setIsLoading(true);
     setError("");
