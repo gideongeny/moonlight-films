@@ -4,6 +4,7 @@ import { Item, ItemsPage } from "../../shared/types";
 import ExploreResultContent from "./ExploreResultContent";
 import { getExploreMovie, getExploreTV } from "../../services/explore";
 import { useSearchParams } from "react-router-dom";
+import axios from "../../shared/axios";
 
 interface ExploreResultProps {
   currentTab: "movie" | "tv";
@@ -102,37 +103,84 @@ const ExploreResult: FunctionComponent<ExploreResultProps> = ({
           setCurrentPage(1);
           setHasMore(true);
           const config = buildConfig();
-          const result = currentTab === "movie" 
+          
+          // Try with config first
+          let result = currentTab === "movie" 
             ? await getExploreMovie(1, config)
             : await getExploreTV(1, config);
+          
+          // If no results, try popular content immediately (explore.ts should handle this, but double-check)
+          if (!result || !result.results || result.results.length === 0) {
+            console.log("No results from explore, trying popular content directly");
+            result = currentTab === "movie" 
+              ? await getExploreMovie(1, {}) // Empty config = popular
+              : await getExploreTV(1, {});
+          }
           
           if (result && result.results && result.results.length > 0) {
             setPages([result]);
             setHasMore(result.page < result.total_pages);
           } else {
-            // Fallback: If no results, try to get popular content
+            // Last resort: Try TMDB popular directly
             try {
-              const fallbackResult = currentTab === "movie" 
-                ? await getExploreMovie(1, {}) // Empty config = popular
-                : await getExploreTV(1, {});
+              const popularResponse = await axios.get(
+                currentTab === "movie" ? "/movie/popular" : "/tv/popular",
+                { params: { page: 1 }, timeout: 5000 }
+              ).catch(() => ({ data: { results: [] } }));
               
-              if (fallbackResult && fallbackResult.results && fallbackResult.results.length > 0) {
-                setPages([fallbackResult]);
-                setHasMore(fallbackResult.page < fallbackResult.total_pages);
+              const popularItems = (popularResponse.data?.results || []).slice(0, 20).map((item: any) => ({
+                ...item,
+                media_type: currentTab,
+              })).filter((item: Item) => item.poster_path);
+              
+              if (popularItems.length > 0) {
+                setPages([{
+                  page: 1,
+                  total_pages: 1,
+                  results: popularItems,
+                  total_results: popularItems.length,
+                }]);
+                setHasMore(false);
               } else {
                 setPages([]);
                 setHasMore(false);
               }
             } catch (err) {
-              console.error("Fallback failed:", err);
+              console.error("Final fallback failed:", err);
               setPages([]);
               setHasMore(false);
             }
           }
         } catch (err) {
           console.error("Error loading explore data:", err);
-          setPages([]);
-          setHasMore(false);
+          // Try final fallback even on error
+          try {
+            const popularResponse = await axios.get(
+              currentTab === "movie" ? "/movie/popular" : "/tv/popular",
+              { params: { page: 1 }, timeout: 5000 }
+            ).catch(() => ({ data: { results: [] } }));
+            
+            const popularItems = (popularResponse.data?.results || []).slice(0, 20).map((item: any) => ({
+              ...item,
+              media_type: currentTab,
+            })).filter((item: Item) => item.poster_path);
+            
+            if (popularItems.length > 0) {
+              setPages([{
+                page: 1,
+                total_pages: 1,
+                results: popularItems,
+                total_results: popularItems.length,
+              }]);
+              setHasMore(false);
+            } else {
+              setPages([]);
+              setHasMore(false);
+            }
+          } catch (fallbackErr) {
+            setPages([]);
+            setHasMore(false);
+          }
         }
       }
     };
