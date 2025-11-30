@@ -37,6 +37,12 @@ function App() {
   useEffect(() => {
     let unSubDoc: (() => void) | undefined;
     
+    // Check if Firebase is initialized
+    if (!auth || !db) {
+      console.warn("Firebase not initialized. Authentication features will not work.");
+      return;
+    }
+    
     // This listener automatically restores the user session when the app loads
     // Firebase Auth persistence ensures the user stays logged in across app restarts
     const unSubAuth: () => void = onAuthStateChanged(
@@ -55,7 +61,7 @@ function App() {
           if (user.providerData && user.providerData.length > 0) {
             const providerId = user.providerData[0].providerId;
             
-            if (providerId === "google.com") {
+            if (providerId === "google.com" && db) {
               unSubDoc = onSnapshot(
                 doc(db, "users", user.uid),
                 (docSnapshot) => {
@@ -78,7 +84,7 @@ function App() {
                   console.error("Firestore snapshot error (Google):", error);
                 }
               );
-            } else if (providerId === "facebook.com") {
+            } else if (providerId === "facebook.com" && db) {
               unSubDoc = onSnapshot(
                 doc(db, "users", user.uid),
                 (docSnapshot) => {
@@ -101,7 +107,7 @@ function App() {
                   console.error("Firestore snapshot error (Facebook):", error);
                 }
               );
-            } else {
+            } else if (db) {
               unSubDoc = onSnapshot(
                 doc(db, "users", user.uid),
                 (docSnapshot) => {
@@ -125,7 +131,7 @@ function App() {
                 }
               );
             }
-          } else {
+          } else if (db) {
             // Fallback for users without provider data
             unSubDoc = onSnapshot(
               doc(db, "users", user.uid),

@@ -16,9 +16,9 @@ const firebaseConfig = {
 
 // Initialize Firebase with error handling
 // Always initialize to prevent null errors - if Firebase fails, we'll handle it in components
-let app: ReturnType<typeof initializeApp>;
-let db: ReturnType<typeof getFirestore>;
-let auth: ReturnType<typeof getAuth>;
+let app: ReturnType<typeof initializeApp> | null = null;
+let db: ReturnType<typeof getFirestore> | null = null;
+let auth: ReturnType<typeof getAuth> | null = null;
 
 // Initialize Firebase - ensure it always succeeds
 try {
@@ -64,24 +64,26 @@ try {
         auth = getAuth(app);
       } catch (lastError) {
         console.error("Firebase initialization completely failed:", lastError);
-        // Create dummy instances to prevent app crash
-        // Components should handle null/undefined checks
-        throw new Error("Firebase initialization failed. The app may not function correctly.");
+        // Don't throw - let the app continue without Firebase
+        // Components should handle Firebase errors gracefully
+        // This prevents the app from crashing on initialization
       }
     }
   }
 }
 
-// Export - these should always be defined
+// Export - these may be null if Firebase initialization fails
+// Components should check for null before using
 export { db, auth };
 
 // Set persistence to LOCAL (persists across browser sessions and app restarts)
 // This ensures users stay logged in even after closing the app or restarting their phone
 // browserLocalPersistence: Auth state persists in localStorage and persists across browser sessions
 // IMPORTANT: Set persistence BEFORE any auth operations
-(async () => {
+// Use setTimeout to ensure auth is initialized before setting persistence
+setTimeout(async () => {
   try {
-    if (auth) {
+    if (auth !== null && auth !== undefined) {
       await setPersistence(auth, browserLocalPersistence);
       console.log("Auth persistence set to browserLocalPersistence");
     }
@@ -89,18 +91,18 @@ export { db, auth };
     console.error("Error setting auth persistence:", error);
     // Don't crash - auth will still work without explicit persistence
   }
-})();
+}, 100);
 
 // Initialize Analytics (only in browser environment)
 // Optimized to prevent quota exceeded errors
 let analytics: ReturnType<typeof getAnalytics> | undefined;
-if (globalThis.window !== undefined) {
+if (globalThis.window !== undefined && app !== null) {
   try {
     // Only initialize analytics if not in development and user hasn't opted out
     const isDevelopment = process.env.NODE_ENV === 'development';
     const analyticsDisabled = localStorage.getItem('analytics_disabled') === 'true';
     
-    if (!isDevelopment && !analyticsDisabled) {
+    if (!isDevelopment && !analyticsDisabled && app !== null) {
       // getAnalytics only accepts the app instance as argument
       // Analytics configuration is done via Firebase Console, not in code
       analytics = getAnalytics(app);

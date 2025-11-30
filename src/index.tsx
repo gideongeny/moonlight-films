@@ -27,22 +27,24 @@ const queryClient = new QueryClient({
   },
 });
 
-// Check if root element exists before rendering
-const rootElement = document.getElementById("root");
+// Wait for DOM to be fully ready, especially important when coming from Google Search
+function initializeApp() {
+  // Check if root element exists before rendering
+  const rootElement = document.getElementById("root");
 
-if (!rootElement) {
-  // Don't throw - display error in body instead
-  document.body.innerHTML = `
-    <div style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #0f172a; color: #fff; padding: 20px; text-align: center;">
-      <h1 style="font-size: 2rem; margin-bottom: 1rem; color: #ef4444;">Application Error</h1>
-      <p style="margin-bottom: 1rem;">Root element not found. Please refresh the page.</p>
-      <button onclick="window.location.reload()" style="padding: 10px 20px; background-color: #ef4444; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem;">
-        Refresh Page
-      </button>
-    </div>
-  `;
-  throw new Error("Root element not found");
-}
+  if (!rootElement) {
+    // Don't throw - display error in body instead
+    document.body.innerHTML = `
+      <div style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #0f172a; color: #fff; padding: 20px; text-align: center;">
+        <h1 style="font-size: 2rem; margin-bottom: 1rem; color: #ef4444;">Application Error</h1>
+        <p style="margin-bottom: 1rem;">Root element not found. Please refresh the page.</p>
+        <button onclick="window.location.reload()" style="padding: 10px 20px; background-color: #ef4444; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem;">
+          Refresh Page
+        </button>
+      </div>
+    `;
+    return;
+  }
 
 // Add error handler for unhandled errors
 window.addEventListener("error", (event) => {
@@ -55,10 +57,10 @@ window.addEventListener("unhandledrejection", (event) => {
   // Don't prevent default - let React handle it
 });
 
-try {
-  const root = ReactDOM.createRoot(rootElement);
+  try {
+    const root = ReactDOM.createRoot(rootElement);
 
-  root.render(
+    root.render(
     <ErrorBoundary
       onError={(error, errorInfo) => {
         // Log detailed error information for debugging
@@ -109,19 +111,29 @@ try {
         </QueryClientProvider>
       </BrowserRouter>
     </ErrorBoundary>
-  );
-} catch (error) {
-  console.error("Failed to render app:", error);
-  // Fallback rendering if React fails
-  if (rootElement) {
-    rootElement.innerHTML = `
-      <div style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #0f172a; color: #fff; padding: 20px; text-align: center;">
-        <h1 style="font-size: 2rem; margin-bottom: 1rem;">Failed to Load</h1>
-        <p style="margin-bottom: 1rem;">The application could not be initialized. Please refresh the page.</p>
-        <button onclick="window.location.reload()" style="padding: 10px 20px; background-color: #ef4444; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem;">
-          Refresh Page
-        </button>
-      </div>
-    `;
+    );
+  } catch (error) {
+    console.error("Failed to render app:", error);
+    // Fallback rendering if React fails
+    const rootElement = document.getElementById("root");
+    if (rootElement) {
+      rootElement.innerHTML = `
+        <div style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #0f172a; color: #fff; padding: 20px; text-align: center;">
+          <h1 style="font-size: 2rem; margin-bottom: 1rem;">Failed to Load</h1>
+          <p style="margin-bottom: 1rem;">The application could not be initialized. Please refresh the page.</p>
+          <button onclick="window.location.reload()" style="padding: 10px 20px; background-color: #ef4444; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem;">
+            Refresh Page
+          </button>
+        </div>
+      `;
+    }
   }
+}
+
+// Initialize app when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+  // DOM is already ready
+  initializeApp();
 }
