@@ -20,6 +20,9 @@ import Profile from "./pages/Profile";
 import Search from "./pages/Search";
 import TVInfo from "./pages/TV/TVInfo";
 import TVWatch from "./pages/TV/TVWatch";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import UserAgreement from "./pages/UserAgreement";
+import Disclaimer from "./pages/Disclaimer";
 import { auth, db } from "./shared/firebase";
 import { useAppDispatch } from "./store/hooks";
 import { setCurrentUser } from "./store/slice/authSlice";
@@ -195,6 +198,9 @@ function App() {
         <Route path="search" element={<Search />} />
         <Route path="auth" element={<Auth />} />
         <Route path="copyright" element={<Copyright />} />
+        <Route path="privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="user-agreement" element={<UserAgreement />} />
+        <Route path="disclaimer" element={<Disclaimer />} />
         <Route
           path="bookmarked"
           element={
