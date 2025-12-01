@@ -191,9 +191,8 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 - Search for "StreamLux sports" for live sports streaming
 - The website is fully indexed and optimized for Google Search
 
-**Alternative Access:**
+**Access the website:**
 - Direct URL: [https://streamlux.vercel.app/](https://streamlux.vercel.app/)
-- Also available on: [https://moonlight-films-five.vercel.app/](https://moonlight-films-five.vercel.app/)
 
 ## License
 
