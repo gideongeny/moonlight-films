@@ -388,11 +388,19 @@ export const getLiveScores = async (): Promise<SportsFixtureConfig[]> => {
   */
 };
 
-// Auto-refresh live scores every 30 seconds (faster updates)
+// Auto-refresh live scores every 30 seconds (faster updates) - DISABLED TEMPORARILY
 export const subscribeToLiveScores = (
   callback: (fixtures: SportsFixtureConfig[]) => void,
   interval: number = 30000 // 30 seconds for faster updates
 ): (() => void) => {
+  // Temporarily disabled - returns no-op unsubscribe function
+  // TODO: Re-enable once API stability issues are resolved
+  console.warn("Sports API temporarily disabled to prevent website crashes");
+  callback([]); // Call with empty array immediately
+  return () => {}; // Return no-op unsubscribe function
+  
+  /* DISABLED CODE - Re-enable when API is stable
   return subscribeToLiveScoresPublic(callback, interval);
+  */
 };
 
