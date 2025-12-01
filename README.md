@@ -6,6 +6,8 @@ Free Movies, TV Shows & Live Sports Streaming Platform
 
 Official website: [https://streamlux.vercel.app/](https://streamlux.vercel.app/)
 
+🔍 **Find us on Google:** Search for "StreamLux" or "StreamLux movies" on Google to discover our platform. The website is indexed and searchable on Google Search.
+
 **Note:** The website has been rebranded from Moonlight Films to StreamLux. The project uses Firebase for authentication and data storage, and integrates with multiple APIs for content discovery.
 
 ## Content Sources
@@ -61,6 +63,12 @@ Official website: [https://streamlux.vercel.app/](https://streamlux.vercel.app/)
   - Background content loading for faster initial page loads
   - Reduced Firestore query operations
 - **Enhanced Video Sources**: Comprehensive list of international streaming platforms with proper display names for better user experience
+- **Direct Download Feature**: Download movies and TV shows directly to your device with a single click, similar to MovieBox.ph
+- **Sports Integration**: Direct integration with SportsLive.run for live sports streaming and match details
+- **Footer with Legal Pages**: Comprehensive footer including Contact Us, Privacy Policy, User Agreement, Disclaimer, and Backlinks sections
+- **Error Boundaries**: Robust error handling with React Error Boundaries to prevent app crashes and provide graceful fallbacks
+- **Cross-Platform Compatibility**: Optimized for iPhone, Android, and desktop browsers with polyfills for older devices
+- **Google Search Optimized**: Website is indexed and discoverable via Google Search
 
 ## Screenshots, Preview
 
@@ -145,15 +153,58 @@ This project is deployed on Vercel. The build process uses:
 - **Regional Content**: Enhanced filtering for African, Asian, Latin American, and Middle Eastern content
 - **Parallel Fetching**: Uses `Promise.all` for concurrent API requests where appropriate
 
+## Additional Features
+
+### Direct Download
+- **One-Click Download**: Download movies and TV shows directly to your device
+- **Smart Download Page**: Automatically attempts to extract video URLs from embed sources
+- **Multiple Download Options**: Choose from various video sources and quality options
+- **Progress Tracking**: Real-time download progress and status updates
+
+### Sports Integration
+- **SportsLive.run Integration**: Direct links to live sports matches and upcoming games
+- **Match Details**: Click any game to view detailed match information on SportsLive.run
+- **Live Scores**: Real-time updates for ongoing matches
+- **Multiple Leagues**: Support for NBA, EPL, La Liga, Bundesliga, Serie A, and more
+
+### Legal & Compliance
+- **Privacy Policy**: Comprehensive privacy policy page
+- **User Agreement**: Terms of service and user agreement
+- **Disclaimer**: Content disclaimer and copyright information
+- **Contact Information**: Social media links and contact options in footer
+
+### Browser Compatibility
+- **iPhone Support**: Fully optimized for iOS devices with proper viewport settings
+- **Android Support**: Compatible with older Android devices (Android 5+)
+- **Desktop Browsers**: Works on all modern browsers (Chrome, Firefox, Safari, Edge)
+- **Polyfills**: Includes polyfills for older browser compatibility
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+## Search & Discovery
+
+🔍 **Find StreamLux on Google:**
+- Search for "StreamLux" to find our platform
+- Search for "StreamLux movies" or "StreamLux TV shows" for content discovery
+- Search for "StreamLux sports" for live sports streaming
+- The website is fully indexed and optimized for Google Search
+
+**Alternative Access:**
+- Direct URL: [https://streamlux.vercel.app/](https://streamlux.vercel.app/)
+- Also available on: [https://moonlight-films-five.vercel.app/](https://moonlight-films-five.vercel.app/)
 
 ## License
 
 Copyright © 2025 StreamLux. All rights reserved.
 
 See [Copyright Page](/copyright) for more information.
+
+**Legal Pages:**
+- [Privacy Policy](/privacy-policy)
+- [User Agreement](/user-agreement)
+- [Disclaimer](/disclaimer)
 
 ---
 
