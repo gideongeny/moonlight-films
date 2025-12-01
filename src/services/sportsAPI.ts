@@ -37,8 +37,14 @@ export const getTeamLogo = async (teamName: string): Promise<string | null> => {
   }
 };
 
-// Get live fixtures - use public APIs first
+// Get live fixtures - DISABLED TEMPORARILY to prevent website crashes
 export const getLiveFixturesAPI = async (): Promise<SportsFixtureConfig[]> => {
+  // Temporarily disabled - returns empty array to prevent website crashes
+  // TODO: Re-enable once API stability issues are resolved
+  console.warn("Sports API temporarily disabled to prevent website crashes");
+  return [];
+  
+  /* DISABLED CODE - Re-enable when API is stable
   // Try public APIs first (TheSportsDB, Sofascore)
   const publicFixtures = await getLiveFixturesPublic();
   if (publicFixtures.length > 0) {
@@ -47,6 +53,7 @@ export const getLiveFixturesAPI = async (): Promise<SportsFixtureConfig[]> => {
 
   // Fallback to API Sports if public APIs fail
   return await getLiveFixturesAPISports();
+  */
 };
 
 // Get live fixtures from API Sports (fallback)
@@ -169,8 +176,14 @@ const getLiveFixturesAPISports = async (): Promise<SportsFixtureConfig[]> => {
   return [];
 };
 
-// Get upcoming fixtures - use public APIs first
+// Get upcoming fixtures - DISABLED TEMPORARILY to prevent website crashes
 export const getUpcomingFixturesAPI = async (): Promise<SportsFixtureConfig[]> => {
+  // Temporarily disabled - returns empty array to prevent website crashes
+  // TODO: Re-enable once API stability issues are resolved
+  console.warn("Sports API temporarily disabled to prevent website crashes");
+  return [];
+  
+  /* DISABLED CODE - Re-enable when API is stable
   // Try public APIs first (TheSportsDB, Sofascore)
   const publicFixtures = await getUpcomingFixturesPublic();
   if (publicFixtures.length > 0) {
@@ -179,6 +192,7 @@ export const getUpcomingFixturesAPI = async (): Promise<SportsFixtureConfig[]> =
 
   // Fallback to API Sports if public APIs fail
   return await getUpcomingFixturesAPISports();
+  */
 };
 
 // Get upcoming fixtures from API Sports (fallback)
@@ -364,7 +378,14 @@ const getLeagueIdFromName = (leagueName: string): string => {
 
 // Get live scores for scoreboard - use public APIs
 export const getLiveScores = async (): Promise<SportsFixtureConfig[]> => {
+  // Temporarily disabled - returns empty array to prevent website crashes
+  // TODO: Re-enable once API stability issues are resolved
+  console.warn("Sports API temporarily disabled to prevent website crashes");
+  return [];
+  
+  /* DISABLED CODE - Re-enable when API is stable
   return await getLiveScoresPublic();
+  */
 };
 
 // Auto-refresh live scores every 30 seconds (faster updates)

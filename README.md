@@ -39,7 +39,7 @@ Official website: [https://streamlux.vercel.app/](https://streamlux.vercel.app/)
 - **Comment system**: Allowing to give reactions, see who reacts to a comment (sorted and filter out the 3 most popular reactions), reply to a comment, edit, delete, hide, sort by latest/popular and load more comment
 
 ### New Features (StreamLux)
-- **Live Sports Streaming**: Real-time fixtures and scores from multiple leagues (EPL, La Liga, Bundesliga, Serie A, Ligue 1, Champions League, AFCON, Rugby, UFC, WWE, Athletics, etc.)
+- **Live Sports Streaming**: Direct integration with SportsLive.run for live sports streaming (Note: Sports API temporarily disabled to ensure website stability)
 - **World Cinema Discovery**: Explore movies and TV shows from Africa, Asia, Latin America, Middle East, and more with beautiful category images
 - **Enhanced Content Categories**:
   - 🔥 Most Trending Now
@@ -52,7 +52,7 @@ Official website: [https://streamlux.vercel.app/](https://streamlux.vercel.app/)
   - 🇰🇪 Kenyan TV Shows, 🇳🇬 Nigerian TV Shows
   - And many more curated sections
 - **Multiple Streaming Sources**: Access to various embed sources for movies, TV shows, and sports (including SportsLive.run, Streamed.pk, KissKH, Ailok, Googotv, Dramacool, Cuevana, Shahid, and many more regional platforms)
-- **Real-time Sports Updates**: Live scores and upcoming fixtures with auto-refresh from TheSportsDB API
+- **Real-time Sports Updates**: Live scores and upcoming fixtures (Note: Sports API temporarily disabled to prevent website crashes - will be re-enabled once stability issues are resolved)
 - **Enhanced African Content**: Expanded fetching strategies with multiple pages and search terms for maximum content diversity
 - **Responsive Design**: Optimized for mobile, tablet, and desktop
 - **Copyright Page**: Comprehensive legal information and terms of use
@@ -164,8 +164,9 @@ This project is deployed on Vercel. The build process uses:
 ### Sports Integration
 - **SportsLive.run Integration**: Direct links to live sports matches and upcoming games
 - **Match Details**: Click any game to view detailed match information on SportsLive.run
-- **Live Scores**: Real-time updates for ongoing matches
+- **Live Scores**: Real-time updates for ongoing matches (Note: Sports API temporarily disabled to ensure website stability)
 - **Multiple Leagues**: Support for NBA, EPL, La Liga, Bundesliga, Serie A, and more
+- **Status**: Sports API calls are currently disabled to prevent website crashes. Users are redirected to SportsLive.run for live sports content.
 
 ### Legal & Compliance
 - **Privacy Policy**: Comprehensive privacy policy page
