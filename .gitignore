@@ -27,6 +27,14 @@ yarn-error.log*
 /ios
 .capacitor
 
+# Android Studio
+android/.idea/
+android/.gradle/
+android/local.properties
+android/app/build/
+android/build/
+*.iml
+
 # IDE
 .idea
 .vscode
