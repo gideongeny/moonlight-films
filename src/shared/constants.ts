@@ -7,6 +7,20 @@ export const EMBED_TO = "https://www.2embed.to/embed/tmdb";
 // Alternative video streaming services as fallbacks
 export const EMBED_ALTERNATIVES = {
   VIDSRC: "https://vidsrc.me/embed",
+  // New video sources - added after VIDSRC
+  VIDSRC_ME: "https://vidsrc.me/embed",
+  FSAPI: "https://fsapi.xyz",
+  CURTSTREAM: "https://curtstream.com",
+  MOVIEWP: "https://moviewp.com",
+  APIMDB: "https://v2.apimdb.net/e",
+  GOMO: "https://gomo.to",
+  VIDCLOUD: "https://vidcloud.stream",
+  GETSUPEREMBED: "https://getsuperembed.link",
+  GODRIVEPLAYER: "https://databasegdriveplayer.co",
+  ONETWOTHREEMOVIES: "https://123movies.com",
+  FMOVIES_NEW: "https://fmovies.to",
+  YESMOVIES: "https://yesmovies.to",
+  GOMOVIES: "https://gomovies.sx",
   TWOEMBED: "https://2embed.org/embed",
   EMBEDTO: "https://www.2embed.to/embed/tmdb",
   VIDEMBED: "https://vidembed.cc",

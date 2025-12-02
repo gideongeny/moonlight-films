@@ -54,9 +54,29 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
 
   // Generate all available video sources
   const getVideoSources = () => {
+    // Get IMDB ID for movies, use TMDB ID as fallback for TV shows
+    const imdbId = media_type === "movie" 
+      ? (detail as DetailMovie)?.imdb_id || detail?.id?.toString() 
+      : detail?.id?.toString();
+    const tmdbId = detail?.id?.toString() || "";
+    
     if (media_type === "movie") {
       return [
         `${EMBED_ALTERNATIVES.VIDSRC}/${detail?.id}`,
+        // New video sources - added after VIDSRC
+        `https://vidsrc.me/embed/${imdbId}`,
+        `https://fsapi.xyz/movie/${imdbId}`,
+        `https://curtstream.com/movies/imdb/${imdbId}`,
+        `https://moviewp.com/se.php?video_id=${imdbId}`,
+        `https://v2.apimdb.net/e/movie/${imdbId}`,
+        `https://gomo.to/movie/${imdbId}`,
+        `https://vidcloud.stream/${imdbId}.html`,
+        `https://getsuperembed.link/?video_id=${imdbId}`,
+        `https://databasegdriveplayer.co/player.php?type=movie&tmdb=${tmdbId}`,
+        `https://123movies.com/movie/${imdbId}`,
+        `https://fmovies.to/movie/${imdbId}`,
+        `https://yesmovies.to/movie/${imdbId}`,
+        `https://gomovies.sx/movie/${imdbId}`,
         `${EMBED_ALTERNATIVES.EMBEDTO}/movie?id=${detail?.id}`,
         `${EMBED_ALTERNATIVES.TWOEMBED}/movie?tmdb=${detail?.id}`,
         `${EMBED_ALTERNATIVES.VIDEMBED}/movie/${detail?.id}`,
@@ -151,6 +171,17 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
     } else {
       return [
         `${EMBED_ALTERNATIVES.VIDSRC}/${detail?.id}/${seasonId}-${episodeId}`,
+        // New video sources - added after VIDSRC
+        `https://fsapi.xyz/tv-imdb/${imdbId}-${seasonId}-${episodeId}`,
+        `https://moviewp.com/se.php?video_id=${tmdbId}&tmdb=1&s=${seasonId}&e=${episodeId}`,
+        `https://v2.apimdb.net/e/tmdb/tv/${tmdbId}/${seasonId}/${episodeId}/`,
+        `https://databasegdriveplayer.co/player.php?type=series&tmdb=${tmdbId}&season=${seasonId}&episode=${episodeId}`,
+        `https://curtstream.com/series/tmdb/${tmdbId}/${seasonId}/${episodeId}/`,
+        `https://getsuperembed.link/?video_id=${imdbId}&season=${seasonId}&episode=${episodeId}`,
+        `https://123movies.com/tv/${imdbId}/${seasonId}/${episodeId}`,
+        `https://fmovies.to/tv/${imdbId}/${seasonId}/${episodeId}`,
+        `https://yesmovies.to/tv/${imdbId}/${seasonId}/${episodeId}`,
+        `https://gomovies.sx/tv/${imdbId}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.EMBEDTO}/tv?id=${detail?.id}&s=${seasonId}&e=${episodeId}`,
         `${EMBED_ALTERNATIVES.TWOEMBED}/series?tmdb=${detail?.id}&sea=${seasonId}&epi=${episodeId}`,
         `${EMBED_ALTERNATIVES.VIDEMBED}/tv/${detail?.id}/${seasonId}/${episodeId}`,
@@ -252,6 +283,18 @@ const FilmWatch: FunctionComponent<FilmWatchProps & getWatchReturnedType> = ({
   const getSourceDisplayName = (source: string): string => {
     // Primary sources
     if (source.includes('vidsrc.me')) return 'VidSrc';
+    if (source.includes('fsapi.xyz')) return 'FSAPI.xyz';
+    if (source.includes('curtstream.com')) return 'CurtStream';
+    if (source.includes('moviewp.com')) return 'MovieWP';
+    if (source.includes('v2.apimdb.net')) return 'APIMDB';
+    if (source.includes('gomo.to')) return 'Gomo';
+    if (source.includes('vidcloud.stream')) return 'VidCloud';
+    if (source.includes('getsuperembed.link')) return 'GetSuperEmbed';
+    if (source.includes('databasegdriveplayer.co')) return 'GoDrivePlayer';
+    if (source.includes('123movies.com')) return '123Movies';
+    if (source.includes('fmovies.to')) return 'FMovies';
+    if (source.includes('yesmovies.to')) return 'YesMovies';
+    if (source.includes('gomovies.sx')) return 'GoMovies';
     if (source.includes('2embed.to')) return '2Embed.to';
     if (source.includes('2embed.org')) return '2Embed.org';
     if (source.includes('vidembed.cc')) return 'VidEmbed';

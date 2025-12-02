@@ -40,7 +40,12 @@ export class DownloadService {
       ? (detail as DetailMovie).title 
       : (detail as DetailTV).name;
 
-    const sources = this.generateVideoSources(detail.id, mediaType, seasonId, episodeId);
+    // Get IMDB ID for movies, use undefined for TV shows (will use TMDB ID)
+    const imdbId = mediaType === "movie" 
+      ? (detail as DetailMovie).imdb_id 
+      : undefined;
+
+    const sources = this.generateVideoSources(detail.id, mediaType, seasonId, episodeId, imdbId);
 
     return {
       title,
@@ -60,11 +65,29 @@ export class DownloadService {
     id: number,
     mediaType: "movie" | "tv",
     seasonId?: number,
-    episodeId?: number
+    episodeId?: number,
+    imdbId?: string
   ): string[] {
+    const tmdbId = id.toString();
+    const imdb = imdbId || tmdbId; // Use IMDB ID if available, otherwise TMDB ID
+    
     if (mediaType === "movie") {
       return [
         `${EMBED_ALTERNATIVES.VIDSRC}/${id}`,
+        // New video sources - added after VIDSRC
+        `https://vidsrc.me/embed/${imdb}`,
+        `https://fsapi.xyz/movie/${imdb}`,
+        `https://curtstream.com/movies/imdb/${imdb}`,
+        `https://moviewp.com/se.php?video_id=${imdb}`,
+        `https://v2.apimdb.net/e/movie/${imdb}`,
+        `https://gomo.to/movie/${imdb}`,
+        `https://vidcloud.stream/${imdb}.html`,
+        `https://getsuperembed.link/?video_id=${imdb}`,
+        `https://databasegdriveplayer.co/player.php?type=movie&tmdb=${tmdbId}`,
+        `https://123movies.com/movie/${imdb}`,
+        `https://fmovies.to/movie/${imdb}`,
+        `https://yesmovies.to/movie/${imdb}`,
+        `https://gomovies.sx/movie/${imdb}`,
         `${EMBED_ALTERNATIVES.EMBEDTO}/movie?id=${id}`,
         `${EMBED_ALTERNATIVES.TWOEMBED}/movie?tmdb=${id}`,
         `${EMBED_ALTERNATIVES.VIDEMBED}/movie/${id}`,
@@ -164,6 +187,17 @@ export class DownloadService {
     } else {
       return [
         `${EMBED_ALTERNATIVES.VIDSRC}/${id}/${seasonId}-${episodeId}`,
+        // New video sources - added after VIDSRC
+        `https://fsapi.xyz/tv-imdb/${imdb}-${seasonId}-${episodeId}`,
+        `https://moviewp.com/se.php?video_id=${tmdbId}&tmdb=1&s=${seasonId}&e=${episodeId}`,
+        `https://v2.apimdb.net/e/tmdb/tv/${tmdbId}/${seasonId}/${episodeId}/`,
+        `https://databasegdriveplayer.co/player.php?type=series&tmdb=${tmdbId}&season=${seasonId}&episode=${episodeId}`,
+        `https://curtstream.com/series/tmdb/${tmdbId}/${seasonId}/${episodeId}/`,
+        `https://getsuperembed.link/?video_id=${imdb}&season=${seasonId}&episode=${episodeId}`,
+        `https://123movies.com/tv/${imdb}/${seasonId}/${episodeId}`,
+        `https://fmovies.to/tv/${imdb}/${seasonId}/${episodeId}`,
+        `https://yesmovies.to/tv/${imdb}/${seasonId}/${episodeId}`,
+        `https://gomovies.sx/tv/${imdb}/${seasonId}/${episodeId}`,
         `${EMBED_ALTERNATIVES.EMBEDTO}/tv?id=${id}&s=${seasonId}&e=${episodeId}`,
         `${EMBED_ALTERNATIVES.TWOEMBED}/series?tmdb=${id}&sea=${seasonId}&epi=${episodeId}`,
         `${EMBED_ALTERNATIVES.VIDEMBED}/tv/${id}/${seasonId}/${episodeId}`,
@@ -916,6 +950,18 @@ export class DownloadService {
   private getSourceDisplayName(source: string): string {
     // Primary sources
     if (source.includes('vidsrc.me')) return 'VidSrc';
+    if (source.includes('fsapi.xyz')) return 'FSAPI.xyz';
+    if (source.includes('curtstream.com')) return 'CurtStream';
+    if (source.includes('moviewp.com')) return 'MovieWP';
+    if (source.includes('v2.apimdb.net')) return 'APIMDB';
+    if (source.includes('gomo.to')) return 'Gomo';
+    if (source.includes('vidcloud.stream')) return 'VidCloud';
+    if (source.includes('getsuperembed.link')) return 'GetSuperEmbed';
+    if (source.includes('databasegdriveplayer.co')) return 'GoDrivePlayer';
+    if (source.includes('123movies.com')) return '123Movies';
+    if (source.includes('fmovies.to')) return 'FMovies';
+    if (source.includes('yesmovies.to')) return 'YesMovies';
+    if (source.includes('gomovies.sx')) return 'GoMovies';
     if (source.includes('2embed.to')) return '2Embed.to';
     if (source.includes('2embed.org')) return '2Embed.org';
     if (source.includes('vidembed.cc')) return 'VidEmbed';

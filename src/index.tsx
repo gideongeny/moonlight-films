@@ -1,6 +1,9 @@
 // Import polyfills first for older browser support
 import "./utils/polyfills";
 
+// Initialize Capacitor for mobile app
+import { initCapacitor } from "./utils/capacitor";
+
 import "./index.css";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -132,8 +135,12 @@ window.addEventListener("unhandledrejection", (event) => {
 
 // Initialize app when DOM is ready
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initializeApp);
+  document.addEventListener('DOMContentLoaded', () => {
+    initializeApp();
+    initCapacitor();
+  });
 } else {
   // DOM is already ready
   initializeApp();
+  initCapacitor();
 }
