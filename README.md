@@ -1,4 +1,4 @@
-# StreamLux
+)# StreamLux
 
 Free Movies, TV Shows & Live Sports Streaming Platform
 
