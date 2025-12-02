@@ -255,27 +255,36 @@ export const getTMDBByGenre = async (
   }
 };
 
-// Get all content from all APIs (TMDB, OMDB/IMDB)
+// Get all content from all APIs (TMDB, OMDB/IMDB, Letterboxd, Rotten Tomatoes)
 export const getAllAPIContent = async (
   type: "movie" | "tv",
   category: "popular" | "top_rated" | "trending" = "popular"
 ): Promise<Item[]> => {
   try {
-    // Reduce pages for faster loading - fetch 2 pages instead of 5
-    const [tmdbContent, omdbContent, imdbContent] = await Promise.all([
-      getTMDBContent(type, category, 2), // Reduced from 5 to 2 pages
+    // Use the new fallback chain: IMDB -> Letterboxd -> Rotten Tomatoes -> TMDB
+    const { getContentWithFallback } = await import("./additionalAPIs");
+    const fallbackContent = await getContentWithFallback(type, category);
+    
+    // Also fetch from basic TMDB and OMDB in parallel for additional variety
+    const [tmdbContent, omdbContent] = await Promise.allSettled([
+      getTMDBContent(type, category, 2),
       Promise.race([
         getOMDBPopular(type),
-        new Promise<Item[]>((resolve) => setTimeout(() => resolve([]), 2000)), // 2s timeout
-      ]),
-      Promise.race([
-        getIMDBContent(undefined, type),
-        new Promise<Item[]>((resolve) => setTimeout(() => resolve([]), 2000)), // 2s timeout
+        new Promise<Item[]>((resolve) => setTimeout(() => resolve([]), 2000)),
       ]),
     ]);
     
-    // Merge and deduplicate
-    const allContent = [...tmdbContent, ...omdbContent, ...imdbContent];
+    // Merge all sources
+    const allContent: Item[] = [...fallbackContent];
+    
+    if (tmdbContent.status === "fulfilled") {
+      allContent.push(...tmdbContent.value);
+    }
+    if (omdbContent.status === "fulfilled") {
+      allContent.push(...omdbContent.value);
+    }
+    
+    // Deduplicate
     return allContent.filter((item: Item, index: number, self: Item[]) =>
       index === self.findIndex((i: Item) => 
         i.id === item.id || 
@@ -285,7 +294,12 @@ export const getAllAPIContent = async (
     );
   } catch (error) {
     console.error("Error fetching all API content:", error);
-    return [];
+    // Fallback to basic TMDB
+    try {
+      return await getTMDBContent(type, category, 1);
+    } catch (e) {
+      return [];
+    }
   }
 };
 

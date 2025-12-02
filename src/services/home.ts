@@ -52,9 +52,10 @@ export const getHomeMovies = async (): Promise<HomeFilms> => {
   ]) as { fzTrending: Item[], fzPopular: Item[], fzTopRated: Item[], fzLatest: Item[] };
 
   // Load other sources in background (non-blocking) - these will be available later if needed
+  // Now includes Letterboxd, Rotten Tomatoes, and enhanced TMDB via getAllAPIContent
   Promise.allSettled([
     getAllSourceContent("movie", 1),
-    getAllAPIContent("movie", "popular"),
+    getAllAPIContent("movie", "popular"), // Includes IMDB -> Letterboxd -> Rotten Tomatoes -> TMDB fallback
   ]).catch(() => {}); // Silently fail for background loading
 
   // Helper function to merge and deduplicate items from all sources
@@ -182,9 +183,10 @@ export const getHomeTVs = async (): Promise<HomeFilms> => {
   ]) as { fzTrending: Item[], fzPopular: Item[], fzTopRated: Item[], fzLatest: Item[] };
 
   // Load other sources in background (non-blocking) - these will be available later if needed
+  // Now includes Letterboxd, Rotten Tomatoes, and enhanced TMDB via getAllAPIContent
   Promise.allSettled([
     getAllSourceContent("tv", 1),
-    getAllAPIContent("tv", "popular"),
+    getAllAPIContent("tv", "popular"), // Includes IMDB -> Letterboxd -> Rotten Tomatoes -> TMDB fallback
   ]).catch(() => {}); // Silently fail for background loading
 
   // Helper function to merge and deduplicate items from all sources
