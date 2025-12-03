@@ -71,6 +71,34 @@ Official website: [https://streamlux.vercel.app/](https://streamlux.vercel.app/)
 - **Google Search Optimized**: Website is indexed and discoverable via Google Search
 - **Android App Available**: Download the StreamLux Android APK directly from our website, similar to MovieBox. See [BUILD_APK.md](./BUILD_APK.md) and [DISTRIBUTE_APK.md](./DISTRIBUTE_APK.md) for distribution instructions
 
+## 📱 Android App
+
+StreamLux is now available as a native Android app! Download the APK from [GitHub Releases](https://github.com/gideongeny/STREAMLUX/releases) and enjoy streaming on your Android device.
+
+### Android App Screenshots
+
+#### Movies Section
+![StreamLux Android - Movies Section](https://raw.githubusercontent.com/gideongeny/STREAMLUX/main/Images/Android/movies-section.png)
+*Movies section featuring F1 movie banner, Popular section with Zootopia 2 and The Shadow's Edge. Clean dark theme with orange accents.*
+
+#### TV Shows Section
+![StreamLux Android - TV Shows Section](https://raw.githubusercontent.com/gideongeny/STREAMLUX/main/Images/Android/tv-shows-section.png)
+*TV Shows section showing "Heated Rivalry" featured content and Popular section with Stranger Things and IT: Welcome to Derry.*
+
+#### Search Page
+![StreamLux Android - Search Page](https://raw.githubusercontent.com/gideongeny/STREAMLUX/main/Images/Android/search-page.png)
+*Beautiful search interface with anime-style illustration, featuring "Find your favourite movies, TV shows, people and more" with search bar.*
+
+#### Sign In Page
+![StreamLux Android - Sign In Page](https://raw.githubusercontent.com/gideongeny/STREAMLUX/main/Images/Android/sign-in-page.png)
+*Sign In page with Google and Facebook login options, email/password fields, and "Not a member? Sign Up" link.*
+
+### Download Android App
+
+- **GitHub Releases**: [Download APK](https://github.com/gideongeny/STREAMLUX/releases)
+- **Installation Guide**: See [BUILD_APK.md](./BUILD_APK.md) for detailed instructions
+- **Requirements**: Android 5.0+ with 50MB free space
+
 ## Screenshots, Preview
 
 ### Home Page
