@@ -1,5 +1,6 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { Link } from "react-router-dom";
+import { GiHamburgerMenu } from "react-icons/gi";
 import { 
   FaDownload, 
   FaAndroid, 
@@ -19,40 +20,52 @@ import {
 } from "react-icons/md";
 import Footer from "../components/Footer/Footer";
 import Sidebar from "../components/Common/Sidebar";
-import SidebarMini from "../components/Common/SidebarMini";
 import { useCurrentViewportView } from "../hooks/useCurrentViewportView";
 
 const Download: FC = () => {
   const { isMobile } = useCurrentViewportView();
+  const [isSidebarActive, setIsSidebarActive] = useState(false);
 
   const handleDownload = () => {
-    // Open GitHub releases page in new tab
-    window.open("https://github.com/gideongeny/STREAMLUX/releases", "_blank");
+    // Open specific GitHub release page in new tab
+    window.open("https://github.com/gideongeny/STREAMLUX/releases/tag/V1.00", "_blank");
   };
 
   return (
-    <div className="flex items-start">
-      {isMobile && <SidebarMini />}
-      {!isMobile && <Sidebar isSidebarActive={true} onCloseSidebar={() => {}} />}
+    <>
+      {/* Mobile Header */}
+      <div className="flex md:hidden justify-between items-center px-5 my-5">
+        <Link to="/" className="flex gap-2 items-center">
+          <img
+            src="/logo.svg"
+            alt="StreamLux Logo"
+            className="h-10 w-10"
+          />
+          <p className="text-xl text-white font-medium tracking-wider uppercase">
+            Stream<span className="text-primary">Lux</span>
+          </p>
+        </Link>
+        <button onClick={() => setIsSidebarActive((prev) => !prev)}>
+          <GiHamburgerMenu size={25} />
+        </button>
+      </div>
 
-        <div className="flex-1 min-h-screen bg-dark">
+      <div className="flex items-start">
+        {isMobile && (
+          <Sidebar
+            isSidebarActive={isSidebarActive}
+            onCloseSidebar={() => setIsSidebarActive(false)}
+          />
+        )}
+        {!isMobile && <Sidebar isSidebarActive={true} onCloseSidebar={() => {}} />}
+
+        <div className="flex-1 min-h-screen bg-dark md:pt-7 pt-0 pb-7">
           <div className="container mx-auto px-4 py-8">
             {/* Header Section */}
             <div className="text-center mb-12">
-              <div className="flex items-center justify-center gap-3 mb-4">
-                <img
-                  src="/logo.svg"
-                  alt="StreamLux Logo"
-                  className="w-16 h-16"
-                />
-                <h1 className="text-4xl md:text-5xl font-bold text-white">
-                  <span>Stream</span>
-                  <span className="text-primary">Lux</span>
-                </h1>
-              </div>
-              <p className="text-xl text-gray-300 mb-2">
+              <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
                 Download StreamLux for Android
-              </p>
+              </h1>
               <p className="text-gray-400 max-w-2xl mx-auto">
                 Watch thousands of movies, TV shows, and live sports on your Android device - completely free!
               </p>
@@ -283,6 +296,7 @@ const Download: FC = () => {
           <Footer />
         </div>
       </div>
+    </>
   );
 };
 
