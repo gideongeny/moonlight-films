@@ -5,6 +5,7 @@ import { BiSearch, BiUserCircle } from "react-icons/bi";
 import { BsBookmarkHeart } from "react-icons/bs";
 import { HiOutlineLogin, HiOutlineLogout } from "react-icons/hi";
 import { MdOutlineExplore, MdSportsSoccer } from "react-icons/md";
+import { FaDownload } from "react-icons/fa";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
@@ -194,6 +195,17 @@ const Sidebar: FC<SidebarProps> = ({ isSidebarActive, onCloseSidebar }) => {
 
         <div className="text-white text-lg font-medium mt-12">GENERAL</div>
         <div className="mt-8 ml-4 flex flex-col gap-6">
+          <Link
+            to="/download"
+            className={`flex gap-6 items-center  ${
+              location.pathname === "/download" &&
+              "!text-primary border-r-4 border-primary font-medium"
+            } hover:text-white transition duration-300`}
+          >
+            <FaDownload size={25} />
+            <p>Download App</p>
+          </Link>
+
           <button
             onClick={() => personalPageHandler("/profile")}
             className={`flex gap-6 items-center  ${

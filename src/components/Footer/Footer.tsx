@@ -44,6 +44,11 @@ const Footer: FunctionComponent<FooterProps> = () => {
                   Sports
                 </Link>
               </li>
+              <li>
+                <Link to="/download" className="text-gray-400 hover:text-primary transition">
+                  Download App
+                </Link>
+              </li>
             </ul>
           </div>
 
