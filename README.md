@@ -78,19 +78,23 @@ StreamLux is now available as a native Android app! Download the APK from [GitHu
 ### Android App Screenshots
 
 #### Movies Section
-![StreamLux Android - Movies Section](https://raw.githubusercontent.com/gideongeny/STREAMLUX/main/Images/Android/movies-section.png)
+![StreamLux Android - Movies Section](![WhatsApp Image 2025-12-03 at 04 25 59_79b6a59f](https://github.com/user-attachments/assets/e015ce20-dce0-4da5-84eb-ddcab06609d7)
+)
 *Movies section featuring F1 movie banner, Popular section with Zootopia 2 and The Shadow's Edge. Clean dark theme with orange accents.*
 
 #### TV Shows Section
-![StreamLux Android - TV Shows Section](https://raw.githubusercontent.com/gideongeny/STREAMLUX/main/Images/Android/tv-shows-section.png)
+![StreamLux Android - TV Shows Section](![WhatsApp Image 2025-12-03 at 04 25 59_04d2962f](https://github.com/user-attachments/assets/dffb0b8f-418f-49e8-8300-3b93d04186f5)
+)
 *TV Shows section showing "Heated Rivalry" featured content and Popular section with Stranger Things and IT: Welcome to Derry.*
 
 #### Search Page
-![StreamLux Android - Search Page](https://raw.githubusercontent.com/gideongeny/STREAMLUX/main/Images/Android/search-page.png)
+![StreamLux Android - Search Page](![WhatsApp Image 2025-12-03 at 04 25 59_c0380572](https://github.com/user-attachments/assets/0cabb2d0-2a7e-48dd-b7cd-5d89c2d6bef0)
+)
 *Beautiful search interface with anime-style illustration, featuring "Find your favourite movies, TV shows, people and more" with search bar.*
 
 #### Sign In Page
-![StreamLux Android - Sign In Page](https://raw.githubusercontent.com/gideongeny/STREAMLUX/main/Images/Android/sign-in-page.png)
+![StreamLux Android - Sign In Page](![WhatsApp Image 2025-12-03 at 04 26 00_dc4a0d9d](https://github.com/user-attachments/assets/8bf949c8-9d81-42c9-97f8-356e275c59b6)
+)
 *Sign In page with Google and Facebook login options, email/password fields, and "Not a member? Sign Up" link.*
 
 ### Download Android App
