@@ -1,4 +1,4 @@
-# ✅ Android App Setup Complete!
+Y# ✅ Android App Setup Complete!
 
 Your StreamLux website has been successfully converted to an Android app using Capacitor!
 

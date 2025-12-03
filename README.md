@@ -69,6 +69,7 @@ Official website: [https://streamlux.vercel.app/](https://streamlux.vercel.app/)
 - **Error Boundaries**: Robust error handling with React Error Boundaries to prevent app crashes and provide graceful fallbacks
 - **Cross-Platform Compatibility**: Optimized for iPhone, Android, and desktop browsers with polyfills for older devices
 - **Google Search Optimized**: Website is indexed and discoverable via Google Search
+- **Android App Available**: Download the StreamLux Android APK directly from our website, similar to MovieBox. See [BUILD_APK.md](./BUILD_APK.md) and [DISTRIBUTE_APK.md](./DISTRIBUTE_APK.md) for distribution instructions
 
 ## Screenshots, Preview
 
