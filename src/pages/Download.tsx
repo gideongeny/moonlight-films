@@ -60,9 +60,9 @@ const Download: FC = () => {
         {!isMobile && <Sidebar isSidebarActive={true} onCloseSidebar={() => {}} />}
 
         <div className="flex-1 min-h-screen bg-dark md:pt-7 pt-0 pb-7">
-          <div className="container mx-auto px-4 py-8">
+          <div className="container mx-auto px-4 py-8 md:pl-8">
             {/* Header Section */}
-            <div className="text-center mb-12">
+            <div className="text-center mb-12 md:mt-4">
               <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
                 Download StreamLux for Android
               </h1>
@@ -87,13 +87,19 @@ const Download: FC = () => {
                   </div>
                 </div>
 
-                <button
-                  onClick={handleDownload}
-                  className="bg-gradient-to-r from-primary to-orange-600 hover:from-primary/90 hover:to-orange-600/90 text-white font-bold py-4 px-8 rounded-xl text-lg md:text-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-primary/50 flex items-center gap-3 mx-auto"
+                <a
+                  href="https://github.com/gideongeny/STREAMLUX/releases/tag/V1.00"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleDownload();
+                  }}
+                  className="bg-gradient-to-r from-primary to-orange-600 hover:from-primary/90 hover:to-orange-600/90 text-white font-bold py-4 px-8 rounded-xl text-lg md:text-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-primary/50 flex items-center gap-3 mx-auto cursor-pointer inline-block"
                 >
                   <FaDownload className="text-2xl" />
                   <span>Download APK</span>
-                </button>
+                </a>
 
                 <p className="text-gray-400 text-sm mt-4">
                   Click to download from GitHub Releases
